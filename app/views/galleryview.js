@@ -6,12 +6,14 @@ import {
     TouchableOpacity,
     View,
     ScrollView,
+    ListView,
     TextInput,
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
+import thumbnail from "../assets/img/settings.png";
 
-class SettingsView extends Component {
+class GalleryView extends Component {
 
     state = {
         wifi: false,
@@ -23,65 +25,38 @@ class SettingsView extends Component {
         this.props.navigation.navigate('homeView')
     }
 
+    cases = [{key: "1", thumbnail : require("../assets/img/settings.png")}, {key: "2", thumbnail : require("../assets/img/settings.png")}, {key: "3", thumbnail : require("../assets/img/settings.png")}, {key: "4", thumbnail : require("../assets/img/settings.png")}, {key: "5", thumbnail : require("../assets/img/settings.png")}, {key: "6", thumbnail : require("../assets/img/settings.png")}, {key: "7", thumbnail : require("../assets/img/settings.png")}, {key: "8", thumbnail : require("../assets/img/settings.png")}, {key: "9", thumbnail : require("../assets/img/settings.png")}, {key: "10", thumbnail : require("../assets/img/settings.png")}, {key: "11", thumbnail : require("../assets/img/settings.png")}, {key: "12", thumbnail : require("../assets/img/settings.png")}, {key: "13", thumbnail : require("../assets/img/settings.png")}, {key: "14", thumbnail : require("../assets/img/settings.png")}, {key: "15", thumbnail : require("../assets/img/settings.png")}, {key: "16", thumbnail : require("../assets/img/settings.png")}, {key: "17", thumbnail : require("../assets/img/settings.png")}, {key: "18", thumbnail : require("../assets/img/settings.png")}, {key: "19", thumbnail : require("../assets/img/settings.png")}, {key: "20", thumbnail : require("../assets/img/settings.png")}, {key: "21", thumbnail : require("../assets/img/settings.png")}, {key: "22", thumbnail : require("../assets/img/settings.png")}, {key: "23", thumbnail : require("../assets/img/settings.png")}, {key: "24", thumbnail : require("../assets/img/settings.png")}, {key: "25", thumbnail : require("../assets/img/settings.png")}, {key: "26", thumbnail : require("../assets/img/settings.png")}, {key: "27", thumbnail : require("../assets/img/settings.png")}, {key: "28", thumbnail : require("../assets/img/settings.png")}, {key: "29", thumbnail : require("../assets/img/settings.png")}, {key: "30", thumbnail : require("../assets/img/settings.png")}, {key: "31", thumbnail : require("../assets/img/settings.png")}, {key: "32", thumbnail : require("../assets/img/settings.png")}, {key: "33", thumbnail : require("../assets/img/settings.png")}, {key: "34", thumbnail : require("../assets/img/settings.png")}, {key: "35", thumbnail : require("../assets/img/settings.png")}, ];
+
+    buildGallery = function (cases) {
+        let rowCount = 0;
+        let count = 0;
+        let list = [];
+        let rowElems = [];
+        //let row = <View style={styles.row}>{rowElems}</View>;
+        cases.forEach(function (c) {
+            count++;
+            rowElems.push(<Image key={c.key} style={styles.thumbnail} source={c.thumbnail}/>);
+            if (count === 3) {
+                list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
+                rowElems = [];
+                count = 0;
+                rowCount++;
+            }
+        });
+        while (rowElems.length < 3){
+            rowElems.push(<View key={"fill" + rowElems.length} style={styles.thumbnail}/>)
+        }
+        list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
+        rowElems = [];
+        return list;
+    };
+
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.textEntryText}>Unfinished Cases</Text>
+                <Text style={styles.title}>Pending Cases</Text>
                 <ScrollView style={styles.topContainer}>
-                    <View style={styles.textEntryContainer}>
-                        <Text style={styles.textEntryText}>Full Name:</Text>
-                        <TextInput
-                            style={styles.textEntryBox}
-                        />
-                    </View>
-                    {/*<Picker*/}
-                    {/*    selectedValue={this.state.defaultAnimal}*/}
-                    {/*    onValueChange={(itemValue, itemIndex) =>*/}
-                    {/*        this.setState({defaultAnimal: itemValue})*/}
-                    {/*    }>*/}
-                    {/*    <Picker.Item label="Cow" value="cow"/>*/}
-                    {/*    <Picker.Item label="Goat" value="goat"/>*/}
-                    {/*    <Picker.Item label="Sheep" value="sheep"/>*/}
-                    {/*    <Picker.Item label="Pig" value="pig"/>*/}
-                    {/*    <Picker.Item label="Horse" value="horse"/>*/}
-                    {/*</Picker>*/}
-                    <Text style={styles.uploadTitle}>Default Species:</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) =>
-                            this.setState({defaultAnimal: value})}
-                        items={[
-                            {label: 'Cow', value: 'cow'},
-                            {label: 'Goat', value: 'goat'},
-                            {label: 'Sheep', value: 'sheep'},
-                            {label: 'Pig', value: 'pig'},
-                            {label: 'Horse', value: 'horse'},
-                        ]}
-                        useNativeAndroidPickerStyle={false}
-                        textInputProps={{
-                            //color: '#73c4c4',
-                            fontFamily: "sans-serif-light",
-                            fontSize: 20,
-
-                        }}
-                    />
-                    <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
-                    <CheckBox
-                        title='WiFi'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.wifi}
-                        onPress={() => this.setState({wifi: !this.state.wifi})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                    <CheckBox
-                        title='Cellular Data'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.cell}
-                        onPress={() => this.setState({cell: !this.state.cell})}
-                        textStyle={styles.options}
-                    />
+                    {this.buildGallery(this.cases)}
                 </ScrollView>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
@@ -102,53 +77,39 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
+    title: {
+//        flex: 1,
+        color: '#73c4c4',
+        fontFamily: "sans-serif-light",
+        fontSize: 30,
+        margin: 15,
+    },
     topContainer: {
         width: Dimensions.get('window').width * 4 / 5,
 
         //height: Dimensions.get('window').width * 4 / 3,
-        flex: 1,
-
-        //backgroundColor: '#7d7808',
-        //contentContainerStyle: {
-        //alignItems: 'center'
-        //},
-
+        //flex: 1,
+        //flexDirection: 'row',
+        //lexWrap: 'wrap',
+        // contentContainerStyle:{
+        //alignItems: 'flex-start'
+        //   }
     },
-    options: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: "sans-serif-thin",
-        fontSize: 20,
-    },
-    optionsContainer: {
-        margin: 10,
-    },
-    textEntryContainer: {
-        height: Dimensions.get('window').height / 20,
-        marginTop: 20,
-        marginBottom: 20,
+    row:{
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'center',
+        justifyContent: 'space-evenly',
     },
-    textEntryText: {
-        flex: 1,
-        color: '#73c4c4',
-        fontFamily: "sans-serif-light",
-        fontSize: 20,
+    thumbnailContainer: {
+        width: 50,
+        height: 50,
+        backgroundColor: '#000000'
     },
-    textEntryBox: {
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: '#ebebeb',
-        backgroundColor: '#f9f9f9',
-        height: Dimensions.get('window').height / 20,
-        flex: 2,
-        // color: '#73c4c4',
-        color: 'black',
-        fontFamily: "sans-serif-light",
-        fontSize: 20,
-        textAlign: 'center',
+    thumbnail: {
+        //flex: 1
+        width: Dimensions.get('window').width * 4 / 20,
+        height: Dimensions.get('window').width * 4 / 20,
+        //backgroundColor: '#000000',
     },
     uploadTitle: {
         //flex: 1,
@@ -224,4 +185,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SettingsView;
+export default GalleryView;

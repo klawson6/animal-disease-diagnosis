@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {
-    Dimensions, Image,
+    Dimensions,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
     ScrollView,
     TextInput,
-    Picker,
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -35,17 +34,6 @@ class SettingsView extends Component {
                             style={styles.textEntryBox}
                         />
                     </View>
-                    {/*<Picker*/}
-                    {/*    selectedValue={this.state.defaultAnimal}*/}
-                    {/*    onValueChange={(itemValue, itemIndex) =>*/}
-                    {/*        this.setState({defaultAnimal: itemValue})*/}
-                    {/*    }>*/}
-                    {/*    <Picker.Item label="Cow" value="cow"/>*/}
-                    {/*    <Picker.Item label="Goat" value="goat"/>*/}
-                    {/*    <Picker.Item label="Sheep" value="sheep"/>*/}
-                    {/*    <Picker.Item label="Pig" value="pig"/>*/}
-                    {/*    <Picker.Item label="Horse" value="horse"/>*/}
-                    {/*</Picker>*/}
                     <Text style={styles.uploadTitle}>Default Species:</Text>
                     <RNPickerSelect
                         onValueChange={(value) =>
@@ -54,7 +42,7 @@ class SettingsView extends Component {
                             {label: 'Cow', value: 'cow'},
                             {label: 'Goat', value: 'goat'},
                             {label: 'Sheep', value: 'sheep'},
-                            {label: 'Pig', value: 'pig'},
+                            {label: 'Camel', value: 'camel'},
                             {label: 'Horse', value: 'horse'},
                         ]}
                         useNativeAndroidPickerStyle={false}
