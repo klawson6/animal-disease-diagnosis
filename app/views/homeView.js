@@ -11,13 +11,13 @@ class HomeView extends Component {
 
     onHealthyPress() {
         this.props.navigation.navigate('cameraView', {
-            type: "healthy",
+            type: "Healthy Animal",
         })
     }
 
     onDiseasePress() {
         this.props.navigation.navigate('cameraView', {
-            type: "disease",
+            type: "Disease",
         })
     }
 
@@ -110,20 +110,20 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-evenly',
         // backgroundColor: '#000000'
-        transform: [{
-            translateY: -50,
-        }],
+        // transform: [{
+        //     translateY: -50,
+        // }],
     },
     button: {
         // borderRadius: 10,
         // borderColor: '#689491',
         // borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: '#ebebeb',
         backgroundColor: '#f9f9f9',
-        width: 200,
-        height: 50,
+        width: Dimensions.get('window').width*2/3,
+        height: Dimensions.get('window').height/10,
         alignItems: 'center',
         //backgroundColor: '#73c4c4',
         justifyContent: 'space-evenly'

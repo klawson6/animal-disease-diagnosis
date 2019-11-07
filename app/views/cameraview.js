@@ -9,62 +9,45 @@ import {
 } from 'react-native';
 import * as Permissions from "expo-permissions";
 import {Camera} from "expo-camera";
-import * as ImagePicker from 'expo-image-picker';
-
-
-// More info on all the options is below in the API Reference... just some common use cases shown here
-// const options = {
-//     title: 'Select Avatar',
-//     customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-//     storageOptions: {
-//         skipBackup: true,
-//         path: 'images',
-//     },
-// };
-
-// Launch Camera:
-// ImagePicker.launchCamera(options, (response) => {
-//     // Same code as in above section!
-//     console.log('Response = ', response);
-//
-//     if (response.didCancel) {
-//         console.log('User cancelled image picker');
-//     } else if (response.error) {
-//         console.log('ImagePicker Error: ', response.error);
-//     } else if (response.customButton) {
-//         console.log('User tapped custom button: ', response.customButton);
-//     } else {
-//         const source = {uri: response.uri};
-//
-//         // You can also display the image using data:
-//         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-//
-//         this.setState({
-//             avatarSource: source,
-//         });
-//     }
-// });
-
 
 class CameraView extends Component {
 
     camera = null;
 
     state = {
-        hasCameraPermission: null,
+        hasPermissions: null,
+        thumbnail: require('../assets/img/white.png'),
+        white: require('../assets/img/white.png'),
     };
 
     async componentDidMount() {
-        const {status} = await Permissions.askAsync(Permissions.CAMERA);
-        this.setState({hasCameraPermission: status === 'granted'});
+        const { status } = await Permissions.getAsync(
+            Permissions.CAMERA,
+            Permissions.CAMERA_ROLL
+        );
+        this.setState({hasPermissions: status === 'granted'});
     }
 
-    // state = {
-    //     image: null,
-    // };
+    onGalleryButton() {
+        this.props.navigation.navigate('galleryView')
+    }
 
-    onPressButton() {
-        this.props.navigation.navigate('settingsView')
+    async onSnapButton() {
+        if (this.camera) {
+            const options = {skipProcessing: true, base64: true, exif: true};
+            console.log("waiting...");
+            await this.camera.takePictureAsync(options).then(photo => {
+                photo.exif.Orientation = 1;
+                this.setState({
+                    thumbnail: photo,
+                });
+                console.log(photo.uri);
+            });
+        }
+    }
+
+    onContinueButton() {
+        this.props.navigation.navigate('categoriseView')
     }
 
     render() {
@@ -82,53 +65,28 @@ class CameraView extends Component {
                         <Camera ref={ref => {
                             this.camera = ref;
                         }} style={styles.camera} type={Camera.Constants.Type.back} props={{ratio: "4:3"}}/>
-                        {/*<Image source={this.state.avatarSource}/>*/}
-                        {/*{image &&*/}
-                        {/*<Image source={{uri: image}} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').width*4/3}}/>}*/}
                     </View>
                 </View>
                 <View style={styles.navContainer}>
+                    <Text style={styles.buttonTitle}>Capture Images of the {navigation.getParam('type')}</Text>
                     <View style={styles.imgContainer}>
-                        <TouchableOpacity onPress={this.onPressButton.bind(this)}>
+                        <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
-                                   source={require('../assets/img/gallery.png')}/>
+                                   source={this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this._pickImage}>
+                        <TouchableOpacity onPress={this.onSnapButton.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPressButton.bind(this)}>
+                        <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
                             <Image style={[styles.image, styles.settingsTouchable]}
-                                   source={require("../assets/img/settings.png")}/>
+                                   source={require("../assets/img/arrow.png")}/>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
         );
-        //}
     }
-
-    // componentDidMount() {
-    //     this.getPermissionAsync();
-    // }
-
-    // getPermissionAsync = async () => {
-    //     if (Constants.platform.ios) {
-    //         const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    //         if (status !== 'granted') {
-    //             alert('Sorry, we need camera roll permissions to make this work!');
-    //         }
-    //     }
-    // }
-
-    // _pickImage = async () => {
-    //     let result = await ImagePicker.launchCameraAsync({
-    //         aspect: [4, 3],
-    //     });
-    //     if (!result.cancelled) {
-    //         this.setState({image: result.uri});
-    //     }
-    // };
 }
 
 const styles = StyleSheet.create({
@@ -144,9 +102,8 @@ const styles = StyleSheet.create({
         //flexDirection: "column",
         width: Dimensions.get('window').width,
         // height: Dimensions.get('window').width,
-        flex:1,
+        flex: 1,
         overflow: "hidden",
-
         //backgroundColor:"#fdff17",
         //justifyContent: "flex-end",
     },
@@ -157,18 +114,26 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
         // overflow: "hidden",
-
         //backgroundColor: "#f6f6f6"
     },
     camera: {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').width*4/3,
+        height: Dimensions.get('window').width * 4 / 3,
         borderRadius: 20,
+    },
+    buttonTitle: {
+        //flex: 1,
+        color: '#73c4c4',
+        fontFamily: "sans-serif-light",
+        fontSize: 20,
+        marginTop: 20,
+        marginBottom: 20,
+        alignSelf: "center",
     },
     navContainer: {
         //flexDirection: "row",
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height/4,
+        height: Dimensions.get('window').height / 4,
         //backgroundColor:"#0f33ff",
         // backgroundColor: '#7d7d7d',
         // justifyContent: "space-between",
@@ -198,6 +163,9 @@ const styles = StyleSheet.create({
         transform: [{
             translateX: -25,
         }],
+        borderColor: '#73c4c4',
+        borderWidth: 1,
+        borderRadius: 5,
     }
 });
 
