@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import * as Permissions from "expo-permissions";
 import {Camera} from "expo-camera";
+import * as MediaLibrary from 'expo-media-library';
 
 class CameraView extends Component {
 
@@ -21,11 +22,46 @@ class CameraView extends Component {
     };
 
     async componentDidMount() {
-        const { status } = await Permissions.getAsync(
+        const {status} = await Permissions.getAsync(
             Permissions.CAMERA,
             Permissions.CAMERA_ROLL
         );
         this.setState({hasPermissions: status === 'granted'});
+        this.loadAlbum();
+    }
+
+    loadAlbum() {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                if (album !== null) {
+                    this.loadImages(album);
+                } else {
+                    console.log("No album for Animal Disease Diagnosis yet.");
+                }
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis.', error);
+
+            })
+    }
+
+    loadImages(album) {
+        MediaLibrary.getAssetsAsync({album: album})
+            .then(assets => {
+                while (assets.hasNextPage) {
+                    console.log("Loading images...");
+                }
+                console.log('Estimated number of loaded images: ' + assets.totalCount);
+                console.log('Actual number of loaded images: ' + assets.assets.length);
+                let img = assets.assets[0];
+                this.setState({
+                    thumbnail: img,
+                    white: img,
+                })
+            })
+            .catch(error => {
+                console.log('Could not get assets from folder.', error);
+            });
     }
 
     onGalleryButton() {
@@ -36,14 +72,33 @@ class CameraView extends Component {
         if (this.camera) {
             const options = {skipProcessing: true, base64: true, exif: true};
             console.log("waiting...");
-            await this.camera.takePictureAsync(options).then(photo => {
-                photo.exif.Orientation = 1;
-                this.setState({
-                    thumbnail: photo,
+            await this.camera.takePictureAsync(options)
+                .then(photo => {
+                    photo.exif.Orientation = 1;
+                    this.setState({
+                        thumbnail: photo,
+                    });
+                    this.savePhoto(photo);
+                    console.log('Photo taken.');
+                    console.log(photo.uri);
+                })
+                .catch(error => {
+                    console.log('Error taking photo.', error);
                 });
-                console.log(photo.uri);
-            });
         }
+    }
+
+    async savePhoto(photo) {
+        const {uri} = photo;
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        console.log(asset.id);
+        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
+            .then(() => {
+                console.log('Image captured and saved to the device.');
+            })
+            .catch(error => {
+                console.log('Error saving photo.', error);
+            });
     }
 
     onContinueButton() {
