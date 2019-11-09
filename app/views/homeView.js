@@ -6,27 +6,90 @@ import {
     View,
     Image, Dimensions,
 } from 'react-native';
+import * as MediaLibrary from "expo-media-library";
+import * as Permissions from "expo-permissions";
 
 class HomeView extends Component {
 
+    state = {
+        cases: null,
+        hasPermissions: false,
+    };
+
+    componentDidMount() {
+        Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+            .then(result => {
+                this.setState({hasPermissions: result.status === 'granted'});
+                if (this.state.hasPermissions) {
+                    this.loadAlbum();
+                } else {
+                    // TODO add error message to user also on buttons presses
+                    console.log("NO PERMISSIONS EXPECT ERROR")
+                }
+            });
+    }
+
+    loadAlbum() {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                if (album !== null) {
+                    this.loadImages(album);
+                } else {
+                    console.log("No album for Animal Disease Diagnosis yet.");
+                }
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis.', error);
+            })
+    }
+
+    loadImages(album) {
+        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
+            .then(assets => {
+                while (assets.hasNextPage) {
+                    console.log("Loading images...");
+                }
+                console.log('Estimated number of loaded images: ' + assets.totalCount);
+                console.log('Actual number of loaded images: ' + assets.assets.length);
+                this.setState({
+                    cases: assets,
+                });
+            })
+            .catch(error => {
+                console.log('Could not get assets from folder.', error);
+            });
+    }
+
     onHealthyPress() {
-        this.props.navigation.navigate('cameraView', {
-            type: "Healthy Animal",
-        })
+        if (this.state.hasPermissions) {
+            this.props.navigation.navigate('cameraView', {
+                type: "Healthy Animal",
+                cases: this.state.cases,
+            })
+        }
     }
 
     onDiseasePress() {
-        this.props.navigation.navigate('cameraView', {
-            type: "Disease",
-        })
+        if (this.state.hasPermissions) {
+            this.props.navigation.navigate('cameraView', {
+                type: "Disease",
+                cases: this.state.cases,
+            })
+        }
     }
 
     onGalleryPress() {
-        this.props.navigation.navigate('galleryView')
+        if (this.state.hasPermissions) {
+            this.props.navigation.navigate('galleryView', {
+                cases: this.state.cases,
+            })
+        }
     }
 
     onSettingsPress() {
-        this.props.navigation.navigate('settingsView')
+        if (this.state.hasPermissions) {
+            this.props.navigation.navigate('settingsView')
+        }
     }
 
     render() {
@@ -34,8 +97,6 @@ class HomeView extends Component {
             <View style={styles.container}>
                 <View style={styles.topContainer}>
                     <View style={styles.titleContainer}>
-                        {/*<Image style={styles.titleImg}*/}
-                        {/*       source={require('../assets/img/title.png')}/>*/}
                         <Text style={styles.title}>
                             New Case:
                         </Text>
@@ -82,50 +143,33 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         width: Dimensions.get('window').width,
-        //height: Dimensions.get('window').width * 4 / 3,
         flex: 1,
-
         alignItems: 'center',
     },
     titleContainer: {
         flex: 1,
         flexDirection: 'column-reverse',
-        //backgroundColor: '#7d7d7d'
-    },
-    titleImg: {
-        width: 250,
-        height: 75,
     },
     title: {
         textAlign: 'center',
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 30,
-        //textShadowRadius: 8,
-
         textShadowColor: '#000000',
     },
     buttonContainer: {
         flex: 2,
         flexDirection: 'column',
         justifyContent: 'space-evenly',
-        // backgroundColor: '#000000'
-        // transform: [{
-        //     translateY: -50,
-        // }],
     },
     button: {
-        // borderRadius: 10,
-        // borderColor: '#689491',
-        // borderWidth: 1,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#ebebeb',
         backgroundColor: '#f9f9f9',
-        width: Dimensions.get('window').width*2/3,
-        height: Dimensions.get('window').height/10,
+        width: Dimensions.get('window').width * 2 / 3,
+        height: Dimensions.get('window').height / 10,
         alignItems: 'center',
-        //backgroundColor: '#73c4c4',
         justifyContent: 'space-evenly'
     },
     buttonText: {
@@ -135,12 +179,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     navContainer: {
-        // flexDirection: "row",
-        // flex: 1,
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height / 4,
-        //backgroundColor: '#ecff1f',
-        // justifyContent: "space-between",
     },
     imgContainer: {
         flex: 1,
@@ -149,20 +189,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     image: {
-        // borderRadius: 5,
-        // backgroundColor: '#1A936F',
-        // borderColor: 'black',
-        // borderWidth: 1,
-        width: 65,
-        height: 65,
-        // width: Dimensions.get('window').width/6,
-        // height: Dimensions.get('window').width * 4 / 24,
-    },
-    settingsImg: {
-        width: 65,
-        height: 65,
-    },
-    galleryImg: {
         width: 65,
         height: 65,
     },
@@ -183,7 +209,7 @@ const styles = StyleSheet.create({
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 18,
-    },
+    }
 });
 
 export default HomeView;

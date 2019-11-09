@@ -47,10 +47,8 @@ class SettingsView extends Component {
                         ]}
                         useNativeAndroidPickerStyle={false}
                         textInputProps={{
-                            //color: '#73c4c4',
                             fontFamily: "sans-serif-light",
                             fontSize: 20,
-
                         }}
                     />
                     <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
@@ -92,7 +90,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     title:{
-//        flex: 1,
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 30,
@@ -100,24 +97,7 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         width: Dimensions.get('window').width * 4 / 5,
-
-        //height: Dimensions.get('window').width * 4 / 3,
         flex: 1,
-
-        //backgroundColor: '#7d7808',
-        //contentContainerStyle: {
-        //alignItems: 'center'
-        //},
-
-    },
-    options: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: "sans-serif-thin",
-        fontSize: 20,
-    },
-    optionsContainer: {
-        margin: 10,
     },
     textEntryContainer: {
         height: Dimensions.get('window').height / 20,
@@ -140,25 +120,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9',
         height: Dimensions.get('window').height / 20,
         flex: 2,
-        // color: '#73c4c4',
         color: 'black',
         fontFamily: "sans-serif-light",
         fontSize: 20,
         textAlign: 'center',
     },
     uploadTitle: {
-        //flex: 1,
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
+    },options: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: "sans-serif-thin",
+        fontSize: 20,
+    },
+    optionsContainer: {
+        margin: 10,
     },
     saveContainer: {
         flexDirection: 'row',
         alignItems: "center",
         height: Dimensions.get('window').height / 10,
-        //backgroundColor:"#3cfdff",
     },
     button: {
         borderRadius: 10,
@@ -175,48 +160,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: "sans-serif-light",
         fontSize: 20,
-    },
-    navContainer: {
-        // flexDirection: "row",
-        // flex: 1,
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height / 4,
-        //backgroundColor: '#ecff1f',
-        // justifyContent: "space-between",
-    },
-    imgContainer: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: 'center',
-    },
-    image: {
-        // borderRadius: 5,
-        // backgroundColor: '#1A936F',
-        // borderColor: 'black',
-        // borderWidth: 1,
-        width: 65,
-        height: 65,
-        // width: Dimensions.get('window').width/6,
-        // height: Dimensions.get('window').width * 4 / 24,
-    },
-    settingsImg: {
-        width: 65,
-        height: 65,
-    },
-    galleryImg: {
-        width: 65,
-        height: 65,
-    },
-    settingsTouchable: {
-        transform: [{
-            translateX: 65,
-        }],
-    },
-    galleryTouchable: {
-        transform: [{
-            translateX: -65,
-        }],
     }
 });
 

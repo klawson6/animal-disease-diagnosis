@@ -10,62 +10,26 @@ import {
 import * as Permissions from "expo-permissions";
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
+import {SortBy} from "expo-media-library";
 
 class CameraView extends Component {
 
     camera = null;
 
     state = {
-        hasPermissions: null,
         thumbnail: require('../assets/img/white.png'),
         white: require('../assets/img/white.png'),
+        cases: null,
     };
 
-    async componentDidMount() {
-        const {status} = await Permissions.getAsync(
-            Permissions.CAMERA,
-            Permissions.CAMERA_ROLL
-        );
-        this.setState({hasPermissions: status === 'granted'});
-        this.loadAlbum();
-    }
-
-    loadAlbum() {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                if (album !== null) {
-                    this.loadImages(album);
-                } else {
-                    console.log("No album for Animal Disease Diagnosis yet.");
-                }
-            })
-            .catch(error => {
-                console.log('No folder for Animal Disease Diagnosis.', error);
-
-            })
-    }
-
-    loadImages(album) {
-        MediaLibrary.getAssetsAsync({album: album})
-            .then(assets => {
-                while (assets.hasNextPage) {
-                    console.log("Loading images...");
-                }
-                console.log('Estimated number of loaded images: ' + assets.totalCount);
-                console.log('Actual number of loaded images: ' + assets.assets.length);
-                let img = assets.assets[0];
-                this.setState({
-                    thumbnail: img,
-                    white: img,
-                })
-            })
-            .catch(error => {
-                console.log('Could not get assets from folder.', error);
-            });
+    onContinueButton() {
+        this.props.navigation.navigate('categoriseView')
     }
 
     onGalleryButton() {
-        this.props.navigation.navigate('galleryView')
+        this.props.navigation.navigate('galleryView', {
+            cases: this.state.cases,
+        })
     }
 
     async onSnapButton() {
@@ -90,29 +54,76 @@ class CameraView extends Component {
 
     async savePhoto(photo) {
         const {uri} = photo;
-        const asset = await MediaLibrary.createAssetAsync(uri);
-        console.log(asset.id);
-        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
-            .then(() => {
-                console.log('Image captured and saved to the device.');
-            })
-            .catch(error => {
-                console.log('Error saving photo.', error);
+        MediaLibrary.createAssetAsync(uri)
+            .then(asset => {
+                MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
+                    .then(album => {
+                        if (this.state.cases === null)
+                            this.loadImages(album);
+                        else
+                            this.state.cases.assets.unshift(photo);
+                        console.log('Image captured and saved to the device.');
+                    })
+                    .catch(error => {
+                        console.log('Error saving photo.', error);
+                    });
             });
     }
 
-    onContinueButton() {
-        this.props.navigation.navigate('categoriseView')
+    componentDidMount() {
+        //const {status} = await Permissions.getAsync(
+        // Permissions.getAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+        //     .then( result => {
+        //         this.setState({hasPermissions: result.status === 'granted'});
+        //         if(this.state.hasPermissions){
+        //             this.render();
+        //             this.loadThumbnail();
+        //         } else {
+        //             this.props.navigation.navigate('HomeView')
+        //         }
+        //     });
+        this.loadThumbnail();
+    }
+
+    loadThumbnail() {
+        // NOTE DO NOT CALL SETSTATE A BUNCH OF TIMES CLOSE  BY EACH OTHER??
+        if (this.props.navigation.getParam('cases') !== null) {
+            console.log('Images found in HomeView state.');
+            this.setState({
+                thumbnail: this.props.navigation.getParam('cases').assets[0],
+                white: this.props.navigation.getParam('cases').assets[0],
+                cases: this.props.navigation.getParam('cases'),
+            });
+        }
+    }
+
+    loadImages(album) {
+        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
+            .then(assets => {
+                while (assets.hasNextPage) {
+                    console.log("Loading images...");
+                }
+                console.log('Estimated number of loaded images: ' + assets.totalCount);
+                console.log('Actual number of loaded images: ' + assets.assets.length);
+                console.log(assets);
+                this.setState({
+                    cases: assets,
+                });
+            })
+            .catch(error => {
+                console.log('Could not get assets from folder.', error);
+            });
     }
 
     render() {
+        // TODO handle declined camera and filesystem request
         // const {hasCameraPermission} = this.state;
         // if (hasCameraPermission === null) {
         //     return <View/>;
         // } else if (hasCameraPermission === false) {
         //     return <Text>No access to camera</Text>;
         // } else {
-        const {navigation} = this.props;
+        // const {navigation} = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.cameraContainer}>
@@ -123,7 +134,7 @@ class CameraView extends Component {
                     </View>
                 </View>
                 <View style={styles.navContainer}>
-                    <Text style={styles.buttonTitle}>Capture Images of the {navigation.getParam('type')}</Text>
+                    <Text style={styles.buttonTitle}>Capture Images of the {this.props.navigation.getParam('type')}</Text>
                     <View style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
@@ -153,45 +164,30 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
     },
     cameraContainer: {
-        //flex: 5,
-        //flexDirection: "column",
         width: Dimensions.get('window').width,
-        // height: Dimensions.get('window').width,
         flex: 1,
         overflow: "hidden",
-        //backgroundColor:"#fdff17",
-        //justifyContent: "flex-end",
     },
     cameraContainerBorder: {
-        // //flex:1,
-        // width: Dimensions.get('window').width,
-        // height: Dimensions.get('window').width*4/3,
         borderWidth: 1,
         borderColor: 'black',
-        // overflow: "hidden",
-        //backgroundColor: "#f6f6f6"
     },
     camera: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').width * 4 / 3,
         borderRadius: 20,
     },
+    navContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height / 4,
+    },
     buttonTitle: {
-        //flex: 1,
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
         alignSelf: "center",
-    },
-    navContainer: {
-        //flexDirection: "row",
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height / 4,
-        //backgroundColor:"#0f33ff",
-        // backgroundColor: '#7d7d7d',
-        // justifyContent: "space-between",
     },
     imgContainer: {
         flex: 1,
@@ -200,12 +196,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     image: {
-        // borderRadius: 32.5,
-        // backgroundColor: '#000000',
-        //borderColor: 'black',
-        //borderWidth: 2,
-        // width: Dimensions.get('window').width/6,
-        // height: (Dimensions.get('window').height - (Dimensions.get('window').width * 4 / 3))/3,
         width: 65,
         height: 65,
     },
