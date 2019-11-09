@@ -7,6 +7,7 @@ import {
     View,
     ScrollView,
     TextInput,
+    DatePickerAndroid,
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -14,13 +15,27 @@ import RNPickerSelect from 'react-native-picker-select';
 class CategoriseView extends Component {
 
     state = {
-        wifi: false,
-        cell: false,
+        age: 0,
         defaultAnimal: null,
+        dateSelected: 'DD/MM/YY',
     };
 
     onSavePress() {
         this.props.navigation.navigate('homeView')
+    }
+
+    onDatePress() {
+        DatePickerAndroid.open({date: new Date(),})
+            .then(result => {
+                if (result.action !== DatePickerAndroid.dismissedAction) {
+                    this.setState({
+                        dateSelected: '' + result.day + '/' + result.month + '/' + result.year
+                    })
+                }
+            })
+            .catch(error => {
+                console.warn('Cannot open date picker', error);
+            });
     }
 
     render() {
@@ -29,10 +44,18 @@ class CategoriseView extends Component {
                 <Text style={styles.title}>Categorise the Image(s)</Text>
                 <ScrollView style={styles.topContainer}>
                     <View style={styles.textEntryContainer}>
-                        <Text style={styles.textEntryText}>Your Full Name:</Text>
-                        <TextInput
-                            style={styles.textEntryBox}
-                        />
+                        <Text style={styles.nameText}>Full Name:</Text>
+                        <TextInput style={styles.nameBox}/>
+                    </View>
+                    <View style={styles.textEntryContainer}>
+                        <Text style={styles.dateText}>Date of Observation:</Text>
+                        <TouchableOpacity style={styles.datePicker} onPress={this.onDatePress.bind(this)}>
+                            <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.textEntryContainer}>
+                        <Text style={styles.nameText}>Location:</Text>
+                        <TextInput style={styles.nameBox}/>
                     </View>
                     <Text style={styles.uploadTitle}>Species:</Text>
                     <RNPickerSelect
@@ -51,25 +74,43 @@ class CategoriseView extends Component {
                             fontSize: 20,
                         }}
                     />
-                    <Text style={styles.uploadTitle}>Date of Observation:</Text>
-                    {/*<Text style={styles.uploadTitle}>Upload Cases Using:</Text>*/}
-                    {/*<CheckBox*/}
-                    {/*    title='WiFi'*/}
-                    {/*    checkedIcon='check-circle'*/}
-                    {/*    uncheckedIcon='check-circle'*/}
-                    {/*    checked={this.state.wifi}*/}
-                    {/*    onPress={() => this.setState({wifi: !this.state.wifi})}*/}
-                    {/*    textStyle={styles.options}*/}
-                    {/*    containerStyle={styles.optionsContainer}*/}
-                    {/*/>*/}
-                    {/*<CheckBox*/}
-                    {/*    title='Cellular Data'*/}
-                    {/*    checkedIcon='check-circle'*/}
-                    {/*    uncheckedIcon='check-circle'*/}
-                    {/*    checked={this.state.cell}*/}
-                    {/*    onPress={() => this.setState({cell: !this.state.cell})}*/}
-                    {/*    textStyle={styles.options}*/}
-                    {/*/>*/}
+                    <Text style={styles.uploadTitle}>Age of Animal:</Text>
+                    <CheckBox
+                        title='0 - 6 Months'
+                        checkedIcon='check-circle'
+                        uncheckedIcon='check-circle'
+                        checked={this.state.age === 1}
+                        onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
+                        textStyle={styles.options}
+                        containerStyle={styles.optionsContainer}
+                    />
+                    <CheckBox
+                        title='7 - 12 months'
+                        checkedIcon='check-circle'
+                        uncheckedIcon='check-circle'
+                        checked={this.state.age === 2}
+                        onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
+                        textStyle={styles.options}
+                        containerStyle={styles.optionsContainer}
+                    />
+                    <CheckBox
+                        title='13 - 24 Months'
+                        checkedIcon='check-circle'
+                        uncheckedIcon='check-circle'
+                        checked={this.state.age === 3}
+                        onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
+                        textStyle={styles.options}
+                        containerStyle={styles.optionsContainer}
+                    />
+                    <CheckBox
+                        title='Over 24 Months'
+                        checkedIcon='check-circle'
+                        uncheckedIcon='check-circle'
+                        checked={this.state.age === 4}
+                        onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
+                        textStyle={styles.options}
+                        containerStyle={styles.optionsContainer}
+                    />
                 </ScrollView>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
@@ -90,7 +131,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    title:{
+    title: {
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 30,
@@ -108,23 +149,48 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    textEntryText: {
+    nameText: {
         flex: 1,
         color: '#73c4c4',
         fontFamily: "sans-serif-light",
         fontSize: 20,
     },
-    textEntryBox: {
+    nameBox: {
         borderRadius: 3,
         borderWidth: 1,
         borderColor: '#ebebeb',
         backgroundColor: '#f9f9f9',
         height: Dimensions.get('window').height / 20,
         flex: 2,
+        flexDirection: 'row',
         color: 'black',
         fontFamily: "sans-serif-light",
         fontSize: 20,
         textAlign: 'center',
+        alignItems: 'center'
+    },
+    dateText: {
+        flex: 1.75,
+        color: '#73c4c4',
+        fontFamily: "sans-serif-light",
+        fontSize: 20,
+    },
+    datePicker: {
+        borderRadius: 3,
+        borderWidth: 1,
+        borderColor: '#ebebeb',
+        backgroundColor: '#f9f9f9',
+        height: Dimensions.get('window').height / 20,
+        flex: 1,
+        flexDirection: 'row',
+        textAlign: 'center',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    dateChosen:{
+        color: 'black',
+        fontFamily: "sans-serif-light",
+        fontSize: 20,
     },
     uploadTitle: {
         color: '#73c4c4',
@@ -132,7 +198,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
-    },options: {
+    },
+    options: {
         textAlign: 'center',
         color: '#73c4c4',
         fontFamily: "sans-serif-thin",

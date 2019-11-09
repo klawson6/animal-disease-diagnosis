@@ -54,8 +54,8 @@ class SettingsView extends Component {
                     <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
                     <CheckBox
                         title='WiFi'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
+                        checkedIcon='check-square'
+                        uncheckedIcon='check-square'
                         checked={this.state.wifi}
                         onPress={() => this.setState({wifi: !this.state.wifi})}
                         textStyle={styles.options}
@@ -63,8 +63,8 @@ class SettingsView extends Component {
                     />
                     <CheckBox
                         title='Cellular Data'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
+                        checkedIcon='check-square'
+                        uncheckedIcon='check-square'
                         checked={this.state.cell}
                         onPress={() => this.setState({cell: !this.state.cell})}
                         textStyle={styles.options}
