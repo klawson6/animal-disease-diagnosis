@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Platform,
     Dimensions,
     StyleSheet,
     Text,
@@ -51,6 +52,10 @@ class SettingsView extends Component {
                             fontSize: 20,
                         }}
                     />
+                    <Text style={styles.uploadTitle}>Default Location:</Text>
+                    <TextInput onChangeText={text => {
+                        this.setState({location: text})
+                    }} style={styles.locBox}/>
                     <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
                     <CheckBox
                         title='WiFi'
@@ -91,7 +96,9 @@ const styles = StyleSheet.create({
     },
     title:{
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 30,
         margin: 15,
     },
@@ -110,7 +117,9 @@ const styles = StyleSheet.create({
     textEntryText: {
         flex: 1,
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     textEntryBox: {
@@ -121,20 +130,26 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 20,
         flex: 2,
         color: 'black',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
         textAlign: 'center',
     },
     uploadTitle: {
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
     },options: {
         textAlign: 'center',
         color: '#73c4c4',
-        fontFamily: "sans-serif-thin",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-thin"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     optionsContainer: {
@@ -147,20 +162,39 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 10,
-        borderColor: '#689491',
+        borderColor: '#808080',
         borderWidth: 1,
         width: 160,
         height: 35,
+        flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#73c4c4',
-        justifyContent: 'space-evenly'
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'center',
     },
     buttonText: {
         textAlign: 'center',
-        color: 'white',
-        fontFamily: "sans-serif-light",
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
-    }
+    },
+    locBox: {
+        borderRadius: 3,
+        borderWidth: 1,
+        borderColor: '#ebebeb',
+        backgroundColor: '#f9f9f9',
+        height: Dimensions.get('window').height / 20,
+        flex: 1,
+        flexDirection: 'row',
+        color: '#808080',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
+        textAlign: 'center',
+        alignItems: 'center'
+    },
 });
 
 export default SettingsView;

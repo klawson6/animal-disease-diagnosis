@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Platform,
     Dimensions, Image,
     StyleSheet,
     Text,
@@ -65,7 +66,7 @@ class GalleryView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Pending Cases</Text>
+                <Text style={styles.title}>Cases</Text>
                 <ScrollView style={styles.topContainer}>
                     {this.buildGallery(this.state.cases.assets)}
                 </ScrollView>
@@ -90,12 +91,18 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 30,
         margin: 15,
     },
     topContainer: {
         width: Dimensions.get('window').width * 4 / 5,
+        borderRadius: 5,
+        borderColor:  '#808080',
+        backgroundColor: '#f9f9f9',
+        borderWidth: 1,
     },
     saveContainer: {
         flexDirection: 'row',
@@ -104,18 +111,20 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 10,
-        borderColor: '#689491',
+        borderColor: '#808080',
         borderWidth: 1,
         width: 160,
         height: 35,
         alignItems: 'center',
-        backgroundColor: '#73c4c4',
+        backgroundColor: '#f9f9f9',
         justifyContent: 'space-evenly'
     },
     buttonText: {
         textAlign: 'center',
-        color: 'white',
-        fontFamily: "sans-serif-light",
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     row:{
@@ -126,7 +135,9 @@ const styles = StyleSheet.create({
     thumbnail: {
         width: Dimensions.get('window').width / 5,
         height: Dimensions.get('window').width / 5,
+        marginTop: Dimensions.get('window').height / 45,
         marginBottom: Dimensions.get('window').height / 45,
+        borderRadius: 5,
     }
 });
 

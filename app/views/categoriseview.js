@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Platform,
     Dimensions,
     StyleSheet,
     Text,
@@ -15,22 +16,26 @@ import RNPickerSelect from 'react-native-picker-select';
 class CategoriseView extends Component {
 
     state = {
-        age: 0,
-        defaultAnimal: null,
+        name: null,
         dateSelected: 'DD/MM/YY',
+        location: null,
+        species: null,
+        age: 0,
+        breed: 0,
+        diagnosis: null,
+        defaultAnimal: null,
     };
 
     onSavePress() {
-        this.props.navigation.navigate('homeView')
+        console.log(this.state);
+        this.props.navigation.navigate('homeView');
     }
 
     onDatePress() {
         DatePickerAndroid.open({date: new Date(),})
             .then(result => {
                 if (result.action !== DatePickerAndroid.dismissedAction) {
-                    this.setState({
-                        dateSelected: '' + result.day + '/' + result.month + '/' + result.year
-                    })
+                    this.setState({dateSelected: result.day + '/' + result.month + '/' + result.year});
                 }
             })
             .catch(error => {
@@ -42,76 +47,169 @@ class CategoriseView extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Categorise the Image(s)</Text>
-                <ScrollView style={styles.topContainer}>
-                    <View style={styles.textEntryContainer}>
-                        <Text style={styles.nameText}>Full Name:</Text>
-                        <TextInput style={styles.nameBox}/>
-                    </View>
-                    <View style={styles.textEntryContainer}>
-                        <Text style={styles.dateText}>Date of Observation:</Text>
-                        <TouchableOpacity style={styles.datePicker} onPress={this.onDatePress.bind(this)}>
-                            <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.textEntryContainer}>
-                        <Text style={styles.nameText}>Location:</Text>
-                        <TextInput style={styles.nameBox}/>
-                    </View>
-                    <Text style={styles.uploadTitle}>Species:</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) =>
-                            this.setState({defaultAnimal: value})}
-                        items={[
-                            {label: 'Cow', value: 'cow'},
-                            {label: 'Goat', value: 'goat'},
-                            {label: 'Sheep', value: 'sheep'},
-                            {label: 'Camel', value: 'camel'},
-                            {label: 'Horse', value: 'horse'},
-                        ]}
-                        useNativeAndroidPickerStyle={false}
-                        textInputProps={{
-                            fontFamily: "sans-serif-light",
-                            fontSize: 20,
-                        }}
-                    />
-                    <Text style={styles.uploadTitle}>Age of Animal:</Text>
-                    <CheckBox
-                        title='0 - 6 Months'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.age === 1}
-                        onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                    <CheckBox
-                        title='7 - 12 months'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.age === 2}
-                        onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                    <CheckBox
-                        title='13 - 24 Months'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.age === 3}
-                        onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                    <CheckBox
-                        title='Over 24 Months'
-                        checkedIcon='check-circle'
-                        uncheckedIcon='check-circle'
-                        checked={this.state.age === 4}
-                        onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                </ScrollView>
+                <View style={styles.topContainer}>
+                    <ScrollView style={styles.scrollContainer}>
+                        <View style={styles.textEntryContainer}>
+                            <Text style={styles.nameText}>Full Name:</Text>
+                            <TextInput onChangeText={text => {
+                                this.setState({name: text})
+                            }} style={styles.nameBox}/>
+                        </View>
+                        <View style={styles.textEntryContainer}>
+                            <Text style={styles.dateText}>Date of Observation:</Text>
+                            <TouchableOpacity style={styles.datePicker} onPress={this.onDatePress.bind(this)}>
+                                <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.textEntryContainer}>
+                            <Text style={styles.nameText}>Location:</Text>
+                            <TextInput onChangeText={text => {
+                                this.setState({location: text})
+                            }} style={styles.nameBox}/>
+                        </View>
+                        <Text style={styles.optionTitle}>Species:</Text>
+                        <RNPickerSelect
+                            onValueChange={value => {
+                                this.setState({species: value})
+                            }}
+                            items={[
+                                {label: 'Cow', value: 'cow'},
+                                {label: 'Goat', value: 'goat'},
+                                {label: 'Sheep', value: 'sheep'},
+                                {label: 'Camel', value: 'camel'},
+                                {label: 'Horse', value: 'horse'},
+                            ]}
+                            useNativeAndroidPickerStyle={false}
+                            textInputProps={{
+                                fontFamily: "sans-serif-light",
+                                fontSize: 20,
+                            }}
+                        />
+                        <Text style={styles.optionTitle}>Age of Animal:</Text>
+                        <CheckBox
+                            title='0 - 6 Months'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.age === 1}
+                            onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='7 - 12 months'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.age === 2}
+                            onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
+
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='13 - 24 Months'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.age === 3}
+                            onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
+
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='Over 24 Months'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.age === 4}
+                            onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <Text style={styles.optionTitle}>Breed of Animal:</Text>
+                        <CheckBox
+                            title='Local'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.breed === 1}
+                            onPress={() => this.setState({breed: this.state.breed === 1 ? 0 : 1})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='Exotic'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.breed === 2}
+                            onPress={() => this.setState({breed: this.state.breed === 2 ? 0 : 2})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='Cross'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.breed === 3}
+                            onPress={() => this.setState({breed: this.state.breed === 3 ? 0 : 3})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <Text style={styles.optionTitle}>Sex of Animal:</Text>
+                        <CheckBox
+                            title='Male'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.sex === 1}
+                            onPress={() => this.setState({sex: this.state.sex === 1 ? 0 : 1})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='Female'
+                            checkedIcon='check-circle'
+                            uncheckedIcon='check-circle'
+                            checked={this.state.sex === 2}
+                            onPress={() => this.setState({sex: this.state.sex === 2 ? 0 : 2})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
+                        <RNPickerSelect
+                            onValueChange={(value) => {
+                                this.setState({diagnosis: value})
+                            }}
+                            items={[
+                                {label: 'Parasitic Gastro Enteritis', value: 'pge'},
+                                {label: 'Lungworm', value: 'lungworm'},
+                                {label: 'Foot & Mouth Disease', value: 'fmd'},
+                                {label: 'Colibacillosis', value: 'colibacillosis'},
+                                {label: 'Fasciolosis', value: 'fasciolosis'},
+                                {label: 'Pasteurollosis', value: 'pasteurollosis'},
+                                {label: 'Blackleg', value: 'blackleg'},
+                                {label: 'Tick Infestation', value: 'tick'},
+                                {label: 'Babesiosis', value: 'babesiosis'},
+                                {label: 'Lice Infestation', value: 'lice'},
+                                {label: 'Lumpy Skin Disease', value: 'lsd'},
+                                {label: 'Trypanosomiasis', value: 'trypanosomiasis'},
+                                {label: 'Cowdriosis', value: 'Cowdriosis'},
+                                {label: 'Contagious Bovine Pleuroneumonia', value: 'cbp'},
+                                {label: 'Rabies', value: 'rabies'},
+                                {label: 'Mastisis', value: 'mastisis'},
+                                {label: 'Dermatophilosis', value: 'dermatophilosis'},
+                                {label: 'Retained Placenta', value: 'rp'},
+                                {label: 'Mechanical Injury', value: 'mi'},
+                                {label: 'Salmonellosis', value: 'salmonellosis'},
+                                {label: 'Simple Indigestion', value: 'si'},
+                                {label: 'Pneumonia', value: 'pneumonia'},
+                                {label: 'Actinobacillosis', value: 'actinobacillosis'},
+                                {label: 'Tuberculosis', value: 'tuberculosis'},
+                            ]}
+                            useNativeAndroidPickerStyle={false}
+                            textInputProps={{
+                                fontFamily: "sans-serif-light",
+                                fontSize: 20,
+                            }}
+                        />
+                    </ScrollView>
+                </View>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
                     <TouchableOpacity onPress={this.onSavePress.bind(this)}>
@@ -133,18 +231,33 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 30,
-        margin: 15,
+        marginTop: Dimensions.get('window').width / 40,
     },
     topContainer: {
+        width: Dimensions.get('window').width * 4.5 / 5,
+        flex: 1,
+        margin: Dimensions.get('window').width / 20,
+        borderRadius: 5,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        borderWidth: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    scrollContainer: {
         width: Dimensions.get('window').width * 4 / 5,
         flex: 1,
+        marginTop: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 20,
     },
     textEntryContainer: {
         height: Dimensions.get('window').height / 20,
-        marginTop: 20,
-        marginBottom: 20,
+        marginBottom: Dimensions.get('window').width / 20,
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
@@ -152,7 +265,9 @@ const styles = StyleSheet.create({
     nameText: {
         flex: 1,
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     nameBox: {
@@ -163,8 +278,10 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 20,
         flex: 2,
         flexDirection: 'row',
-        color: 'black',
-        fontFamily: "sans-serif-light",
+        color: '#808080',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
         textAlign: 'center',
         alignItems: 'center'
@@ -172,7 +289,9 @@ const styles = StyleSheet.create({
     dateText: {
         flex: 1.75,
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     datePicker: {
@@ -187,26 +306,33 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    dateChosen:{
-        color: 'black',
-        fontFamily: "sans-serif-light",
+    dateChosen: {
+        color: '#808080',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
-    uploadTitle: {
+    optionTitle: {
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 20,
     },
     options: {
         textAlign: 'center',
         color: '#73c4c4',
-        fontFamily: "sans-serif-thin",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-thin"
+            : 'Avenir-Light',
         fontSize: 20,
     },
+
     optionsContainer: {
-        margin: 10,
+        margin: Dimensions.get('window').width / 40,
     },
     saveContainer: {
         flexDirection: 'row',
@@ -215,18 +341,20 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 10,
-        borderColor: '#689491',
+        borderColor: '#808080',
         borderWidth: 1,
         width: 160,
         height: 35,
         alignItems: 'center',
-        backgroundColor: '#73c4c4',
+        backgroundColor: '#f9f9f9',
         justifyContent: 'space-evenly'
     },
     buttonText: {
         textAlign: 'center',
-        color: 'white',
-        fontFamily: "sans-serif-light",
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     }
 });

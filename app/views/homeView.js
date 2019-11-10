@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -17,6 +18,19 @@ class HomeView extends Component {
     };
 
     componentDidMount() {
+        Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+            .then(result => {
+                this.setState({hasPermissions: result.status === 'granted'});
+                if (this.state.hasPermissions) {
+                    this.loadAlbum();
+                } else {
+                    // TODO add error message to user also on buttons presses
+                    console.log("NO PERMISSIONS EXPECT ERROR")
+                }
+            });
+    }
+
+    askForPermissions() {
         Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
             .then(result => {
                 this.setState({hasPermissions: result.status === 'granted'});
@@ -66,6 +80,8 @@ class HomeView extends Component {
                 type: "Healthy Animal",
                 cases: this.state.cases,
             })
+        } else {
+            this.askForPermissions();
         }
     }
 
@@ -75,6 +91,8 @@ class HomeView extends Component {
                 type: "Disease",
                 cases: this.state.cases,
             })
+        } else {
+            this.askForPermissions();
         }
     }
 
@@ -83,12 +101,16 @@ class HomeView extends Component {
             this.props.navigation.navigate('galleryView', {
                 cases: this.state.cases,
             })
+        } else {
+            this.askForPermissions();
         }
     }
 
     onSettingsPress() {
         if (this.state.hasPermissions) {
             this.props.navigation.navigate('settingsView')
+        } else {
+            this.askForPermissions();
         }
     }
 
@@ -114,14 +136,18 @@ class HomeView extends Component {
                             </View>
                         </TouchableOpacity>
                     </View>
-
+                    <TouchableOpacity style={styles.helpContainer}>
+                        <View style={[styles.buttonHelp]}>
+                            <Text style={styles.buttonHelpText}>How to Use</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.navContainer}>
                     <View style={styles.imgContainer}>
                         <TouchableOpacity style={styles.galleryTouchable} onPress={this.onGalleryPress.bind(this)}>
                             <Image style={[styles.image]}
-                                   source={require('../assets/img/gallery.png')}/>
-                            <Text style={styles.caption}>Gallery</Text>
+                                   source={require('../assets/img/folder.png')}/>
+                            <Text style={styles.caption}>Cases</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.settingsTouchable} onPress={this.onSettingsPress.bind(this)}>
                             <Image style={[styles.image]}
@@ -143,29 +169,37 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         width: Dimensions.get('window').width,
-        flex: 1,
+        flex: 4,
         alignItems: 'center',
     },
     titleContainer: {
         flex: 1,
         flexDirection: 'column-reverse',
+       // backgroundColor: '#000000',
+        //justifyContent: 'space-around',
     },
     title: {
         textAlign: 'center',
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 30,
         textShadowColor: '#000000',
+        //flex: 1,
     },
     buttonContainer: {
-        flex: 2,
+        flex: 3,
         flexDirection: 'column',
         justifyContent: 'space-evenly',
+        alignItems: 'center',
+        //backgroundColor: '#ff6381',
+
     },
     button: {
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#ebebeb',
+        borderColor: '#808080',
         backgroundColor: '#f9f9f9',
         width: Dimensions.get('window').width * 2 / 3,
         height: Dimensions.get('window').height / 10,
@@ -175,12 +209,41 @@ const styles = StyleSheet.create({
     buttonText: {
         textAlign: 'center',
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 25,
+    },
+    helpContainer:{
+        flex: 2,
+        flexDirection: 'column-reverse',
+        //justifyContent: 'space-evenly',
+        alignItems: 'center',
+        //backgroundColor: '#6bff40',
+    },
+    buttonHelp: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        width: Dimensions.get('window').width * 2 / 5,
+        height: Dimensions.get('window').height / 14,
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
+    buttonHelpText: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 20,
     },
     navContainer: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height / 4,
+        //backgroundColor: '#4345ff',
+        flex: 1,
     },
     imgContainer: {
         flex: 1,
@@ -203,11 +266,14 @@ const styles = StyleSheet.create({
             translateX: -65,
         }],
         alignItems: 'center',
+        //backgroundColor: '#000000',
     },
     caption: {
         textAlign: 'center',
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 18,
     }
 });

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Platform,
     Image,
     StyleSheet,
     Text,
@@ -183,7 +184,9 @@ const styles = StyleSheet.create({
     },
     buttonTitle: {
         color: '#73c4c4',
-        fontFamily: "sans-serif-light",
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif"
+            : 'Avenir-Light',
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
         transform: [{
             translateX: -25,
         }],
-        borderColor: '#73c4c4',
+        borderColor: '#808080',
         borderWidth: 1,
         borderRadius: 5,
     }
