@@ -8,14 +8,14 @@ import {
     View,
     Dimensions
 } from 'react-native';
-import * as Permissions from "expo-permissions";
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
-import {SortBy} from "expo-media-library";
+import {captureRef} from 'react-native-view-shot';
 
 class CameraView extends Component {
 
     camera = null;
+    cameraView = null;
 
     state = {
         thumbnail: require('../assets/img/white.png'),
@@ -33,17 +33,40 @@ class CameraView extends Component {
         })
     }
 
-    async onSnapButton() {
+    onSnapButtonCamera() {
         if (this.camera) {
             const options = {skipProcessing: true, base64: true, exif: true};
             console.log("waiting...");
-            await this.camera.takePictureAsync(options)
+            this.camera.takePictureAsync(options)
                 .then(photo => {
                     photo.exif.Orientation = 1;
                     this.setState({
                         thumbnail: photo,
                     });
                     this.savePhoto(photo);
+                    console.log('Photo taken.');
+                    console.log(photo.uri);
+                })
+                .catch(error => {
+                    console.log('Error taking photo.', error);
+                });
+        }
+    }
+
+    onSnapButtonScreenShot() {
+        if (this.camera) {
+            const options = {
+                result: 'tmpfile',
+                quality: 1,
+                format: 'png',
+            };
+            captureRef(this.cameraView, options)
+                .then(uri => {
+                    this.setState({
+                        thumbnail: {uri:uri},
+                    });
+
+                    //this.savePhoto(photo);
                     console.log('Photo taken.');
                     console.log(photo.uri);
                 })
@@ -72,17 +95,6 @@ class CameraView extends Component {
     }
 
     componentDidMount() {
-        //const {status} = await Permissions.getAsync(
-        // Permissions.getAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
-        //     .then( result => {
-        //         this.setState({hasPermissions: result.status === 'granted'});
-        //         if(this.state.hasPermissions){
-        //             this.render();
-        //             this.loadThumbnail();
-        //         } else {
-        //             this.props.navigation.navigate('HomeView')
-        //         }
-        //     });
         this.loadThumbnail();
     }
 
@@ -117,31 +129,26 @@ class CameraView extends Component {
     }
 
     render() {
-        // TODO handle declined camera and filesystem request
-        // const {hasCameraPermission} = this.state;
-        // if (hasCameraPermission === null) {
-        //     return <View/>;
-        // } else if (hasCameraPermission === false) {
-        //     return <Text>No access to camera</Text>;
-        // } else {
-        // const {navigation} = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.cameraContainer}>
-                    <View style={styles.cameraContainerBorder}>
+                    <View ref={ref => {
+                        this.cameraView = ref;
+                    }} style={styles.cameraContainerBorder}>
                         <Camera ref={ref => {
                             this.camera = ref;
                         }} style={styles.camera} type={Camera.Constants.Type.back} props={{ratio: "4:3"}}/>
                     </View>
                 </View>
                 <View style={styles.navContainer}>
-                    <Text style={styles.buttonTitle}>Capture Images of the {this.props.navigation.getParam('type')}</Text>
+                    <Text style={styles.buttonTitle}>Capture Images of
+                        the {this.props.navigation.getParam('type')}</Text>
                     <View style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
                                    source={this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onSnapButton.bind(this)}>
+                        <TouchableOpacity onPress={this.onSnapButtonScreenShot.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
@@ -171,7 +178,7 @@ const styles = StyleSheet.create({
     },
     cameraContainerBorder: {
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: '#808080',
     },
     camera: {
         width: Dimensions.get('window').width,

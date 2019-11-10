@@ -48,7 +48,7 @@ class CategoriseView extends Component {
             <View style={styles.container}>
                 <Text style={styles.title}>Categorise the Image(s)</Text>
                 <View style={styles.topContainer}>
-                    <ScrollView style={styles.scrollContainer}>
+                    <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
                         <View style={styles.textEntryContainer}>
                             <Text style={styles.nameText}>Full Name:</Text>
                             <TextInput onChangeText={text => {
@@ -319,8 +319,8 @@ const styles = StyleSheet.create({
             ? "sans-serif-light"
             : 'Avenir-Light',
         fontSize: 20,
-        marginTop: Dimensions.get('window').width / 20,
-        marginBottom: Dimensions.get('window').width / 20,
+        marginTop: Dimensions.get('window').width / 40,
+        marginBottom: Dimensions.get('window').width / 40,
     },
     options: {
         textAlign: 'center',
@@ -330,7 +330,6 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 20,
     },
-
     optionsContainer: {
         margin: Dimensions.get('window').width / 40,
     },

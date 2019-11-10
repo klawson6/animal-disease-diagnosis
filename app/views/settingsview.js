@@ -28,53 +28,55 @@ class SettingsView extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Settings</Text>
-                <ScrollView style={styles.topContainer}>
-                    <View style={styles.textEntryContainer}>
-                        <Text style={styles.textEntryText}>Full Name:</Text>
-                        <TextInput
-                            style={styles.textEntryBox}
+                <View style={styles.topContainer}>
+                    <ScrollView style={styles.scrollContainer}>
+                        <View style={styles.textEntryContainer}>
+                            <Text style={styles.textEntryText}>Full Name:</Text>
+                            <TextInput
+                                style={styles.textEntryBox}
+                            />
+                        </View>
+                        <Text style={styles.uploadTitle}>Default Species:</Text>
+                        <RNPickerSelect
+                            onValueChange={(value) =>
+                                this.setState({defaultAnimal: value})}
+                            items={[
+                                {label: 'Cow', value: 'cow'},
+                                {label: 'Goat', value: 'goat'},
+                                {label: 'Sheep', value: 'sheep'},
+                                {label: 'Camel', value: 'camel'},
+                                {label: 'Horse', value: 'horse'},
+                            ]}
+                            useNativeAndroidPickerStyle={false}
+                            textInputProps={{
+                                fontFamily: "sans-serif-light",
+                                fontSize: 20,
+                            }}
                         />
-                    </View>
-                    <Text style={styles.uploadTitle}>Default Species:</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) =>
-                            this.setState({defaultAnimal: value})}
-                        items={[
-                            {label: 'Cow', value: 'cow'},
-                            {label: 'Goat', value: 'goat'},
-                            {label: 'Sheep', value: 'sheep'},
-                            {label: 'Camel', value: 'camel'},
-                            {label: 'Horse', value: 'horse'},
-                        ]}
-                        useNativeAndroidPickerStyle={false}
-                        textInputProps={{
-                            fontFamily: "sans-serif-light",
-                            fontSize: 20,
-                        }}
-                    />
-                    <Text style={styles.uploadTitle}>Default Location:</Text>
-                    <TextInput onChangeText={text => {
-                        this.setState({location: text})
-                    }} style={styles.locBox}/>
-                    <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
-                    <CheckBox
-                        title='WiFi'
-                        checkedIcon='check-square'
-                        uncheckedIcon='check-square'
-                        checked={this.state.wifi}
-                        onPress={() => this.setState({wifi: !this.state.wifi})}
-                        textStyle={styles.options}
-                        containerStyle={styles.optionsContainer}
-                    />
-                    <CheckBox
-                        title='Cellular Data'
-                        checkedIcon='check-square'
-                        uncheckedIcon='check-square'
-                        checked={this.state.cell}
-                        onPress={() => this.setState({cell: !this.state.cell})}
-                        textStyle={styles.options}
-                    />
-                </ScrollView>
+                        <Text style={styles.uploadTitle}>Default Location:</Text>
+                        <TextInput onChangeText={text => {
+                            this.setState({location: text})
+                        }} style={styles.locBox}/>
+                        <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
+                        <CheckBox
+                            title='WiFi'
+                            checkedIcon='check-square'
+                            uncheckedIcon='check-square'
+                            checked={this.state.wifi}
+                            onPress={() => this.setState({wifi: !this.state.wifi})}
+                            textStyle={styles.options}
+                            containerStyle={styles.optionsContainer}
+                        />
+                        <CheckBox
+                            title='Cellular Data'
+                            checkedIcon='check-square'
+                            uncheckedIcon='check-square'
+                            checked={this.state.cell}
+                            onPress={() => this.setState({cell: !this.state.cell})}
+                            textStyle={styles.options}
+                        />
+                    </ScrollView>
+                </View>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
                     <TouchableOpacity onPress={this.onSavePress.bind(this)}>
@@ -103,14 +105,26 @@ const styles = StyleSheet.create({
         margin: 15,
     },
     topContainer: {
+        width: Dimensions.get('window').width * 4.5 / 5,
+        flex: 1,
+        margin: Dimensions.get('window').width / 20,
+        borderRadius: 5,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        borderWidth: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    scrollContainer:{
         width: Dimensions.get('window').width * 4 / 5,
         flex: 1,
+        marginTop: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 20,
     },
     textEntryContainer: {
         height: Dimensions.get('window').height / 20,
-        marginTop: 20,
-        marginBottom: 20,
-        flex: 1,
+        marginBottom: Dimensions.get('window').width / 20,        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
     },
