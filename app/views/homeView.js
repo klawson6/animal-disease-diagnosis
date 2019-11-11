@@ -5,7 +5,7 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Image, Dimensions,
+    Image, Dimensions, ImageBackground,
 } from 'react-native';
 import * as MediaLibrary from "expo-media-library";
 import * as Permissions from "expo-permissions";
@@ -116,7 +116,7 @@ class HomeView extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <ImageBackground source={require("../assets/img/cow.png")} style={styles.container} imageStyle={styles.background}>
                 <View style={styles.topContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>
@@ -136,11 +136,13 @@ class HomeView extends Component {
                             </View>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.helpContainer}>
-                        <View style={[styles.buttonHelp]}>
-                            <Text style={styles.buttonHelpText}>How to Use</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View style={styles.helpContainer}>
+                        <TouchableOpacity>
+                            <View style={[styles.buttonHelp]}>
+                                <Text style={styles.buttonHelpText}>How to Use</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.navContainer}>
                     <View style={styles.imgContainer}>
@@ -156,7 +158,7 @@ class HomeView extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </ImageBackground>
         );
     }
 }
@@ -166,6 +168,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ffffff',
+    },
+    background:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
     },
     topContainer: {
         width: Dimensions.get('window').width,

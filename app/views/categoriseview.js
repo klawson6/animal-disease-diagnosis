@@ -73,11 +73,12 @@ class CategoriseView extends Component {
                                 this.setState({species: value})
                             }}
                             items={[
-                                {label: 'Cow', value: 'cow'},
+                                {label: 'Cattle', value: 'cattle'},
                                 {label: 'Goat', value: 'goat'},
                                 {label: 'Sheep', value: 'sheep'},
                                 {label: 'Camel', value: 'camel'},
                                 {label: 'Horse', value: 'horse'},
+                                {label: 'Donkey', value: 'donkey'},
                             ]}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{
@@ -177,30 +178,30 @@ class CategoriseView extends Component {
                                 this.setState({diagnosis: value})
                             }}
                             items={[
-                                {label: 'Parasitic Gastro Enteritis', value: 'pge'},
-                                {label: 'Lungworm', value: 'lungworm'},
-                                {label: 'Foot & Mouth Disease', value: 'fmd'},
-                                {label: 'Colibacillosis', value: 'colibacillosis'},
-                                {label: 'Fasciolosis', value: 'fasciolosis'},
-                                {label: 'Pasteurollosis', value: 'pasteurollosis'},
-                                {label: 'Blackleg', value: 'blackleg'},
-                                {label: 'Tick Infestation', value: 'tick'},
-                                {label: 'Babesiosis', value: 'babesiosis'},
-                                {label: 'Lice Infestation', value: 'lice'},
-                                {label: 'Lumpy Skin Disease', value: 'lsd'},
-                                {label: 'Trypanosomiasis', value: 'trypanosomiasis'},
-                                {label: 'Cowdriosis', value: 'Cowdriosis'},
-                                {label: 'Contagious Bovine Pleuroneumonia', value: 'cbp'},
-                                {label: 'Rabies', value: 'rabies'},
-                                {label: 'Mastisis', value: 'mastisis'},
-                                {label: 'Dermatophilosis', value: 'dermatophilosis'},
-                                {label: 'Retained Placenta', value: 'rp'},
-                                {label: 'Mechanical Injury', value: 'mi'},
-                                {label: 'Salmonellosis', value: 'salmonellosis'},
-                                {label: 'Simple Indigestion', value: 'si'},
-                                {label: 'Pneumonia', value: 'pneumonia'},
-                                {label: 'Actinobacillosis', value: 'actinobacillosis'},
-                                {label: 'Tuberculosis', value: 'tuberculosis'},
+                                {label: 'Parasitic Gastro Enteritis', value: 'pge', color:'#000000'},
+                                {label: 'Lungworm', value: 'lungworm', color:'#000000'},
+                                {label: 'Foot & Mouth Disease', value: 'fmd', color:'#000000'},
+                                {label: 'Colibacillosis', value: 'colibacillosis', color:'#000000'},
+                                {label: 'Fasciolosis', value: 'fasciolosis', color:'#000000'},
+                                {label: 'Pasteurollosis', value: 'pasteurollosis', color:'#000000'},
+                                {label: 'Blackleg', value: 'blackleg', color:'#000000'},
+                                {label: 'Tick Infestation', value: 'tick', color:'#000000'},
+                                {label: 'Babesiosis', value: 'babesiosis', color:'#000000'},
+                                {label: 'Lice Infestation', value: 'lice', color:'#000000'},
+                                {label: 'Lumpy Skin Disease', value: 'lsd', color:'#000000'},
+                                {label: 'Trypanosomiasis', value: 'trypanosomiasis', color:'#000000'},
+                                {label: 'Cowdriosis', value: 'Cowdriosis', color:'#000000'},
+                                {label: 'Contagious Bovine Pleuroneumonia', value: 'cbp', color:'#000000'},
+                                {label: 'Rabies', value: 'rabies', color:'#000000'},
+                                {label: 'Mastisis', value: 'mastisis', color:'#000000'},
+                                {label: 'Dermatophilosis', value: 'dermatophilosis', color:'#000000'},
+                                {label: 'Retained Placenta', value: 'rp', color:'#000000'},
+                                {label: 'Mechanical Injury', value: 'mi', color:'#000000'},
+                                {label: 'Salmonellosis', value: 'salmonellosis', color:'#000000'},
+                                {label: 'Simple Indigestion', value: 'si', color:'#000000'},
+                                {label: 'Pneumonia', value: 'pneumonia', color:'#000000'},
+                                {label: 'Actinobacillosis', value: 'actinobacillosis', color:'#000000'},
+                                {label: 'Tuberculosis', value: 'tuberculosis', color:'#000000'},
                             ]}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{

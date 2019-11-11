@@ -66,7 +66,7 @@ class CameraView extends Component {
                         thumbnail: {uri:uri},
                     });
 
-                    //this.savePhoto(photo);
+                    this.savePhoto({uri:uri});
                     console.log('Photo taken.');
                     console.log(photo.uri);
                 })
@@ -76,7 +76,7 @@ class CameraView extends Component {
         }
     }
 
-    async savePhoto(photo) {
+    savePhoto(photo) {
         const {uri} = photo;
         MediaLibrary.createAssetAsync(uri)
             .then(asset => {
@@ -148,7 +148,7 @@ class CameraView extends Component {
                             <Image style={[styles.image, styles.galleryTouchable]}
                                    source={this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onSnapButtonScreenShot.bind(this)}>
+                        <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     cameraContainerBorder: {
-        borderWidth: 1,
-        borderColor: '#808080',
+        //borderWidth: 1,
+        //borderColor: '#808080',
     },
     camera: {
         width: Dimensions.get('window').width,
