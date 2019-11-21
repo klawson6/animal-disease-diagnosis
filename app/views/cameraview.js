@@ -28,9 +28,7 @@ class CameraView extends Component {
     }
 
     onGalleryButton() {
-        this.props.navigation.navigate('galleryView', {
-            cases: this.state.cases,
-        })
+        this.props.navigation.navigate('galleryView')
     }
 
     onSnapButtonCamera() {
@@ -81,13 +79,6 @@ class CameraView extends Component {
         MediaLibrary.createAssetAsync(uri)
             .then(asset => {
                 MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
-                    .then(album => {
-                        if (this.state.cases === null)
-                            this.loadImages(album);
-                        else
-                            this.state.cases.assets.unshift(photo);
-                        console.log('Image captured and saved to the device.');
-                    })
                     .catch(error => {
                         console.log('Error saving photo.', error);
                     });
@@ -95,19 +86,17 @@ class CameraView extends Component {
     }
 
     componentDidMount() {
-        this.loadThumbnail();
+        this.loadAlbum(); //TODO Loads full album, optimise to load just thumbnail
     }
 
-    loadThumbnail() {
-        // NOTE DO NOT CALL SETSTATE A BUNCH OF TIMES CLOSE  BY EACH OTHER??
-        if (this.props.navigation.getParam('cases') !== null) {
-            console.log('Images found in HomeView state.');
-            this.setState({
-                thumbnail: this.props.navigation.getParam('cases').assets[0],
-                white: this.props.navigation.getParam('cases').assets[0],
-                cases: this.props.navigation.getParam('cases'),
-            });
-        }
+    loadAlbum() {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                album !== null ? this.loadImages(album) : console.log("No album for Animal Disease Diagnosis yet.");
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis.', error);
+            })
     }
 
     loadImages(album) {
@@ -115,12 +104,13 @@ class CameraView extends Component {
             .then(assets => {
                 while (assets.hasNextPage) {
                     console.log("Loading images...");
+                    // TODO stop user interaction while it loads?
                 }
                 console.log('Estimated number of loaded images: ' + assets.totalCount);
                 console.log('Actual number of loaded images: ' + assets.assets.length);
-                console.log(assets);
                 this.setState({
                     cases: assets,
+                    thumbnail: assets.assets[0],
                 });
             })
             .catch(error => {

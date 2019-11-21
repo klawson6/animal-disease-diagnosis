@@ -5,9 +5,8 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Image, Dimensions, ImageBackground,
+    Image, Dimensions,
 } from 'react-native';
-import * as MediaLibrary from "expo-media-library";
 import * as Permissions from "expo-permissions";
 
 class HomeView extends Component {
@@ -18,59 +17,13 @@ class HomeView extends Component {
     };
 
     componentDidMount() {
-        Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
-            .then(result => {
-                this.setState({hasPermissions: result.status === 'granted'});
-                if (this.state.hasPermissions) {
-                    this.loadAlbum();
-                } else {
-                    // TODO add error message to user also on buttons presses
-                    console.log("NO PERMISSIONS EXPECT ERROR")
-                }
-            });
+        this.askForPermissions();
     }
 
     askForPermissions() {
         Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
             .then(result => {
                 this.setState({hasPermissions: result.status === 'granted'});
-                if (this.state.hasPermissions) {
-                    this.loadAlbum();
-                } else {
-                    // TODO add error message to user also on buttons presses
-                    console.log("NO PERMISSIONS EXPECT ERROR")
-                }
-            });
-    }
-
-    loadAlbum() {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                if (album !== null) {
-                    this.loadImages(album);
-                } else {
-                    console.log("No album for Animal Disease Diagnosis yet.");
-                }
-            })
-            .catch(error => {
-                console.log('No folder for Animal Disease Diagnosis.', error);
-            })
-    }
-
-    loadImages(album) {
-        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
-            .then(assets => {
-                while (assets.hasNextPage) {
-                    console.log("Loading images...");
-                }
-                console.log('Estimated number of loaded images: ' + assets.totalCount);
-                console.log('Actual number of loaded images: ' + assets.assets.length);
-                this.setState({
-                    cases: assets,
-                });
-            })
-            .catch(error => {
-                console.log('Could not get assets from folder.', error);
             });
     }
 
@@ -78,8 +31,7 @@ class HomeView extends Component {
         if (this.state.hasPermissions) {
             this.props.navigation.navigate('cameraView', {
                 type: "Healthy Animal",
-                cases: this.state.cases,
-            })
+            });
         } else {
             this.askForPermissions();
         }
@@ -87,10 +39,9 @@ class HomeView extends Component {
 
     onDiseasePress() {
         if (this.state.hasPermissions) {
-            this.props.navigation.navigate('cameraView', {
+            this.props.navigation.navigate('cameraView',{
                 type: "Disease",
-                cases: this.state.cases,
-            })
+            });
         } else {
             this.askForPermissions();
         }
@@ -98,9 +49,7 @@ class HomeView extends Component {
 
     onGalleryPress() {
         if (this.state.hasPermissions) {
-            this.props.navigation.navigate('galleryView', {
-                cases: this.state.cases,
-            })
+            this.props.navigation.navigate('galleryView');
         } else {
             this.askForPermissions();
         }
@@ -116,7 +65,7 @@ class HomeView extends Component {
 
     render() {
         return (
-            <ImageBackground source={require("../assets/img/cow.png")} style={styles.container} imageStyle={styles.background}>
+            <View style={styles.container}>
                 <View style={styles.topContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>
@@ -158,7 +107,7 @@ class HomeView extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </ImageBackground>
+            </View>
         );
     }
 }
@@ -169,7 +118,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    background:{
+    background: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
     },
@@ -181,7 +130,7 @@ const styles = StyleSheet.create({
     titleContainer: {
         flex: 1,
         flexDirection: 'column-reverse',
-       // backgroundColor: '#000000',
+        // backgroundColor: '#000000',
         //justifyContent: 'space-around',
     },
     title: {
@@ -220,7 +169,7 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 25,
     },
-    helpContainer:{
+    helpContainer: {
         flex: 2,
         flexDirection: 'column-reverse',
         //justifyContent: 'space-evenly',

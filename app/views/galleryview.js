@@ -8,36 +8,27 @@ import {
     View,
     ScrollView,
 } from 'react-native';
+import * as MediaLibrary from "expo-media-library";
 
 class GalleryView extends Component {
 
-    state = {
-        wifi: false,
-        cell: false,
-        defaultAnimal: null,
-        cases: {assets: null},
-    };
-
-    componentDidMount() {
-        this.loadImages();
-        this.render();
+    constructor(props) {
+        super(props);
+        this.state = {
+            wifi: false,
+            cell: false,
+            defaultAnimal: null,
+            cases: null,
+        };
     }
 
-    loadImages(){
-        let prevState = this.props.navigation.getParam('cases');
-        console.log('HomeView state passed to GalleryView.');
-        if (prevState !== null){
-            console.log('Images found in HomeView state.');
-            this.setState({
-                cases: prevState,
-            })
-        }
+    componentDidMount() {
+        this.loadAlbum();
     }
 
     onSavePress() {
         this.props.navigation.navigate('homeView')
     }
-
 
     buildGallery = function (cases) {
         if (cases === null) return;
@@ -45,7 +36,7 @@ class GalleryView extends Component {
         let count = 0;
         let list = [];
         let rowElems = [];
-        cases.forEach(function (c) {
+        cases.assets.forEach(function (c) {
             count++;
             rowElems.push(<Image key={c.uri} style={styles.thumbnail} source={c}/>);
             if (count === 3) {
@@ -55,7 +46,7 @@ class GalleryView extends Component {
                 rowCount++;
             }
         });
-        while (rowElems.length < 3){
+        while (rowElems.length < 3) {
             rowElems.push(<View key={"fill" + rowElems.length} style={styles.thumbnail}/>)
         }
         list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
@@ -63,12 +54,40 @@ class GalleryView extends Component {
         return list;
     };
 
+    loadAlbum() {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                album !== null ? this.loadImages(album) : console.log("No album for Animal Disease Diagnosis yet.");
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis.', error);
+            })
+    }
+
+    loadImages(album) {
+        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
+            .then(assets => {
+                while (assets.hasNextPage) {
+                    console.log("Loading images...");
+                    // TODO stop user interaction while it loads?
+                }
+                console.log('Estimated number of loaded images: ' + assets.totalCount);
+                console.log('Actual number of loaded images: ' + assets.assets.length);
+                this.setState({
+                    cases: assets,
+                });
+            })
+            .catch(error => {
+                console.log('Could not get assets from folder.', error);
+            });
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Cases</Text>
                 <ScrollView style={styles.topContainer}>
-                    {this.buildGallery(this.state.cases.assets)}
+                    {this.buildGallery(this.state.cases)}
                 </ScrollView>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
@@ -100,7 +119,7 @@ const styles = StyleSheet.create({
     topContainer: {
         width: Dimensions.get('window').width * 4 / 5,
         borderRadius: 5,
-        borderColor:  '#808080',
+        borderColor: '#808080',
         backgroundColor: '#f9f9f9',
         borderWidth: 1,
     },
@@ -127,7 +146,7 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 20,
     },
-    row:{
+    row: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-evenly',

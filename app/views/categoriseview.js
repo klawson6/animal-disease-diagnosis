@@ -9,6 +9,7 @@ import {
     ScrollView,
     TextInput,
     DatePickerAndroid,
+    AsyncStorage
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -27,8 +28,35 @@ class CategoriseView extends Component {
     };
 
     onSavePress() {
-        console.log(this.state);
-        this.props.navigation.navigate('homeView');
+        AsyncStorage.multiSet([
+            ['name', this.state.name],
+            ['date', this.state.dateSelected],
+            ['location', this.state.location],
+            ['species', ''+this.state.species],
+            ['age', ''+this.state.age],
+            ['breed', ''+this.state.breed],
+            ['diagnosis', this.state.diagnosis],
+        ], (errors => console.log('Key specific error(s) occurred when saving a classification: ' + errors)))
+            .then(() => {
+                console.log("Classification saved");
+            })
+            .catch(error => {
+                console.log('Error occurred when saving classification: ' + error)
+            });
+    }
+
+    constructor(props) {
+        super(props);
+        AsyncStorage.multiGet(
+            ['name', 'date', 'location', 'species', 'age', 'breed', 'diagnosis'],
+            ((errors, result) => {
+                console.log(result);
+                console.log(errors);
+            }))
+            .then(() => console.log("Loaded from storage."))
+            .catch(error => {
+                console.log('Error occurred when loading classification: ' + error)
+            });
     }
 
     onDatePress() {
@@ -178,22 +206,22 @@ class CategoriseView extends Component {
                                 this.setState({diagnosis: value})
                             }}
                             items={[
-                                {label: 'Anthrax', value: 'anthrax', color:'#000000'},
-                                {label: 'Babesiosis', value: 'babesiosis', color:'#000000'},
-                                {label: 'Blackleg', value: 'blackleg', color:'#000000'},
-                                {label: 'CBPP', value: 'cbpp', color:'#000000'},
-                                {label: 'Colibacillosis', value: 'colibacillosis', color:'#000000'},
-                                {label: 'Cowdriosis', value: 'Cowdriosis', color:'#000000'},
-                                {label: 'Fasciolosis', value: 'fasciolosis', color:'#000000'},
-                                {label: 'FMD', value: 'fmd', color:'#000000'},
-                                {label: 'Pasteurollosis', value: 'pasteurollosis', color:'#000000'},
-                                {label: 'Parasitic Gastro Enteritis', value: 'pge', color:'#000000'},
-                                {label: 'Lumpy Skin Disease', value: 'lsd', color:'#000000'},
-                                {label: 'Lungworm', value: 'lungworm', color:'#000000'},
-                                {label: 'Rabies', value: 'rabies', color:'#000000'},
-                                {label: 'Trypanosomiasis', value: 'trypanosomiasis', color:'#000000'},
-                                {label: 'Tuberculosis', value: 'tuberculosis', color:'#000000'},
-                                {label: 'Other', value: 'other', color:'#000000'},
+                                {label: 'Anthrax', value: 'anthrax', color: '#000000'},
+                                {label: 'Babesiosis', value: 'babesiosis', color: '#000000'},
+                                {label: 'Blackleg', value: 'blackleg', color: '#000000'},
+                                {label: 'CBPP', value: 'cbpp', color: '#000000'},
+                                {label: 'Colibacillosis', value: 'colibacillosis', color: '#000000'},
+                                {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
+                                {label: 'Fasciolosis', value: 'fasciolosis', color: '#000000'},
+                                {label: 'FMD', value: 'fmd', color: '#000000'},
+                                {label: 'Pasteurollosis', value: 'pasteurollosis', color: '#000000'},
+                                {label: 'Parasitic Gastro Enteritis', value: 'pge', color: '#000000'},
+                                {label: 'Lumpy Skin Disease', value: 'lsd', color: '#000000'},
+                                {label: 'Lungworm', value: 'lungworm', color: '#000000'},
+                                {label: 'Rabies', value: 'rabies', color: '#000000'},
+                                {label: 'Trypanosomiasis', value: 'trypanosomiasis', color: '#000000'},
+                                {label: 'Tuberculosis', value: 'tuberculosis', color: '#000000'},
+                                {label: 'Other', value: 'other', color: '#000000'},
                             ]}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{
