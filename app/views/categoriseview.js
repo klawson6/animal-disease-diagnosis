@@ -9,10 +9,12 @@ import {
     ScrollView,
     TextInput,
     DatePickerAndroid,
-    AsyncStorage
+    AsyncStorage,
+    Image
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
+import Swiper from 'react-native-swiper'
 
 class CategoriseView extends Component {
 
@@ -25,6 +27,8 @@ class CategoriseView extends Component {
         breed: 0,
         diagnosis: null,
         defaultAnimal: null,
+        images: null,
+        urls: []
     };
 
     onSavePress() {
@@ -32,9 +36,9 @@ class CategoriseView extends Component {
             ['name', this.state.name],
             ['date', this.state.dateSelected],
             ['location', this.state.location],
-            ['species', ''+this.state.species],
-            ['age', ''+this.state.age],
-            ['breed', ''+this.state.breed],
+            ['species', '' + this.state.species],
+            ['age', '' + this.state.age],
+            ['breed', '' + this.state.breed],
             ['diagnosis', this.state.diagnosis],
         ], (errors => console.log('Key specific error(s) occurred when saving a classification: ' + errors)))
             .then(() => {
@@ -47,16 +51,24 @@ class CategoriseView extends Component {
 
     constructor(props) {
         super(props);
-        AsyncStorage.multiGet(
-            ['name', 'date', 'location', 'species', 'age', 'breed', 'diagnosis'],
-            ((errors, result) => {
-                console.log(result);
-                console.log(errors);
-            }))
-            .then(() => console.log("Loaded from storage."))
-            .catch(error => {
-                console.log('Error occurred when loading classification: ' + error)
-            });
+        this.state.images = this.props.navigation.getParam('case');
+        this.state.images.forEach(img => {
+            this.state.urls.push({url: img.uri, name: img.filename});
+        });
+        console.log(this.state.images);
+        // AsyncStorage.multiGet(
+        //     ['name', 'date', 'location', 'species', 'age', 'breed', 'diagnosis'],
+        //     ((errors, result) => {
+        //         console.log(result);
+        //         console.log(errors);
+        //     }))
+        //     .then(() => {
+        //         console.log("Loaded from storage.");
+        //         this.state
+        //     })
+        //     .catch(error => {
+        //         console.log('Error occurred when loading classification: ' + error)
+        //     });
     }
 
     onDatePress() {
@@ -71,10 +83,23 @@ class CategoriseView extends Component {
             });
     }
 
+    buildPreview = function (images) {
+        let imgs = [];
+        images.forEach(function (img) {
+            imgs.push(<Image style={styles.image} key={img.filename} source={img}/>);
+        });
+        return imgs;
+    };
+
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Categorise the Image(s)</Text>
+                {/*<View style={styles.imagesContainer}>*/}
+                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0} style={styles.swiper} containerStyle={styles.swiperContainer}>
+                    {this.buildPreview(this.state.images)}
+                </Swiper>
+                {/*</View>*/}
                 <View style={styles.topContainer}>
                     <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
                         <View style={styles.textEntryContainer}>
@@ -258,10 +283,43 @@ const styles = StyleSheet.create({
         fontSize: 30,
         marginTop: Dimensions.get('window').width / 40,
     },
+    swiperContainer: {
+        width: Dimensions.get('window').width * 3 / 5,
+        height: Dimensions.get('window').width * 3 / 5,
+        margin: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 40,
+        borderRadius: 5,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        borderWidth: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+    },
+    swiper: {
+        width: Dimensions.get('window').width * 3 / 5,
+        height: Dimensions.get('window').width * 3 / 5,
+        overflow: 'hidden',
+        // margin: Dimensions.get('window').width / 20,
+        // marginBottom: Dimensions.get('window').width / 40,
+        // borderRadius: 5,
+        // borderColor: '#808080',
+        // backgroundColor: '#f9f9f9',
+        // borderWidth: 1,
+        // flexDirection: 'column',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+    },
+    image: {
+        width: Dimensions.get('window').width * 3 / 5,
+        height: Dimensions.get('window').width * 4/5,
+    },
     topContainer: {
         width: Dimensions.get('window').width * 4.5 / 5,
         flex: 1,
         margin: Dimensions.get('window').width / 20,
+        marginTop: Dimensions.get('window').width / 40,
         borderRadius: 5,
         borderColor: '#808080',
         backgroundColor: '#f9f9f9',
@@ -358,6 +416,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: "center",
         height: Dimensions.get('window').height / 10,
+        overflow: 'hidden'
     },
     button: {
         borderRadius: 10,

@@ -16,6 +16,7 @@ class CameraView extends Component {
 
     camera = null;
     cameraView = null;
+    case = [];
 
     state = {
         thumbnail: require('../assets/img/white.png'),
@@ -24,10 +25,15 @@ class CameraView extends Component {
     };
 
     onContinueButton() {
-        this.props.navigation.navigate('categoriseView')
+        //this.savePhotos('categoriseView');
+        this.props.navigation.navigate('categoriseView', {
+            case: this.case,
+        })
     }
 
     onGalleryButton() {
+        //this.savePhotos('galleryView');
+        // TODO show the case photos not all photos, and then in home->gallery show cases not photos.
         this.props.navigation.navigate('galleryView')
     }
 
@@ -41,9 +47,16 @@ class CameraView extends Component {
                     this.setState({
                         thumbnail: photo,
                     });
-                    this.savePhoto(photo);
-                    console.log('Photo taken.');
-                    console.log(photo.uri);
+                    const {uri} = photo;
+                    MediaLibrary.createAssetAsync(uri)
+                        .then(asset => {
+                            this.case.push(asset);
+                            console.log('Photo taken.');
+                            console.log(photo.uri);
+                        })
+                        .catch(error => {
+                            console.log('Error creating asset of captured image.', error);
+                        });
                 })
                 .catch(error => {
                     console.log('Error taking photo.', error);
@@ -61,10 +74,10 @@ class CameraView extends Component {
             captureRef(this.cameraView, options)
                 .then(uri => {
                     this.setState({
-                        thumbnail: {uri:uri},
+                        thumbnail: {uri: uri},
                     });
 
-                    this.savePhoto({uri:uri});
+                    this.savePhoto({uri: uri});
                     console.log('Photo taken.');
                     console.log(photo.uri);
                 })
@@ -74,19 +87,24 @@ class CameraView extends Component {
         }
     }
 
-    savePhoto(photo) {
-        const {uri} = photo;
-        MediaLibrary.createAssetAsync(uri)
-            .then(asset => {
-                MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
+    savePhotos(nav) {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                MediaLibrary.addAssetsToAlbumAsync(this.case, album, false)
+                    .then(() => {
+                        //this.props.navigation.navigate(nav);
+                        console.log('Cases saved to camera roll.');
+                    })
                     .catch(error => {
-                        console.log('Error saving photo.', error);
-                    });
-            });
+                        console.log('Error saving case to camera roll.', error);
+                    });            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis to save case.', error);
+            })
     }
 
     componentDidMount() {
-        this.loadAlbum(); //TODO Loads full album, optimise to load just thumbnail
+        //this.loadAlbum(); //TODO Loads full album, optimise to load just thumbnail
     }
 
     loadAlbum() {

@@ -19,6 +19,7 @@ class GalleryView extends Component {
             cell: false,
             defaultAnimal: null,
             cases: null,
+            //allCases: this.props.navigation.getParam('allCases'),
         };
     }
 
