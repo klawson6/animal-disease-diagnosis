@@ -88,7 +88,6 @@ class HomeView extends Component {
         //         console.log('Error clearing storage: ' + error)
         //     });
 
-
         // FOR PRINTING STORAGE
         AsyncStorage.getAllKeys()
             .then(keys => keys.forEach(k => {

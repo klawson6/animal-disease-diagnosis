@@ -6,7 +6,6 @@ import CameraView from "./app/views/cameraview";
 import SettingsView from "./app/views/settingsview";
 import GalleryView from "./app/views/galleryview";
 import CategoriseView from "./app/views/categoriseview";
-import CaseView from "./app/views/caseview";
 
 const RootStack = createStackNavigator(
     {
@@ -15,7 +14,6 @@ const RootStack = createStackNavigator(
         settingsView: SettingsView,
         galleryView: GalleryView,
         categoriseView: CategoriseView,
-        caseView: CaseView,
     },
     {
         initialRouteName: 'homeView',
