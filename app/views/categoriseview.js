@@ -32,6 +32,29 @@ class CategoriseView extends Component {
     };
 
     onSavePress() {
+        AsyncStorage.getItem("numCases")
+            .then(value => {
+                AsyncStorage.setItem("case"+value, JSON.stringify(this.state), errors => {
+                    if (errors !== null && error !== undefined) {
+                        console.log('Key specific error(s) occurred when saving a classification: ' + errors)
+                    }
+                })
+                    .then(() => {
+                        console.log("Classification saved");
+                        AsyncStorage.setItem('numCases', '' + (parseInt(value)+1))
+                            .then(() =>
+                                console.log("numCases incremented"))
+                            .catch(error => {
+                                console.log('Error occurred when incrementing numCases: ' + error)
+                            });
+                    })
+                    .catch(error => {
+                        console.log('Error occurred when saving classification: ' + error)
+                    });
+            })
+    }
+
+    onSavePressTest() {
         AsyncStorage.multiSet([
             ['name', this.state.name],
             ['date', this.state.dateSelected],
@@ -39,8 +62,12 @@ class CategoriseView extends Component {
             ['species', '' + this.state.species],
             ['age', '' + this.state.age],
             ['breed', '' + this.state.breed],
-            ['diagnosis', this.state.diagnosis],
-        ], (errors => console.log('Key specific error(s) occurred when saving a classification: ' + errors)))
+            ['diagnosis', '' + this.state.diagnosis],
+        ], (errors => {
+            if (errors !== null) {
+                console.log('Key specific error(s) occurred when saving a classification: ' + errors)
+            }
+        }))
             .then(() => {
                 console.log("Classification saved");
             })
@@ -52,10 +79,13 @@ class CategoriseView extends Component {
     constructor(props) {
         super(props);
         this.state.images = this.props.navigation.getParam('case');
-        this.state.images.forEach(img => {
+        this.state.images.assets.forEach(img => {
             this.state.urls.push({url: img.uri, name: img.filename});
         });
         console.log(this.state.images);
+        AsyncStorage.getItem("numCases")
+            .then(value => console.log(value))
+            .catch()
         // AsyncStorage.multiGet(
         //     ['name', 'date', 'location', 'species', 'age', 'breed', 'diagnosis'],
         //     ((errors, result) => {
@@ -85,7 +115,7 @@ class CategoriseView extends Component {
 
     buildPreview = function (images) {
         let imgs = [];
-        images.forEach(function (img) {
+        images.assets.forEach(function (img) {
             imgs.push(<Image style={styles.image} key={img.filename} source={img}/>);
         });
         return imgs;
@@ -96,7 +126,8 @@ class CategoriseView extends Component {
             <View style={styles.container}>
                 <Text style={styles.title}>Categorise the Image(s)</Text>
                 {/*<View style={styles.imagesContainer}>*/}
-                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0} style={styles.swiper} containerStyle={styles.swiperContainer}>
+                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0} style={styles.swiper}
+                        containerStyle={styles.swiperContainer}>
                     {this.buildPreview(this.state.images)}
                 </Swiper>
                 {/*</View>*/}
@@ -313,7 +344,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 4/5,
+        height: Dimensions.get('window').width * 4 / 5,
     },
     topContainer: {
         width: Dimensions.get('window').width * 4.5 / 5,

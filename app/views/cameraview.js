@@ -16,7 +16,9 @@ class CameraView extends Component {
 
     camera = null;
     cameraView = null;
-    case = [];
+    case = {
+        assets: [],
+    };
 
     state = {
         thumbnail: require('../assets/img/white.png'),
@@ -34,7 +36,10 @@ class CameraView extends Component {
     onGalleryButton() {
         //this.savePhotos('galleryView');
         // TODO show the case photos not all photos, and then in home->gallery show cases not photos.
-        this.props.navigation.navigate('galleryView')
+        this.props.navigation.navigate('galleryView', {
+            case: this.case,
+            home: false,
+        })
     }
 
     onSnapButtonCamera() {
@@ -50,7 +55,7 @@ class CameraView extends Component {
                     const {uri} = photo;
                     MediaLibrary.createAssetAsync(uri)
                         .then(asset => {
-                            this.case.push(asset);
+                            this.case.assets.push(asset);
                             console.log('Photo taken.');
                             console.log(photo.uri);
                         })

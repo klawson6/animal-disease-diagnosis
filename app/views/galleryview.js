@@ -24,7 +24,10 @@ class GalleryView extends Component {
     }
 
     componentDidMount() {
-        this.loadAlbum();
+        if (this.props.navigation.getParam('home'))
+            this.loadAlbum();
+        else
+            this.loadCase();
     }
 
     onSavePress() {
@@ -54,6 +57,12 @@ class GalleryView extends Component {
         rowElems = [];
         return list;
     };
+
+    loadCase(){
+        this.setState({
+            cases: this.props.navigation.getParam('case'),
+        });
+    }
 
     loadAlbum() {
         MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
@@ -86,7 +95,7 @@ class GalleryView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Cases</Text>
+                <Text style={styles.title}>{this.props.navigation.getParam('home') ? "Cases" : "Current Case"}</Text>
                 <ScrollView style={styles.topContainer}>
                     {this.buildGallery(this.state.cases)}
                 </ScrollView>
