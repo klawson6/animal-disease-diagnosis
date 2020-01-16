@@ -15,6 +15,7 @@ import {
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
 import Swiper from 'react-native-swiper'
+import * as MediaLibrary from "expo-media-library";
 
 class CategoriseView extends Component {
 
@@ -34,16 +35,18 @@ class CategoriseView extends Component {
     onSavePress() {
         AsyncStorage.getItem("numCases")
             .then(value => {
-                AsyncStorage.setItem("case"+value, JSON.stringify(this.state), errors => {
+                AsyncStorage.setItem("case" + value, JSON.stringify(this.state), errors => {
                     if (errors !== null && error !== undefined) {
                         console.log('Key specific error(s) occurred when saving a classification: ' + errors)
                     }
                 })
                     .then(() => {
                         console.log("Classification saved");
-                        AsyncStorage.setItem('numCases', '' + (parseInt(value)+1))
-                            .then(() =>
-                                console.log("numCases incremented"))
+                        AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
+                            .then(() => {
+                                console.log("numCases incremented");
+                                this.saveImages();
+                            })
                             .catch(error => {
                                 console.log('Error occurred when incrementing numCases: ' + error)
                             });
@@ -51,6 +54,41 @@ class CategoriseView extends Component {
                     .catch(error => {
                         console.log('Error occurred when saving classification: ' + error)
                     });
+            })
+    }
+
+    saveImages() {
+        console.log("got here before");
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                console.log("Got here");
+                if (this.state.images !== null) {
+                    if (album === null){
+                        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
+                            .then(album => {
+                                MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
+                                    .then(() => {
+                                        //this.props.navigation.navigate(nav);
+                                        console.log('Cases saved to camera roll.');
+                                    })
+                                    .catch(error => {
+                                        console.log('Error saving case to camera roll.', error);
+                                    });
+                            })
+                    } else {
+                        MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
+                            .then(() => {
+                                //this.props.navigation.navigate(nav);
+                                console.log('Cases saved to camera roll.');
+                            })
+                            .catch(error => {
+                                console.log('Error saving case to camera roll.', error);
+                            });
+                    }
+                }
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis to save case.', error);
             })
     }
 
