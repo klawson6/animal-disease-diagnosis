@@ -27,8 +27,8 @@ const RootStack = createStackNavigator(
                 //fontFamily: "sans-serif-thin"
             },
             title: "Image Collection Tool",
+            headerTitleAlign: 'center',
         },
-        headerLayoutPreset: 'center',
     }
 );
 

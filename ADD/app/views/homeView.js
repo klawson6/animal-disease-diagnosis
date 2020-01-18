@@ -60,7 +60,9 @@ class HomeView extends Component {
 
     onGalleryPress() {
         if (this.state.hasPermissions) {
-            this.props.navigation.navigate('galleryView');
+            this.props.navigation.navigate('galleryView', {
+                home: true,
+            });
         } else {
             this.askForPermissions();
         }
@@ -87,7 +89,6 @@ class HomeView extends Component {
             .catch(error => {
                 console.log('Error clearing storage: ' + error)
             });
-
 
         // FOR PRINTING STORAGE
         // AsyncStorage.getAllKeys()

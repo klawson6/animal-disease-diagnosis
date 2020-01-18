@@ -8,16 +8,19 @@ import {
     View,
     ScrollView,
     TextInput,
-    DatePickerAndroid,
     AsyncStorage,
-    Image
+    Image,
+    Alert
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
 import Swiper from 'react-native-swiper'
 import * as MediaLibrary from "expo-media-library";
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+
 
 class CategoriseView extends Component {
+
 
     state = {
         name: null,
@@ -29,7 +32,10 @@ class CategoriseView extends Component {
         diagnosis: null,
         defaultAnimal: null,
         images: null,
-        urls: []
+        urls: [],
+        date: new Date(),
+        mode: 'date',
+        show: false,
     };
 
     onSavePress() {
@@ -58,21 +64,28 @@ class CategoriseView extends Component {
     }
 
     saveImages() {
-        console.log("got here before");
         MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
             .then(album => {
-                console.log("Got here");
                 if (this.state.images !== null) {
-                    if (album === null){
+                    if (album === null) {
                         MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
                             .then(album => {
                                 MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
                                     .then(() => {
                                         //this.props.navigation.navigate(nav);
                                         console.log('Cases saved to camera roll.');
+                                        this.props.navigation.navigate('homeView');
+                                        new Alert.alert(
+                                            'Saved',
+                                            'Your case has been saved.'
+                                        )
                                     })
                                     .catch(error => {
                                         console.log('Error saving case to camera roll.', error);
+                                        new Alert.alert(
+                                            'Error',
+                                            'Your case could not be saved.\n' + error
+                                        )
                                     });
                             })
                     } else {
@@ -139,16 +152,29 @@ class CategoriseView extends Component {
         //     });
     }
 
-    onDatePress() {
-        DatePickerAndroid.open({date: new Date(),})
-            .then(result => {
-                if (result.action !== DatePickerAndroid.dismissedAction) {
-                    this.setState({dateSelected: result.day + '/' + result.month + '/' + result.year});
-                }
-            })
-            .catch(error => {
-                console.warn('Cannot open date picker', error);
+    showDatePicker() {
+        this.setState({
+            show: true
+        });
+    }
+
+    setDate(event, date) {
+        // DatePickerAndroid.open({date: new Date(),})
+        //     .then(result => {
+        //         if (result.action !== DatePickerAndroid.dismissedAction) {
+        //             this.setState({dateSelected: result.day + '/' + result.month + '/' + result.year});
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.warn('Cannot open date picker', error);
+        //     });
+        if (date !== undefined) {
+            this.setState({
+                dateSelected: date.toLocaleDateString(),
+                date: date,
+                show: false
             });
+        }
     }
 
     buildPreview = function (images) {
@@ -160,11 +186,13 @@ class CategoriseView extends Component {
     };
 
     render() {
+        const {show, date, mode} = this.state;
+
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Categorise the Image(s)</Text>
                 {/*<View style={styles.imagesContainer}>*/}
-                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0} style={styles.swiper}
+                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0}
                         containerStyle={styles.swiperContainer}>
                     {this.buildPreview(this.state.images)}
                 </Swiper>
@@ -179,8 +207,14 @@ class CategoriseView extends Component {
                         </View>
                         <View style={styles.textEntryContainer}>
                             <Text style={styles.dateText}>Date of Observation:</Text>
-                            <TouchableOpacity style={styles.datePicker} onPress={this.onDatePress.bind(this)}>
+                            <TouchableOpacity style={styles.datePicker} onPress={this.showDatePicker.bind(this)}>
                                 <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
+                                {show && <RNDateTimePicker value={date}
+                                                           mode={mode}
+                                                           is24Hour={true}
+                                                           display="default"
+                                                           onChange={this.setDate.bind(this)}/>
+                                }
                             </TouchableOpacity>
                         </View>
                         <View style={styles.textEntryContainer}>
@@ -354,7 +388,7 @@ const styles = StyleSheet.create({
     },
     swiperContainer: {
         width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 3 / 5,
+        height: Dimensions.get('window').width * 4 / 5,
         margin: Dimensions.get('window').width / 20,
         marginBottom: Dimensions.get('window').width / 40,
         borderRadius: 5,
@@ -368,7 +402,7 @@ const styles = StyleSheet.create({
     },
     swiper: {
         width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 3 / 5,
+        height: Dimensions.get('window').width * 4 / 5,
         overflow: 'hidden',
         // margin: Dimensions.get('window').width / 20,
         // marginBottom: Dimensions.get('window').width / 40,

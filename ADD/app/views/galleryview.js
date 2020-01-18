@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     View,
     ScrollView,
+    Alert
 } from 'react-native';
 import * as MediaLibrary from "expo-media-library";
 
@@ -67,7 +68,7 @@ class GalleryView extends Component {
     loadAlbum() {
         MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
             .then(album => {
-                album !== null ? this.loadImages(album) : console.log("No album for Animal Disease Diagnosis yet.");
+                album !== null ? this.loadImages(album) : new Alert.alert('Empty', 'No cases have been made yet');
             })
             .catch(error => {
                 console.log('No folder for Animal Disease Diagnosis.', error);
