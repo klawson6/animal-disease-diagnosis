@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
     ScrollView,
-    Alert
+    Alert, AsyncStorage
 } from 'react-native';
 import * as MediaLibrary from "expo-media-library";
 
@@ -26,7 +26,7 @@ class GalleryView extends Component {
 
     componentDidMount() {
         if (this.props.navigation.getParam('home'))
-            this.loadAlbum();
+            this.loadAllCases();
         else
             this.loadCase();
     }
@@ -37,32 +37,51 @@ class GalleryView extends Component {
 
     buildGallery = function (cases) {
         if (cases === null) return;
-        let rowCount = 0;
-        let count = 0;
-        let list = [];
-        let rowElems = [];
-        cases.assets.forEach(function (c) {
-            count++;
-            rowElems.push(<Image key={c.uri} style={styles.thumbnail} source={c}/>);
-            if (count === 3) {
-                list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
-                rowElems = [];
-                count = 0;
-                rowCount++;
+        if (this.props.navigation.getParam('home')) {
+
+        } else {
+            let rowCount = 0;
+            let count = 0;
+            let list = [];
+            let rowElems = [];
+            cases.assets.forEach(function (c) {
+                count++;
+                rowElems.push(<Image key={c.uri} style={styles.thumbnail} source={c}/>);
+                if (count === 3) {
+                    list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
+                    rowElems = [];
+                    count = 0;
+                    rowCount++;
+                }
+            });
+            while (rowElems.length < 3) {
+                rowElems.push(<View key={"fill" + rowElems.length} style={styles.thumbnail}/>)
             }
-        });
-        while (rowElems.length < 3) {
-            rowElems.push(<View key={"fill" + rowElems.length} style={styles.thumbnail}/>)
+            list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
+            rowElems = [];
+            return list;
         }
-        list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
-        rowElems = [];
-        return list;
     };
 
-    loadCase(){
+    loadCase() {
         this.setState({
             cases: this.props.navigation.getParam('case'),
         });
+    }
+
+    loadAllCases() {
+        let cases = {};
+        AsyncStorage.getAllKeys()
+            .then(keys => keys.forEach(k => {
+                AsyncStorage.getItem(k)
+                    .then(value => {
+                        cases[k] = JSON.parse(value);
+                    });
+            }));
+        this.setState({
+            cases: cases
+        });
+        console.log(JSON.stringify(this.state.cases));
     }
 
     loadAlbum() {

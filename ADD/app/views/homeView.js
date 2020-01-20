@@ -21,8 +21,8 @@ class HomeView extends Component {
     componentDidMount() {
         this.askForPermissions();
         AsyncStorage.getAllKeys()
-            .then(keys =>{
-                if (!keys.includes('numCases')){
+            .then(keys => {
+                if (!keys.includes('numCases')) {
                     AsyncStorage.setItem('numCases', '0');
                 }
             })
@@ -78,27 +78,27 @@ class HomeView extends Component {
 
     onHelpPress() {
         // FOR CLEARING STORAGE
-        AsyncStorage.clear(error => {
-                if (error !== null && error !== undefined) {
-                    console.log('Key specific error(s) occurred when saving a classification: ' + error)
-                }
-            })
-            .then(() => {
-                console.log("Storage cleared.");
-            })
-            .catch(error => {
-                console.log('Error clearing storage: ' + error)
-            });
+        // AsyncStorage.clear(error => {
+        //         if (error !== null && error !== undefined) {
+        //             console.log('Key specific error(s) occurred when saving a classification: ' + error)
+        //         }
+        //     })
+        //     .then(() => {
+        //         console.log("Storage cleared.");
+        //     })
+        //     .catch(error => {
+        //         console.log('Error clearing storage: ' + error)
+        //     });
 
         // FOR PRINTING STORAGE
-        // AsyncStorage.getAllKeys()
-        //     .then(keys => keys.forEach(k => {
-        //         AsyncStorage.getItem(k)
-        //             .then(value => console.log(value));
-        //     }));
-        //
-        // AsyncStorage.getItem("numCases")
-        //     .then(value => console.log(value));
+        AsyncStorage.getAllKeys()
+            .then(keys => keys.forEach(k => {
+                AsyncStorage.getItem(k)
+                    .then(value => console.log(k + " : " + value));
+            }));
+
+        AsyncStorage.getItem("numCases")
+            .then(value => console.log(value));
     }
 
     render() {

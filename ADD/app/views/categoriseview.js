@@ -18,9 +18,129 @@ import Swiper from 'react-native-swiper'
 import * as MediaLibrary from "expo-media-library";
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-
 class CategoriseView extends Component {
 
+    diseases = {
+        Cattle: [
+            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
+            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
+            {label: 'Blackleg', value: 'Blackleg', color: '#000000'},
+            {label: 'CBPP / CCPP', value: 'CBPP / CCPP', color: '#000000'},
+            {label: 'Colibacillosis', value: 'Colibacillosis', color: '#000000'},
+            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
+            {label: 'Fasciolosis', value: 'Fasciolosis', color: '#000000'},
+            {label: 'Foot & Mouth Disease', value: 'Foot & Mouth Disease', color: '#000000'},
+            {label: 'Pasteurellosis', value: 'Pasteurellosis', color: '#000000'},
+            {label: 'PGE / GIT Parasite', value: 'PGE / GIT Parasite', color: '#000000'},
+            {label: 'Lumpy Skin Disease', value: 'Lumpy Skin Disease', color: '#000000'},
+            {label: 'Lungworm', value: 'lungworm', color: '#000000'},
+            {label: 'Rabies', value: 'rabies', color: '#000000'},
+            {label: 'Trypanosomiasis', value: 'trypanosomiasis', color: '#000000'},
+            {label: 'Tuberculosis', value: 'tuberculosis', color: '#000000'},
+            {label: 'Other', value: 'other', color: '#000000'},
+        ],
+        Horse: [
+            {label: 'African Horse Sickness (AHS)', value: 'African Horse Sickness (AHS)', color: '#000000'},
+            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
+            {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
+            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
+            {label: 'GI (Non-infectious / Colic)', value: 'GI (Non-infectious / Colic)', color: '#000000'},
+            {label: 'GI (Parasitic)', value: 'GI (Parasitic)', color: '#000000'},
+            {label: 'Habronemiasis', value: 'Habronemiasis', color: '#000000'},
+            {label: 'Heat Stress', value: 'Heat Stress', color: '#000000'},
+            {label: 'Lymphangitis (Epizootic)', value: 'Lymphangitis (Epizootic)', color: '#000000'},
+            {label: 'Lymphangitis (Ulcerative)', value: 'Lymphangitis (Ulcerative)', color: '#000000'},
+            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
+            {label: 'Rabies', value: 'rabies', color: '#000000'},
+            {label: 'Respiratory (Lower Bacterical)', value: 'Respiratory (Lower Bacterical)', color: '#000000'},
+            {label: 'Respiratory (Upper Bacterical)', value: 'Respiratory (Upper Bacterical)', color: '#000000'},
+            {label: 'Respiratory (Asthma / Lungworm)', value: 'Respiratory (Asthma / Lungworm)', color: '#000000'},
+            {label: 'Respiratory (Viral)', value: 'Respiratory (Viral)', color: '#000000'},
+            {label: 'Strangles', value: 'Strangles', color: '#000000'},
+            {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
+            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
+            {label: 'Other', value: 'other', color: '#000000'},
+        ],
+        Donkey: [
+            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
+            {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
+            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
+            {label: 'GI (Non-infectious / Colic)', value: 'GI (Non-infectious / Colic)', color: '#000000'},
+            {label: 'GI (Parasitic)', value: 'GI (Parasitic)', color: '#000000'},
+            {label: 'Habronemiasis', value: 'Habronemiasis', color: '#000000'},
+            {label: 'Heat Stress', value: 'Heat Stress', color: '#000000'},
+            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
+            {label: 'Rabies', value: 'rabies', color: '#000000'},
+            {label: 'Respiratory (Lower Bacterical)', value: 'Respiratory (Lower Bacterical)', color: '#000000'},
+            {label: 'Respiratory (Upper Bacterical)', value: 'Respiratory (Upper Bacterical)', color: '#000000'},
+            {label: 'Respiratory (Asthma / Lungworm)', value: 'Respiratory (Asthma / Lungworm)', color: '#000000'},
+            {label: 'Respiratory (Viral)', value: 'Respiratory (Viral)', color: '#000000'},
+            {label: 'Strangles', value: 'Strangles', color: '#000000'},
+            {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
+            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
+            {label: 'Other', value: 'other', color: '#000000'},
+        ],
+        Sheep: [
+            {label: 'Coenurosis', value: 'Coenurosis', color: '#000000'},
+            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
+            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
+            {label: 'Fasciolosis', value: 'Fasciolosis', color: '#000000'},
+            {label: 'Haemonchosis', value: 'Haemonchosis', color: '#000000'},
+            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
+            {label: 'Lungworm', value: 'Lungworm', color: '#000000'},
+            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
+            {label: 'Nasal Bot', value: 'Nasal Bot', color: '#000000'},
+            {label: 'Pasteurellosis', value: 'Pasteurellosis)', color: '#000000'},
+            {label: 'Pox', value: 'Pox', color: '#000000'},
+            {label: 'Peste des Petits Ruminants (PPR)', value: 'Peste des Petits Ruminants (PPR)', color: '#000000'},
+            {label: 'Trichostrongiulosis', value: 'Trichostrongiulosis', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
+        ],
+        Camel: [
+            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
+            {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
+            {label: 'Camel Calf Diarrhoea', value: 'Camel Calf Diarrhoea', color: '#000000'},
+            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
+            {label: 'Hemorrhagic Septicemia', value: 'Hemorrhagic Septicemia', color: '#000000'},
+            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
+            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
+            {label: 'Mastitis', value: 'Mastitis', color: '#000000'},
+            {label: 'Pasteurellosis', value: 'Pasteurellosis', color: '#000000'},
+            {label: 'Plant Poisoning', value: 'Plant Poisoning)', color: '#000000'},
+            {label: 'Pox', value: 'Pox', color: '#000000'},
+            {label: 'Pus / Abscess', value: 'Pus / Abscess', color: '#000000'},
+            {label: 'Respiratory Infections', value: 'Respiratory Infections', color: '#000000'},
+            {label: 'SDS / Unknown Camel Disease', value: 'SDS / Unknown Camel Disease', color: '#000000'},
+            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
+        ],
+        Goat: [
+            {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
+            {label: 'CBPP / CCPP', value: 'CBPP / CCPP', color: '#000000'},
+            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
+            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
+            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
+            {label: 'Lungworm', value: 'Lungwormx', color: '#000000'},
+            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
+            {label: 'Mastitis', value: 'Mastitis', color: '#000000'},
+            {label: 'Pox', value: 'Pox', color: '#000000'},
+            {label: 'Pus / Abscess', value: 'Pus / Abscess', color: '#000000'},
+            {label: 'Peste des Petits Ruminants (PPR)', value: 'Peste des Petits Ruminants (PPR)', color: '#000000'},
+            {label: 'Trichostrongiulosis', value: 'Trichostrongiulosis', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
+        ]
+    };
+
+    case = {
+        name: null,
+        dateSelected: 'DD/MM/YY',
+        location: null,
+        species: null,
+        age: 0,
+        breed: 0,
+        diagnosis: null,
+        urls: [],
+    };
 
     state = {
         name: null,
@@ -36,12 +156,22 @@ class CategoriseView extends Component {
         date: new Date(),
         mode: 'date',
         show: false,
+        diseases: []
     };
 
     onSavePress() {
         AsyncStorage.getItem("numCases")
             .then(value => {
-                AsyncStorage.setItem("case" + value, JSON.stringify(this.state), errors => {
+                AsyncStorage.setItem("case" + value, JSON.stringify({
+                    name: this.state.name,
+                    dateSelected: this.state.dateSelected,
+                    location: this.state.location,
+                    species: this.state.species,
+                    age: this.state.age,
+                    breed: this.state.breed,
+                    diagnosis: this.state.diagnosis,
+                    urls: this.state.urls
+                }), errors => {
                     if (errors !== null && error !== undefined) {
                         console.log('Key specific error(s) occurred when saving a classification: ' + errors)
                     }
@@ -103,6 +233,11 @@ class CategoriseView extends Component {
             .catch(error => {
                 console.log('No folder for Animal Disease Diagnosis to save case.', error);
             })
+    }
+
+    getDiseaseList() {
+        if (this.state.species != null)
+            console.log(this.diseases.this.state.species);
     }
 
     onSavePressTest() {
@@ -217,24 +352,55 @@ class CategoriseView extends Component {
                                 }
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.textEntryContainer}>
-                            <Text style={styles.nameText}>Location:</Text>
-                            <TextInput onChangeText={text => {
-                                this.setState({location: text})
-                            }} style={styles.nameBox}/>
-                        </View>
+                        {/*<View style={styles.textEntryContainer}>*/}
+                        {/*    <Text style={styles.nameText}>Location:</Text>*/}
+                        {/*    <TextInput onChangeText={text => {*/}
+                        {/*        this.setState({location: text})*/}
+                        {/*    }} style={styles.nameBox}/>*/}
+                        {/*</View>*/}
+                        <Text style={styles.optionTitle}>Location:</Text>
+                        <RNPickerSelect
+                            onValueChange={value => {
+                                this.setState({location: value})
+                            }}
+                            items={[
+                                {label: 'Addis Ababa', value: 'Addis Ababa'},
+                                {label: 'Afar Region', value: 'Afar Region'},
+                                {label: 'Amhara Region', value: 'Amhara Region'},
+                                {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
+                                {label: 'Dire Dawa', value: 'Dire Dawa'},
+                                {label: 'Gamebela Region', value: 'Gamebela Region'},
+                                {label: 'Harari Region', value: 'Harari Region'},
+                                {label: 'Oromia Region', value: 'Oromia Region'},
+                                {label: 'Somali Region', value: 'Somali Region'},
+                                {
+                                    label: 'Southern Nations, Nationalities and Peoples\' Region',
+                                    value: 'Southern Nations, Nationalities and Peoples\' Region'
+                                },
+                                {label: 'Tigray Region', value: 'Tigray Region'},
+                            ]}
+                            useNativeAndroidPickerStyle={false}
+                            textInputProps={{
+                                fontFamily: "sans-serif-light",
+                                fontSize: 20,
+                            }}
+                        />
                         <Text style={styles.optionTitle}>Species:</Text>
                         <RNPickerSelect
                             onValueChange={value => {
-                                this.setState({species: value})
+                                this.setState({
+                                    species: value,
+                                    diagnosis: null,
+                                    diseases: this.diseases[value]
+                                })
                             }}
                             items={[
-                                {label: 'Cattle', value: 'cattle'},
-                                {label: 'Goat', value: 'goat'},
-                                {label: 'Sheep', value: 'sheep'},
-                                {label: 'Camel', value: 'camel'},
-                                {label: 'Horse', value: 'horse'},
-                                {label: 'Donkey', value: 'donkey'},
+                                {label: 'Cattle', value: 'Cattle'},
+                                {label: 'Goat', value: 'Goat'},
+                                {label: 'Sheep', value: 'Sheep'},
+                                {label: 'Camel', value: 'Camel'},
+                                {label: 'Horse', value: 'Horse'},
+                                {label: 'Donkey', value: 'Donkey'},
                             ]}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{
@@ -333,24 +499,8 @@ class CategoriseView extends Component {
                             onValueChange={(value) => {
                                 this.setState({diagnosis: value})
                             }}
-                            items={[
-                                {label: 'Anthrax', value: 'anthrax', color: '#000000'},
-                                {label: 'Babesiosis', value: 'babesiosis', color: '#000000'},
-                                {label: 'Blackleg', value: 'blackleg', color: '#000000'},
-                                {label: 'CBPP', value: 'cbpp', color: '#000000'},
-                                {label: 'Colibacillosis', value: 'colibacillosis', color: '#000000'},
-                                {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
-                                {label: 'Fasciolosis', value: 'fasciolosis', color: '#000000'},
-                                {label: 'FMD', value: 'fmd', color: '#000000'},
-                                {label: 'Pasteurollosis', value: 'pasteurollosis', color: '#000000'},
-                                {label: 'Parasitic Gastro Enteritis', value: 'pge', color: '#000000'},
-                                {label: 'Lumpy Skin Disease', value: 'lsd', color: '#000000'},
-                                {label: 'Lungworm', value: 'lungworm', color: '#000000'},
-                                {label: 'Rabies', value: 'rabies', color: '#000000'},
-                                {label: 'Trypanosomiasis', value: 'trypanosomiasis', color: '#000000'},
-                                {label: 'Tuberculosis', value: 'tuberculosis', color: '#000000'},
-                                {label: 'Other', value: 'other', color: '#000000'},
-                            ]}
+                            value={this.state.diagnosis}
+                            items={this.state.diseases}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{
                                 fontFamily: "sans-serif-light",
@@ -460,7 +610,8 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 20,
         flex: 2,
         flexDirection: 'row',
-        color: '#808080',
+        //color: '#808080',
+        color: '#000000',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
             : 'Avenir-Light',
@@ -489,7 +640,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     dateChosen: {
-        color: '#808080',
+        //color: '#808080',
+        color: '#000000',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
             : 'Avenir-Light',
