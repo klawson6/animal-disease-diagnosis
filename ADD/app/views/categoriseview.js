@@ -159,6 +159,11 @@ class CategoriseView extends Component {
         diseases: []
     };
 
+    //    ________
+    //    |  o  o |
+    //    | |___| |
+    //    |_______|
+    //     _|  _|
     onSavePress() {
         AsyncStorage.getItem("numCases")
             .then(value => {
