@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Dimensions
+    Dimensions, AsyncStorage
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
@@ -29,7 +29,7 @@ class CameraView extends Component {
     onContinueButton() {
         //this.savePhotos('categoriseView');
         this.props.navigation.navigate('categoriseView', {
-            case: this.case,
+            images: this.case,
         })
     }
 

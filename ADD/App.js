@@ -1,4 +1,7 @@
 import React from 'react';
+import {
+    Dimensions
+} from "react-native";
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeView from "./app/views/homeView";
@@ -25,6 +28,8 @@ const RootStack = createStackNavigator(
             headerTitleStyle: {
                 fontWeight: 'bold',
                 //fontFamily: "sans-serif-thin"
+                width : Dimensions.get('window').width,
+                textAlign: 'center'
             },
             title: "Image Collection Tool",
             headerTitleAlign: 'center',

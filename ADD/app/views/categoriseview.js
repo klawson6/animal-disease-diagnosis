@@ -131,17 +131,6 @@ class CategoriseView extends Component {
         ]
     };
 
-    case = {
-        name: null,
-        dateSelected: 'DD/MM/YY',
-        location: null,
-        species: null,
-        age: 0,
-        breed: 0,
-        diagnosis: null,
-        urls: [],
-    };
-
     state = {
         name: null,
         dateSelected: 'DD/MM/YY',
@@ -149,6 +138,7 @@ class CategoriseView extends Component {
         species: null,
         age: 0,
         breed: 0,
+        sex: 0,
         diagnosis: null,
         defaultAnimal: null,
         images: null,
@@ -165,15 +155,21 @@ class CategoriseView extends Component {
     //    |_______|
     //     _|  _|
     onSavePress() {
+        let caseName = this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined
+            ? null : this.props.navigation.getParam('caseName');
+
         AsyncStorage.getItem("numCases")
             .then(value => {
-                AsyncStorage.setItem("case" + value, JSON.stringify({
+                if (caseName === null)
+                    caseName = "case" + value;
+                AsyncStorage.setItem(caseName, JSON.stringify({
                     name: this.state.name,
                     dateSelected: this.state.dateSelected,
                     location: this.state.location,
                     species: this.state.species,
                     age: this.state.age,
                     breed: this.state.breed,
+                    sex: this.state.sex,
                     diagnosis: this.state.diagnosis,
                     urls: this.state.urls
                 }), errors => {
@@ -183,14 +179,18 @@ class CategoriseView extends Component {
                 })
                     .then(() => {
                         console.log("Classification saved");
-                        AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
-                            .then(() => {
-                                console.log("numCases incremented");
-                                this.saveImages();
-                            })
-                            .catch(error => {
-                                console.log('Error occurred when incrementing numCases: ' + error)
-                            });
+                        if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
+                            AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
+                                .then(() => {
+                                    console.log("numCases incremented");
+                                    this.saveImages();
+                                })
+                                .catch(error => {
+                                    console.log('Error occurred when incrementing numCases: ' + error)
+                                });
+                        } else {
+                            this.saveImages();
+                        }
                     })
                     .catch(error => {
                         console.log('Error occurred when saving classification: ' + error)
@@ -207,13 +207,12 @@ class CategoriseView extends Component {
                             .then(album => {
                                 MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
                                     .then(() => {
-                                        //this.props.navigation.navigate(nav);
                                         console.log('Cases saved to camera roll.');
                                         this.props.navigation.navigate('homeView');
                                         new Alert.alert(
                                             'Saved',
                                             'Your case has been saved.'
-                                        )
+                                        );
                                     })
                                     .catch(error => {
                                         console.log('Error saving case to camera roll.', error);
@@ -226,11 +225,19 @@ class CategoriseView extends Component {
                     } else {
                         MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
                             .then(() => {
-                                //this.props.navigation.navigate(nav);
                                 console.log('Cases saved to camera roll.');
+                                this.props.navigation.navigate('homeView');
+                                new Alert.alert(
+                                    'Saved',
+                                    'Your case has been saved.'
+                                );
                             })
                             .catch(error => {
                                 console.log('Error saving case to camera roll.', error);
+                                new Alert.alert(
+                                    'Error',
+                                    'Your case could not be saved.\n' + error
+                                )
                             });
                     }
                 }
@@ -240,56 +247,21 @@ class CategoriseView extends Component {
             })
     }
 
-    getDiseaseList() {
-        if (this.state.species != null)
-            console.log(this.diseases.this.state.species);
-    }
-
-    onSavePressTest() {
-        AsyncStorage.multiSet([
-            ['name', this.state.name],
-            ['date', this.state.dateSelected],
-            ['location', this.state.location],
-            ['species', '' + this.state.species],
-            ['age', '' + this.state.age],
-            ['breed', '' + this.state.breed],
-            ['diagnosis', '' + this.state.diagnosis],
-        ], (errors => {
-            if (errors !== null) {
-                console.log('Key specific error(s) occurred when saving a classification: ' + errors)
-            }
-        }))
-            .then(() => {
-                console.log("Classification saved");
-            })
-            .catch(error => {
-                console.log('Error occurred when saving classification: ' + error)
-            });
-    }
-
     constructor(props) {
         super(props);
-        this.state.images = this.props.navigation.getParam('case');
+        this.state.images = this.props.navigation.getParam('images');
         this.state.images.assets.forEach(img => {
             this.state.urls.push({url: img.uri, name: img.filename});
         });
-        console.log(this.state.images);
+        if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
+            this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
+            if (this.state.species !== null) {
+                this.state.diseases = this.diseases[this.state.species];
+            }
+        }
         AsyncStorage.getItem("numCases")
             .then(value => console.log(value))
             .catch()
-        // AsyncStorage.multiGet(
-        //     ['name', 'date', 'location', 'species', 'age', 'breed', 'diagnosis'],
-        //     ((errors, result) => {
-        //         console.log(result);
-        //         console.log(errors);
-        //     }))
-        //     .then(() => {
-        //         console.log("Loaded from storage.");
-        //         this.state
-        //     })
-        //     .catch(error => {
-        //         console.log('Error occurred when loading classification: ' + error)
-        //     });
     }
 
     showDatePicker() {
@@ -299,15 +271,6 @@ class CategoriseView extends Component {
     }
 
     setDate(event, date) {
-        // DatePickerAndroid.open({date: new Date(),})
-        //     .then(result => {
-        //         if (result.action !== DatePickerAndroid.dismissedAction) {
-        //             this.setState({dateSelected: result.day + '/' + result.month + '/' + result.year});
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.warn('Cannot open date picker', error);
-        //     });
         if (date !== undefined) {
             this.setState({
                 dateSelected: date.toLocaleDateString(),
@@ -341,9 +304,12 @@ class CategoriseView extends Component {
                     <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
                         <View style={styles.textEntryContainer}>
                             <Text style={styles.nameText}>Full Name:</Text>
-                            <TextInput onChangeText={text => {
-                                this.setState({name: text})
-                            }} style={styles.nameBox}/>
+                            <TextInput
+                                onChangeText={text => {
+                                    this.setState({name: text})
+                                }}
+                                style={styles.nameBox}
+                                defaultValue={this.state.name}/>
                         </View>
                         <View style={styles.textEntryContainer}>
                             <Text style={styles.dateText}>Date of Observation:</Text>
@@ -368,6 +334,7 @@ class CategoriseView extends Component {
                             onValueChange={value => {
                                 this.setState({location: value})
                             }}
+                            value={this.state.location}
                             items={[
                                 {label: 'Addis Ababa', value: 'Addis Ababa'},
                                 {label: 'Afar Region', value: 'Afar Region'},
@@ -399,6 +366,7 @@ class CategoriseView extends Component {
                                     diseases: this.diseases[value]
                                 })
                             }}
+                            value={this.state.species}
                             items={[
                                 {label: 'Cattle', value: 'Cattle'},
                                 {label: 'Goat', value: 'Goat'},
@@ -429,7 +397,6 @@ class CategoriseView extends Component {
                             uncheckedIcon='check-circle'
                             checked={this.state.age === 2}
                             onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
-
                             textStyle={styles.options}
                             containerStyle={styles.optionsContainer}
                         />

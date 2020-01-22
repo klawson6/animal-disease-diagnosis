@@ -34,33 +34,9 @@ class GalleryView extends Component {
 
     openCase(c) {
         console.log(c);
-        this.loadCaseImages(c);
+        //this.loadCaseImages(c);
+        this.loadAlbum(c);
         //this.props.navigation.navigate('categoriseView')
-    }
-
-    loadCaseImages(c) {
-        console.log("We are hereerererer");
-
-        MediaLibrary.getAssetsAsync({album: 'Animal Disease Diagnosis'})
-            .then(assets => {
-                while (assets.hasNextPage) {
-                    console.log("Loading images...");
-                    // TODO stop user interaction while it loads?
-                }
-                let images = [];
-                console.log("We are here");
-
-                assets.assets.forEach(asset => {
-                    console.log(this.state.cases[c]);
-                    // if (this.state.cases[c].urls.includes(asset.uri))
-                    //     images.push({url: asset.uri, name: asset.filename})
-                });
-                // this.setState({urls: images});  //hello keep it up ya fup
-                // console.log(this.state.urls);
-            })
-            .catch(error => {
-                console.log("Error loading images for the case : " + error);
-            })
     }
 
     onSavePress() {
@@ -126,8 +102,19 @@ class GalleryView extends Component {
                 AsyncStorage.multiGet(keys)
                     .then(results => {
                         results.forEach(item => {
-                            cases[item[0]] = JSON.parse(item[1])
+                            //console.log("\n");
+
+                            cases[item[0]] = JSON.parse(item[1]);
+
+                            // console.log("item is : " + item);
+                            // console.log("item[0] is : " + item[0]);
+                            // console.log("item[1] is : "+ item[1]);
+                            // console.log("JSON.parse(item[1]) is  : " + JSON.parse(item[1]));
+                            // console.log("\n");
                         });
+                        // console.log(cases);
+                        // console.log("\n");
+
                         this.setState({
                             cases: cases
                         });
@@ -136,17 +123,18 @@ class GalleryView extends Component {
             });
     }
 
-    loadAlbum() {
+    loadAlbum(c) {
         MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
             .then(album => {
-                album !== null ? this.loadImages(album) : new Alert.alert('Empty', 'No cases have been made yet');
+                album !== null ? this.loadImages(album, c) : new Alert.alert('Empty', 'No cases have been made yet');
             })
             .catch(error => {
                 console.log('No folder for Animal Disease Diagnosis.', error);
+                return null;
             })
     }
 
-    loadImages(album) {
+    loadImages(album, c) {
         MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
             .then(assets => {
                 while (assets.hasNextPage) {
@@ -155,13 +143,38 @@ class GalleryView extends Component {
                 }
                 console.log('Estimated number of loaded images: ' + assets.totalCount);
                 console.log('Actual number of loaded images: ' + assets.assets.length);
-                this.setState({
-                    cases: assets,
+                let images = {assets: []};
+                assets.assets.forEach(a =>{
+                    //console.log("This case " + c + " is :\n" + JSON.stringify(this.state.cases[c]));
+                    //console.log("\n this asset uri is : " + a.uri);
+                    this.state.cases[c].urls.forEach(u => {
+                        // console.log("\n");
+                        // console.log(u.name);
+                        // console.log(a.filename);
+                        if (u.name === a.filename){
+                            // console.log("We got here: \n" + a + "\n" + a.uri);
+                            images.assets.push(a);
+                        }
+                    })
                 });
+                this.setState({
+                    images: images,
+                });
+                //console.log(this.state.images);
+                this.prepareToCategorise(c);
             })
             .catch(error => {
                 console.log('Could not get assets from folder.', error);
+                return null;
             });
+    }
+
+    prepareToCategorise(c){
+        this.props.navigation.navigate('categoriseView',{
+            images : this.state.images,
+            case: this.state.cases[c],
+            caseName: c
+        })
     }
 
     render() {
