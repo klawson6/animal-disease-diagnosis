@@ -17,6 +17,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import Swiper from 'react-native-swiper'
 import * as MediaLibrary from "expo-media-library";
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import {create} from 'apisauce'
 
 class CategoriseView extends Component {
 
@@ -149,6 +150,10 @@ class CategoriseView extends Component {
         diseases: []
     };
 
+    onUploadPress() {
+        console.log("WE HERE BOI");
+    }
+
     //    ________
     //    |  o  o |
     //    | |___| |
@@ -189,7 +194,11 @@ class CategoriseView extends Component {
                                     console.log('Error occurred when incrementing numCases: ' + error)
                                 });
                         } else {
-                            this.saveImages();
+                            this.props.navigation.navigate('homeView');
+                            new Alert.alert(
+                                'Saved',
+                                'Your case has been saved.'
+                            );
                         }
                     })
                     .catch(error => {
@@ -205,22 +214,32 @@ class CategoriseView extends Component {
                     if (album === null) {
                         MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
                             .then(album => {
-                                MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
-                                    .then(() => {
-                                        console.log('Cases saved to camera roll.');
-                                        this.props.navigation.navigate('homeView');
-                                        new Alert.alert(
-                                            'Saved',
-                                            'Your case has been saved.'
-                                        );
-                                    })
-                                    .catch(error => {
-                                        console.log('Error saving case to camera roll.', error);
-                                        new Alert.alert(
-                                            'Error',
-                                            'Your case could not be saved.\n' + error
-                                        )
-                                    });
+                                if (this.state.images.assets.length > 1) {
+                                    MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
+                                        .then(() => {
+                                            console.log('Cases saved to camera roll.');
+                                            this.props.navigation.navigate('homeView');
+                                            new Alert.alert(
+                                                'Saved',
+                                                'Your case has been saved.'
+                                            );
+                                        })
+                                        .catch(error => {
+                                            console.log('Error saving case to camera roll.', error);
+                                            new Alert.alert(
+                                                'Error',
+                                                'Your case could not be saved.\n' + error
+                                            )
+                                        });
+                                } else {
+                                    // TODO Find nicer fix. When taking only 1 picture for the very first case, it will not execute all of the .then.
+                                    console.log('Cases saved to camera roll.');
+                                    this.props.navigation.navigate('homeView');
+                                    new Alert.alert(
+                                        'Saved',
+                                        'Your case has been saved.'
+                                    );
+                                }
                             })
                     } else {
                         MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
@@ -483,6 +502,11 @@ class CategoriseView extends Component {
                 </View>
                 <View style={styles.saveContainer}>
                     {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
+                    <TouchableOpacity onPress={this.onUploadPress.bind(this)}>
+                        <View style={[styles.button]}>
+                            <Text style={styles.buttonText}>Upload Case</Text>
+                        </View>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={this.onSavePress.bind(this)}>
                         <View style={[styles.button]}>
                             <Text style={styles.buttonText}>Save</Text>
@@ -545,6 +569,7 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: Dimensions.get('window').width / 20,
         marginTop: Dimensions.get('window').width / 40,
+        marginBottom: 0,
         borderRadius: 5,
         borderColor: '#808080',
         backgroundColor: '#f9f9f9',
@@ -649,8 +674,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: '#808080',
         borderWidth: 1,
-        width: 160,
-        height: 35,
+        width: Dimensions.get('window').width / 3,
+        height: Dimensions.get('window').height / 27,
+        marginLeft: Dimensions.get('window').width / 15,
+        marginRight: Dimensions.get('window').width / 15,
         alignItems: 'center',
         backgroundColor: '#f9f9f9',
         justifyContent: 'space-evenly'
