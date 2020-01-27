@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Dimensions, AsyncStorage
+    Dimensions, AsyncStorage, Alert
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
@@ -55,7 +55,8 @@ class CameraView extends Component {
                     const {uri} = photo;
                     MediaLibrary.createAssetAsync(uri)
                         .then(asset => {
-                            this.case.assets.push(asset);
+                            this.saveImage(asset);
+                            //this.case.assets.push(asset);
                             console.log('Photo taken.');
                             console.log(photo.uri);
                         })
@@ -67,6 +68,60 @@ class CameraView extends Component {
                     console.log('Error taking photo.', error);
                 });
         }
+    }
+
+    saveImage(asset) {
+        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+            .then(album => {
+                if (asset !== null) {
+                    if (album === null) {
+                        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
+                            .then(album => {
+                                console.log('Image saved to camera roll.');
+                                this.addImageToState(album, asset.filename);
+                            })
+                            .catch(error => {
+                                console.log('Error saving image to camera roll.', error);
+                                new Alert.alert(
+                                    'Error',
+                                    'Your image could not be saved.\n' + error
+                                )
+                            });
+                    } else {
+                        MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
+                            .then(() => {
+                                console.log('Image saved to camera roll.');
+                                this.addImageToState(album, asset.filename);
+                            })
+                            .catch(error => {
+                                console.log('Error saving image to camera roll.', error);
+                                new Alert.alert(
+                                    'Error',
+                                    'Your image could not be saved.\n' + error
+                                )
+                            });
+                    }
+                }
+            })
+            .catch(error => {
+                console.log('No folder for Animal Disease Diagnosis to save case.', error);
+            })
+    }
+
+    addImageToState(album, name) {
+        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
+            .then(assets => {
+                for (const a of assets.assets){
+                    if (a.filename === name) {
+                        this.case.assets.push(a);
+                        console.log("Got it from the new folder");
+                        break;
+                    }
+                }
+            })
+            .catch(error => {
+                console.log('Could not get assets from folder.', error);
+            });
     }
 
     onSnapButtonScreenShot() {
@@ -102,7 +157,8 @@ class CameraView extends Component {
                     })
                     .catch(error => {
                         console.log('Error saving case to camera roll.', error);
-                    });            })
+                    });
+            })
             .catch(error => {
                 console.log('No folder for Animal Disease Diagnosis to save case.', error);
             })

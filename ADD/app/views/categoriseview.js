@@ -15,9 +15,7 @@ import {
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
 import Swiper from 'react-native-swiper'
-import * as MediaLibrary from "expo-media-library";
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import {create} from 'apisauce'
 
 class CategoriseView extends Component {
 
@@ -152,6 +150,66 @@ class CategoriseView extends Component {
 
     onUploadPress() {
         console.log("WE HERE BOI");
+        console.log(this.state.urls[0].url);
+        const body = new FormData();
+        this.state.urls.forEach(img => {
+            body.append("images[]", {
+                uri: img.url,
+                name: img.name,
+                type: "image/jpg"
+            });
+        });
+        let curCase = {
+            name: this.state.name,
+            dateSelected: this.state.dateSelected,
+            location: this.state.location,
+            species: this.state.species,
+            age: this.state.age,
+            breed: this.state.breed,
+            sex: this.state.sex,
+            diagnosis: this.state.diagnosis
+        };
+        body.append("case", JSON.stringify(curCase));
+
+        fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
+            {
+                method: 'POST',
+                body: body,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Request to server successful.");
+                    console.log(response.status);
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
+                    this.props.navigation.navigate('homeView');
+                    new Alert.alert(
+                        'Uploaded',
+                        'Your case information has been uploaded.\nImages however, do not upload int his version [BETA].'
+                    );
+                } else {
+                    console.log("Request to server unsuccessful.");
+                    console.log(response.status);
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
+                    this.props.navigation.navigate('homeView');
+                    new Alert.alert(
+                        'Upload Failed',
+                        'Your case information failed to upload.'
+                    );
+                }
+            })
+            .catch(error => {
+                console.log("Error making request : " + error);
+            });
     }
 
     //    ________
@@ -188,7 +246,11 @@ class CategoriseView extends Component {
                             AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
                                 .then(() => {
                                     console.log("numCases incremented");
-                                    this.saveImages();
+                                    this.props.navigation.navigate('homeView');
+                                    new Alert.alert(
+                                        'Saved',
+                                        'Your case has been saved.'
+                                    );
                                 })
                                 .catch(error => {
                                     console.log('Error occurred when incrementing numCases: ' + error)
@@ -207,64 +269,64 @@ class CategoriseView extends Component {
             })
     }
 
-    saveImages() {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                if (this.state.images !== null) {
-                    if (album === null) {
-                        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
-                            .then(album => {
-                                if (this.state.images.assets.length > 1) {
-                                    MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
-                                        .then(() => {
-                                            console.log('Cases saved to camera roll.');
-                                            this.props.navigation.navigate('homeView');
-                                            new Alert.alert(
-                                                'Saved',
-                                                'Your case has been saved.'
-                                            );
-                                        })
-                                        .catch(error => {
-                                            console.log('Error saving case to camera roll.', error);
-                                            new Alert.alert(
-                                                'Error',
-                                                'Your case could not be saved.\n' + error
-                                            )
-                                        });
-                                } else {
-                                    // TODO Find nicer fix. When taking only 1 picture for the very first case, it will not execute all of the .then.
-                                    console.log('Cases saved to camera roll.');
-                                    this.props.navigation.navigate('homeView');
-                                    new Alert.alert(
-                                        'Saved',
-                                        'Your case has been saved.'
-                                    );
-                                }
-                            })
-                    } else {
-                        MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
-                            .then(() => {
-                                console.log('Cases saved to camera roll.');
-                                this.props.navigation.navigate('homeView');
-                                new Alert.alert(
-                                    'Saved',
-                                    'Your case has been saved.'
-                                );
-                            })
-                            .catch(error => {
-                                console.log('Error saving case to camera roll.', error);
-                                new Alert.alert(
-                                    'Error',
-                                    'Your case could not be saved.\n' + error
-                                )
-                            });
-                    }
-                }
-            })
-            .catch(error => {
-                console.log('No folder for Animal Disease Diagnosis to save case.', error);
-            })
-    }
+    // saveImages() {
+    //     MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
+    //         .then(album => {
+    //             if (this.state.images !== null) {
+    //                 if (album === null) {
+    //                     MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
+    //                         .then(album => {
+    //                             if (this.state.images.assets.length > 1) {
+    //                                 MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
+    //                                     .then(() => {
+    //                                         console.log('Cases saved to camera roll.');
+    //                                         this.props.navigation.navigate('homeView');
+    //                                         new Alert.alert(
+    //                                             'Saved',
+    //                                             'Your case has been saved.'
+    //                                         );
+    //                                     })
+    //                                     .catch(error => {
+    //                                         console.log('Error saving case to camera roll.', error);
+    //                                         new Alert.alert(
+    //                                             'Error',
+    //                                             'Your case could not be saved.\n' + error
+    //                                         )
+    //                                     });
+    //                             } else {
+    //                                 // TODO Find nicer fix. When taking only 1 picture for the very first case, it will not execute all of the .then.
+    //                                 console.log('Cases saved to camera roll.');
+    //                                 this.props.navigation.navigate('homeView');
+    //                                 new Alert.alert(
+    //                                     'Saved',
+    //                                     'Your case has been saved.'
+    //                                 );
+    //                             }
+    //                         })
+    //                 } else {
+    //                     MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
+    //                         .then(() => {
+    //                             console.log('Cases saved to camera roll.');
+    //                             this.props.navigation.navigate('homeView');
+    //                             new Alert.alert(
+    //                                 'Saved',
+    //                                 'Your case has been saved.'
+    //                             );
+    //                         })
+    //                         .catch(error => {
+    //                             console.log('Error saving case to camera roll.', error);
+    //                             new Alert.alert(
+    //                                 'Error',
+    //                                 'Your case could not be saved.\n' + error
+    //                             )
+    //                         });
+    //                 }
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.log('No folder for Animal Disease Diagnosis to save case.', error);
+    //         })
+    // }
 
     constructor(props) {
         super(props);
