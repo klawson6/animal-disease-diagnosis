@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
-import {captureRef} from 'react-native-view-shot';
 
 class CameraView extends Component {
 
@@ -27,15 +26,12 @@ class CameraView extends Component {
     };
 
     onContinueButton() {
-        //this.savePhotos('categoriseView');
         this.props.navigation.navigate('categoriseView', {
             images: this.case,
         })
     }
 
     onGalleryButton() {
-        //this.savePhotos('galleryView');
-        // TODO show the case photos not all photos, and then in home->gallery show cases not photos.
         this.props.navigation.navigate('galleryView', {
             case: this.case,
             home: false,
@@ -56,7 +52,6 @@ class CameraView extends Component {
                     MediaLibrary.createAssetAsync(uri)
                         .then(asset => {
                             this.saveImage(asset);
-                            //this.case.assets.push(asset);
                             console.log('Photo taken.');
                             console.log(photo.uri);
                         })
@@ -118,79 +113,6 @@ class CameraView extends Component {
                         break;
                     }
                 }
-            })
-            .catch(error => {
-                console.log('Could not get assets from folder.', error);
-            });
-    }
-
-    onSnapButtonScreenShot() {
-        if (this.camera) {
-            const options = {
-                result: 'tmpfile',
-                quality: 1,
-                format: 'png',
-            };
-            captureRef(this.cameraView, options)
-                .then(uri => {
-                    this.setState({
-                        thumbnail: {uri: uri},
-                    });
-
-                    this.savePhoto({uri: uri});
-                    console.log('Photo taken.');
-                    console.log(photo.uri);
-                })
-                .catch(error => {
-                    console.log('Error taking photo.', error);
-                });
-        }
-    }
-
-    savePhotos(nav) {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                MediaLibrary.addAssetsToAlbumAsync(this.case, album, false)
-                    .then(() => {
-                        //this.props.navigation.navigate(nav);
-                        console.log('Cases saved to camera roll.');
-                    })
-                    .catch(error => {
-                        console.log('Error saving case to camera roll.', error);
-                    });
-            })
-            .catch(error => {
-                console.log('No folder for Animal Disease Diagnosis to save case.', error);
-            })
-    }
-
-    componentDidMount() {
-        //this.loadAlbum(); //TODO Loads full album, optimise to load just thumbnail
-    }
-
-    loadAlbum() {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                album !== null ? this.loadImages(album) : console.log("No album for Animal Disease Diagnosis yet.");
-            })
-            .catch(error => {
-                console.log('No folder for Animal Disease Diagnosis.', error);
-            })
-    }
-
-    loadImages(album) {
-        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
-            .then(assets => {
-                while (assets.hasNextPage) {
-                    console.log("Loading images...");
-                    // TODO stop user interaction while it loads?
-                }
-                console.log('Estimated number of loaded images: ' + assets.totalCount);
-                console.log('Actual number of loaded images: ' + assets.assets.length);
-                this.setState({
-                    cases: assets,
-                    thumbnail: assets.assets[0],
-                });
             })
             .catch(error => {
                 console.log('Could not get assets from folder.', error);

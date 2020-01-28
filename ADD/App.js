@@ -28,7 +28,7 @@ const RootStack = createStackNavigator(
             headerTitleStyle: {
                 fontWeight: 'bold',
                 //fontFamily: "sans-serif-thin"
-                width : Dimensions.get('window').width,
+                width : Dimensions.get('window').width*4/5,
                 textAlign: 'center'
             },
             title: "Image Collection Tool",

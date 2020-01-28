@@ -10,7 +10,6 @@ import {
     Alert, AsyncStorage
 } from 'react-native';
 import * as MediaLibrary from "expo-media-library";
-import List from "react-list-select";
 
 class GalleryView extends Component {
 
@@ -21,7 +20,6 @@ class GalleryView extends Component {
             cell: false,
             defaultAnimal: null,
             cases: null,
-            //allCases: this.props.navigation.getParam('allCases'),
         };
     }
 
@@ -39,7 +37,7 @@ class GalleryView extends Component {
         //this.props.navigation.navigate('categoriseView')
     }
 
-    onSavePress() {
+    uploadAll() {
         this.props.navigation.navigate('homeView')
     }
 
@@ -54,10 +52,12 @@ class GalleryView extends Component {
                     rowElems.push(<Text key={key}
                                         style={styles.caseText}>{cases[key].dateSelected + " - " + cases[key].species + " - " + cases[key].diagnosis}</Text>);
                     list.push(
-                        <TouchableOpacity key={key + "Touchable"} onPress={this.openCase.bind(this, key)}>
+                        <TouchableOpacity style={styles.rowTouchable} key={key + "Touchable"} onPress={this.openCase.bind(this, key)}>
                             <View key={rowCount} style={styles.row}>
                                 {rowElems}
                             </View>
+                            <Image style={[styles.uploadIcon]}
+                                   source={cases[key].isUploaded ? require('../assets/img/cloudTick2.png') : require('../assets/img/cloudUp2.png')}/>
                         </TouchableOpacity>
                     );
                     rowCount++;
@@ -102,23 +102,11 @@ class GalleryView extends Component {
                 AsyncStorage.multiGet(keys)
                     .then(results => {
                         results.forEach(item => {
-                            //console.log("\n");
-
                             cases[item[0]] = JSON.parse(item[1]);
-
-                            // console.log("item is : " + item);
-                            // console.log("item[0] is : " + item[0]);
-                            // console.log("item[1] is : "+ item[1]);
-                            // console.log("JSON.parse(item[1]) is  : " + JSON.parse(item[1]));
-                            // console.log("\n");
                         });
-                        // console.log(cases);
-                        // console.log("\n");
-
                         this.setState({
                             cases: cases
                         });
-                        //console.log(this.state.cases);
                     });
             });
     }
@@ -144,15 +132,9 @@ class GalleryView extends Component {
                 console.log('Estimated number of loaded images: ' + assets.totalCount);
                 console.log('Actual number of loaded images: ' + assets.assets.length);
                 let images = {assets: []};
-                assets.assets.forEach(a =>{
-                    //console.log("This case " + c + " is :\n" + JSON.stringify(this.state.cases[c]));
-                    //console.log("\n this asset uri is : " + a.uri);
-                    this.state.cases[c].urls.forEach(u => {
-                        // console.log("\n");
-                        // console.log(u.name);
-                        // console.log(a.filename);
-                        if (u.name === a.filename){
-                            // console.log("We got here: \n" + a + "\n" + a.uri);
+                assets.assets.forEach(a => {
+                    this.state.cases[c].uris.forEach(u => {
+                        if (u.name === a.filename) {
                             images.assets.push(a);
                         }
                     })
@@ -169,12 +151,27 @@ class GalleryView extends Component {
             });
     }
 
-    prepareToCategorise(c){
-        this.props.navigation.navigate('categoriseView',{
-            images : this.state.images,
+    prepareToCategorise(c) {
+        this.props.navigation.navigate('categoriseView', {
+            images: this.state.images,
             case: this.state.cases[c],
             caseName: c
         })
+    }
+
+    getUploadButton() {
+        if (this.props.navigation.getParam("home")) {
+            let button = [];
+            button.push(
+                <TouchableOpacity key="uploadall" onPress={this.uploadAll.bind(this)}>
+                    <View key="uploadallview" style={[styles.button]}>
+                        <Text key="uploadalltext" style={styles.buttonText}>Upload All</Text>
+                    </View>
+                </TouchableOpacity>);
+            return button;
+        } else {
+            return [];
+        }
     }
 
     render() {
@@ -185,12 +182,7 @@ class GalleryView extends Component {
                     {this.buildGallery(this.state.cases)}
                 </ScrollView>
                 <View style={styles.saveContainer}>
-                    {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
-                    <TouchableOpacity onPress={this.onSavePress.bind(this)}>
-                        <View style={[styles.button]}>
-                            <Text style={styles.buttonText}>Save</Text>
-                        </View>
-                    </TouchableOpacity>
+                    {this.getUploadButton()}
                 </View>
             </View>
         );
@@ -241,10 +233,20 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 20,
     },
+    rowTouchable:{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
     row: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
+    },
+    uploadIcon:{
+        width: Dimensions.get('window').width/10,
+        height: Dimensions.get('window').width/10,
+        margin: Dimensions.get('window').width/40,
     },
     thumbnail: {
         width: Dimensions.get('window').width / 5,

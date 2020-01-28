@@ -141,7 +141,8 @@ class CategoriseView extends Component {
         diagnosis: null,
         defaultAnimal: null,
         images: null,
-        urls: [],
+        uris: [],
+        isUploaded: false,
         date: new Date(),
         mode: 'date',
         show: false,
@@ -150,11 +151,11 @@ class CategoriseView extends Component {
 
     onUploadPress() {
         console.log("WE HERE BOI");
-        console.log(this.state.urls[0].url);
+        console.log(this.state.uris[0].uri);
         const body = new FormData();
-        this.state.urls.forEach(img => {
+        this.state.uris.forEach(img => {
             body.append("images[]", {
-                uri: img.url,
+                uri: img.uri,
                 name: img.name,
                 type: "image/jpg"
             });
@@ -188,10 +189,14 @@ class CategoriseView extends Component {
                         .then(text => {
                             console.log(text);
                         });
-                    this.props.navigation.navigate('homeView');
+                    this.setState({
+                        isUploaded: true,
+                    });
                     new Alert.alert(
                         'Uploaded',
-                        'Your case information has been uploaded.\nImages however, do not upload int his version [BETA].'
+                        'Your case information has been uploaded.',
+                        [{text: 'OK', onPress: () => this.onSavePress()},],
+                        {cancelable: false},
                     );
                 } else {
                     console.log("Request to server unsuccessful.");
@@ -200,10 +205,11 @@ class CategoriseView extends Component {
                         .then(text => {
                             console.log(text);
                         });
-                    this.props.navigation.navigate('homeView');
                     new Alert.alert(
                         'Upload Failed',
-                        'Your case information failed to upload.'
+                        'Your case information failed to upload.',
+                        [{text: 'OK', onPress: () => this.onSavePress()},],
+                        {cancelable: false},
                     );
                 }
             })
@@ -234,7 +240,8 @@ class CategoriseView extends Component {
                     breed: this.state.breed,
                     sex: this.state.sex,
                     diagnosis: this.state.diagnosis,
-                    urls: this.state.urls
+                    uris: this.state.uris,
+                    isUploaded: this.state.isUploaded
                 }), errors => {
                     if (errors !== null && error !== undefined) {
                         console.log('Key specific error(s) occurred when saving a classification: ' + errors)
@@ -269,70 +276,11 @@ class CategoriseView extends Component {
             })
     }
 
-    // saveImages() {
-    //     MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-    //         .then(album => {
-    //             if (this.state.images !== null) {
-    //                 if (album === null) {
-    //                     MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', this.state.images.assets[0], false)
-    //                         .then(album => {
-    //                             if (this.state.images.assets.length > 1) {
-    //                                 MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets.slice(1, this.state.images.assets.length), album, false)
-    //                                     .then(() => {
-    //                                         console.log('Cases saved to camera roll.');
-    //                                         this.props.navigation.navigate('homeView');
-    //                                         new Alert.alert(
-    //                                             'Saved',
-    //                                             'Your case has been saved.'
-    //                                         );
-    //                                     })
-    //                                     .catch(error => {
-    //                                         console.log('Error saving case to camera roll.', error);
-    //                                         new Alert.alert(
-    //                                             'Error',
-    //                                             'Your case could not be saved.\n' + error
-    //                                         )
-    //                                     });
-    //                             } else {
-    //                                 // TODO Find nicer fix. When taking only 1 picture for the very first case, it will not execute all of the .then.
-    //                                 console.log('Cases saved to camera roll.');
-    //                                 this.props.navigation.navigate('homeView');
-    //                                 new Alert.alert(
-    //                                     'Saved',
-    //                                     'Your case has been saved.'
-    //                                 );
-    //                             }
-    //                         })
-    //                 } else {
-    //                     MediaLibrary.addAssetsToAlbumAsync(this.state.images.assets, album, false)
-    //                         .then(() => {
-    //                             console.log('Cases saved to camera roll.');
-    //                             this.props.navigation.navigate('homeView');
-    //                             new Alert.alert(
-    //                                 'Saved',
-    //                                 'Your case has been saved.'
-    //                             );
-    //                         })
-    //                         .catch(error => {
-    //                             console.log('Error saving case to camera roll.', error);
-    //                             new Alert.alert(
-    //                                 'Error',
-    //                                 'Your case could not be saved.\n' + error
-    //                             )
-    //                         });
-    //                 }
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.log('No folder for Animal Disease Diagnosis to save case.', error);
-    //         })
-    // }
-
     constructor(props) {
         super(props);
         this.state.images = this.props.navigation.getParam('images');
         this.state.images.assets.forEach(img => {
-            this.state.urls.push({url: img.uri, name: img.filename});
+            this.state.uris.push({uri: img.uri, name: img.filename});
         });
         if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
@@ -404,12 +352,6 @@ class CategoriseView extends Component {
                                 }
                             </TouchableOpacity>
                         </View>
-                        {/*<View style={styles.textEntryContainer}>*/}
-                        {/*    <Text style={styles.nameText}>Location:</Text>*/}
-                        {/*    <TextInput onChangeText={text => {*/}
-                        {/*        this.setState({location: text})*/}
-                        {/*    }} style={styles.nameBox}/>*/}
-                        {/*</View>*/}
                         <Text style={styles.optionTitle}>Location:</Text>
                         <RNPickerSelect
                             onValueChange={value => {
