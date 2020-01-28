@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Dimensions, AsyncStorage, Alert
+    Dimensions, Alert
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
@@ -41,7 +41,6 @@ class CameraView extends Component {
     onSnapButtonCamera() {
         if (this.camera) {
             const options = {skipProcessing: true, base64: true, exif: true};
-            console.log("waiting...");
             this.camera.takePictureAsync(options)
                 .then(photo => {
                     photo.exif.Orientation = 1;
@@ -52,8 +51,6 @@ class CameraView extends Component {
                     MediaLibrary.createAssetAsync(uri)
                         .then(asset => {
                             this.saveImage(asset);
-                            console.log('Photo taken.');
-                            console.log(photo.uri);
                         })
                         .catch(error => {
                             console.log('Error creating asset of captured image.', error);
@@ -72,7 +69,6 @@ class CameraView extends Component {
                     if (album === null) {
                         MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
                             .then(album => {
-                                console.log('Image saved to camera roll.');
                                 this.addImageToState(album, asset.filename);
                             })
                             .catch(error => {
@@ -85,7 +81,6 @@ class CameraView extends Component {
                     } else {
                         MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
                             .then(() => {
-                                console.log('Image saved to camera roll.');
                                 this.addImageToState(album, asset.filename);
                             })
                             .catch(error => {
@@ -106,10 +101,9 @@ class CameraView extends Component {
     addImageToState(album, name) {
         MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
             .then(assets => {
-                for (const a of assets.assets){
+                for (const a of assets.assets) {
                     if (a.filename === name) {
                         this.case.assets.push(a);
-                        console.log("Got it from the new folder");
                         break;
                     }
                 }
@@ -125,7 +119,7 @@ class CameraView extends Component {
                 <View style={styles.cameraContainer}>
                     <View ref={ref => {
                         this.cameraView = ref;
-                    }} style={styles.cameraContainerBorder}>
+                    }}>
                         <Camera ref={ref => {
                             this.camera = ref;
                         }} style={styles.camera} type={Camera.Constants.Type.back} props={{ratio: "4:3"}}/>
@@ -166,10 +160,6 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
         flex: 1,
         overflow: "hidden",
-    },
-    cameraContainerBorder: {
-        //borderWidth: 1,
-        //borderColor: '#808080',
     },
     camera: {
         width: Dimensions.get('window').width,

@@ -78,17 +78,17 @@ class HomeView extends Component {
 
     onHelpPress() {
         // FOR CLEARING STORAGE
-        AsyncStorage.clear(error => {
-                if (error !== null && error !== undefined) {
-                    console.log('Key specific error(s) occurred when saving a classification: ' + error)
-                }
-            })
-            .then(() => {
-                console.log("Storage cleared.");
-            })
-            .catch(error => {
-                console.log('Error clearing storage: ' + error)
-            });
+        // AsyncStorage.clear(error => {
+        //         if (error !== null && error !== undefined) {
+        //             console.log('Key specific error(s) occurred when saving a classification: ' + error)
+        //         }
+        //     })
+        //     .then(() => {
+        //         console.log("Storage cleared.");
+        //     })
+        //     .catch(error => {
+        //         console.log('Error clearing storage: ' + error)
+        //     });
 
         // FOR PRINTING STORAGE
         // AsyncStorage.getAllKeys()

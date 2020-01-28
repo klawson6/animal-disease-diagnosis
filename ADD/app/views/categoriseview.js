@@ -150,8 +150,6 @@ class CategoriseView extends Component {
     };
 
     onUploadPress() {
-        console.log("WE HERE BOI");
-        console.log(this.state.uris[0].uri);
         const body = new FormData();
         this.state.uris.forEach(img => {
             body.append("images[]", {
@@ -183,12 +181,12 @@ class CategoriseView extends Component {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Request to server successful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
+                    // console.log("Request to server successful.");
+                    // console.log(response.status);
+                    // response.text()
+                    //     .then(text => {
+                    //         console.log(text);
+                    //     });
                     this.setState({
                         isUploaded: true,
                     });
@@ -199,12 +197,12 @@ class CategoriseView extends Component {
                         {cancelable: false},
                     );
                 } else {
-                    console.log("Request to server unsuccessful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
+                    // console.log("Request to server unsuccessful.");
+                    // console.log(response.status);
+                    // response.text()
+                    //     .then(text => {
+                    //         console.log(text);
+                    //     });
                     new Alert.alert(
                         'Upload Failed',
                         'Your case information failed to upload.',
@@ -248,11 +246,9 @@ class CategoriseView extends Component {
                     }
                 })
                     .then(() => {
-                        console.log("Classification saved");
                         if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
                             AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
                                 .then(() => {
-                                    console.log("numCases incremented");
                                     this.props.navigation.navigate('homeView');
                                     new Alert.alert(
                                         'Saved',
@@ -288,9 +284,9 @@ class CategoriseView extends Component {
                 this.state.diseases = this.diseases[this.state.species];
             }
         }
-        AsyncStorage.getItem("numCases")
-            .then(value => console.log(value))
-            .catch()
+        AsyncStorage.getItem("numCases");
+            // .then(value => console.log(value))
+            // .catch()
     }
 
     showDatePicker() {
@@ -322,13 +318,11 @@ class CategoriseView extends Component {
 
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Categorise the Image(s)</Text>
-                {/*<View style={styles.imagesContainer}>*/}
+                <Text style={styles.title}>Annotate the Image(s)</Text>
                 <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0}
                         containerStyle={styles.swiperContainer}>
                     {this.buildPreview(this.state.images)}
                 </Swiper>
-                {/*</View>*/}
                 <View style={styles.topContainer}>
                     <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
                         <View style={styles.textEntryContainer}>
@@ -554,15 +548,6 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width * 3 / 5,
         height: Dimensions.get('window').width * 4 / 5,
         overflow: 'hidden',
-        // margin: Dimensions.get('window').width / 20,
-        // marginBottom: Dimensions.get('window').width / 40,
-        // borderRadius: 5,
-        // borderColor: '#808080',
-        // backgroundColor: '#f9f9f9',
-        // borderWidth: 1,
-        // flexDirection: 'column',
-        // justifyContent: 'center',
-        // alignItems: 'center',
     },
     image: {
         width: Dimensions.get('window').width * 3 / 5,
