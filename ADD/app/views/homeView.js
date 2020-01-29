@@ -9,7 +9,9 @@ import {
     Dimensions,
     AsyncStorage
 } from 'react-native';
+import { ScreenOrientation } from 'expo';
 import * as Permissions from "expo-permissions";
+import * as MediaLibrary from 'expo-media-library';
 
 class HomeView extends Component {
 
@@ -20,6 +22,11 @@ class HomeView extends Component {
 
     componentDidMount() {
         this.askForPermissions();
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
+            .then()
+            .catch(error => {
+                console.log('Error occurred when locking orientation: ' + error)
+            });
         AsyncStorage.getAllKeys()
             .then(keys => {
                 if (!keys.includes('numCases')) {
@@ -78,17 +85,30 @@ class HomeView extends Component {
 
     onHelpPress() {
         // FOR CLEARING STORAGE
-        // AsyncStorage.clear(error => {
-        //         if (error !== null && error !== undefined) {
-        //             console.log('Key specific error(s) occurred when saving a classification: ' + error)
-        //         }
-        //     })
-        //     .then(() => {
-        //         console.log("Storage cleared.");
-        //     })
-        //     .catch(error => {
-        //         console.log('Error clearing storage: ' + error)
-        //     });
+        AsyncStorage.clear(error => {
+            if (error !== null && error !== undefined) {
+                console.log('Key specific error(s) occurred when saving a classification: ' + error)
+            }
+        })
+            .then(() => {
+                console.log("Storage cleared.");
+            })
+            .catch(error => {
+                console.log('Error clearing storage: ' + error)
+            });
+        MediaLibrary.getAlbumAsync("Animal Disease Diagnosis")
+            .then(album => {
+                MediaLibrary.deleteAlbumsAsync([album], true)
+                    .then(success => {
+                        console.log("Images deleted: " + success);
+                    })
+                    .catch(error => {
+                        console.log("Error deleting images " + error);
+                    })
+            })
+            .catch(error => {
+                console.log("Error getting album to delete " + error);
+            })
 
         // FOR PRINTING STORAGE
         // AsyncStorage.getAllKeys()

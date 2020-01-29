@@ -20,6 +20,8 @@ class GalleryView extends Component {
             cell: false,
             defaultAnimal: null,
             cases: null,
+            loading: false,
+            loadingText: ""
         };
     }
 
@@ -36,6 +38,10 @@ class GalleryView extends Component {
     }
 
     uploadAll() {
+        this.setState({
+            loading: true,
+            loadingText: "Uploading cases..."
+        });
         let cases = this.state.cases;
         let fetches = [];
         for (let key in cases) {
@@ -46,6 +52,9 @@ class GalleryView extends Component {
         Promise.all(fetches)
             .then(responses => {
                 if (responses.length === 0) {
+                    this.setState({
+                        loading: false
+                    });
                     new Alert.alert('Nothing to Upload', 'There are no cases to be uploaded.');
                     return;
                 }
@@ -57,7 +66,8 @@ class GalleryView extends Component {
                         errors = true;
                 });
                 this.setState({
-                    cases: cases
+                    cases: cases,
+                    loading: false
                 });
                 errors ?
                     new Alert.alert(
@@ -178,6 +188,10 @@ class GalleryView extends Component {
     }
 
     loadAllCases() {
+        this.setState({
+            loading: true,
+            loadingText: "Loading cases...",
+        });
         let cases = {};
         AsyncStorage.getAllKeys()
             .then(keys => {
@@ -187,29 +201,39 @@ class GalleryView extends Component {
                             cases[item[0]] = JSON.parse(item[1]);
                         });
                         this.setState({
-                            cases: cases
+                            cases: cases,
+                            loading: false,
                         });
                     });
             });
     }
 
     loadAlbum(c) {
+        this.setState({
+            loading: true,
+            loadingText: "Loading..."
+        });
         MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
             .then(album => {
-                album !== null ? this.loadImages(album, c) : new Alert.alert('Empty', 'No cases have been made yet');
+                if (album !== null)
+                    this.loadImages(album, c);
+                else {
+                    new Alert.alert('Empty', 'No cases have been made yet');
+                    this.setState({loading: false});
+                }
             })
             .catch(error => {
+                this.setState({
+                    loading: false,
+                });
                 console.log('No folder for Animal Disease Diagnosis.', error);
-                return null;
             })
     }
 
     loadImages(album, c) {
-        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
+        console.log("Checkpoint 3.1.1");
+        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"], first: 2147483647})
             .then(assets => {
-                while (assets.hasNextPage) {
-                    // TODO stop user interaction while it loads? AND EVERY OTHER LOAD
-                }
                 let images = {assets: []};
                 assets.assets.forEach(a => {
                     this.state.cases[c].uris.forEach(u => {
@@ -220,14 +244,18 @@ class GalleryView extends Component {
                 });
                 this.setState({
                     images: images,
+                    loading: false,
                 });
                 this.prepareToCategorise(c);
             })
             .catch(error => {
+                this.setState({
+                    loading: false,
+                });
                 console.log('Could not get assets from folder.', error);
-                return null;
             });
     }
+
 
     prepareToCategorise(c) {
         this.props.navigation.navigate('categoriseView', {
@@ -255,12 +283,22 @@ class GalleryView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>{this.props.navigation.getParam('home') ? "Cases" : "Current Case"}</Text>
-                <ScrollView style={styles.topContainer}>
-                    {this.buildGallery(this.state.cases)}
-                </ScrollView>
-                <View style={styles.saveContainer}>
-                    {this.getUploadButton()}
+                {this.state.loading ?
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                    </View>
+                    : null}
+                <View pointerEvents={this.state.loading ? 'none' : 'auto'}
+                      style={[styles.gContainer, this.state.loading ? {opacity: 0.4} : {}]}>
+                    <Text
+                        style={styles.title}>{this.props.navigation.getParam('home') ? "Cases" : "Current Case"}</Text>
+                    <ScrollView style={styles.topContainer}>
+                        {this.buildGallery(this.state.cases)}
+                    </ScrollView>
+                    <View style={styles.saveContainer}>
+                        {this.getUploadButton()}
+                    </View>
                 </View>
             </View>
         );
@@ -272,6 +310,39 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ffffff',
+    },
+    gContainer: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        zIndex: 0
+    },
+    loadingScreen: {
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 1,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
     title: {
         color: '#73c4c4',
@@ -319,7 +390,7 @@ const styles = StyleSheet.create({
     row: {
         flex: 1,
         flexDirection: 'row',
-        //justifyContent: 'space-evenly',
+        justifyContent: 'space-evenly',
     },
     uploadIcon: {
         width: Dimensions.get('window').width / 10,

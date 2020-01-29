@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {
     Platform,
     Image,
@@ -6,7 +6,8 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Dimensions, Alert
+    Dimensions, Alert,
+    Animated
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
@@ -22,7 +23,9 @@ class CameraView extends Component {
     state = {
         thumbnail: require('../assets/img/white.png'),
         white: require('../assets/img/white.png'),
+        loading: require('../assets/img/loading.gif'),
         cases: null,
+        capturing: false
     };
 
     onContinueButton() {
@@ -40,6 +43,9 @@ class CameraView extends Component {
 
     onSnapButtonCamera() {
         if (this.camera) {
+            this.setState({
+                capturing: true,
+            });
             const options = {skipProcessing: true, base64: true, exif: true};
             this.camera.takePictureAsync(options)
                 .then(photo => {
@@ -72,6 +78,9 @@ class CameraView extends Component {
                                 this.addImageToState(album, asset.filename);
                             })
                             .catch(error => {
+                                this.setState({
+                                    capturing: false,
+                                });
                                 console.log('Error saving image to camera roll.', error);
                                 new Alert.alert(
                                     'Error',
@@ -84,6 +93,9 @@ class CameraView extends Component {
                                 this.addImageToState(album, asset.filename);
                             })
                             .catch(error => {
+                                this.setState({
+                                    capturing: false,
+                                });
                                 console.log('Error saving image to camera roll.', error);
                                 new Alert.alert(
                                     'Error',
@@ -94,6 +106,9 @@ class CameraView extends Component {
                 }
             })
             .catch(error => {
+                this.setState({
+                    capturing: false,
+                });
                 console.log('No folder for Animal Disease Diagnosis to save case.', error);
             })
     }
@@ -107,8 +122,14 @@ class CameraView extends Component {
                         break;
                     }
                 }
+                this.setState({
+                    capturing: false,
+                });
             })
             .catch(error => {
+                this.setState({
+                    capturing: false,
+                });
                 console.log('Could not get assets from folder.', error);
             });
     }
@@ -116,6 +137,9 @@ class CameraView extends Component {
     render() {
         return (
             <View style={styles.container}>
+                {this.state.capturing ?
+                    <FadeInView style={styles.flash}/>
+                    : null}
                 <View style={styles.cameraContainer}>
                     <View ref={ref => {
                         this.cameraView = ref;
@@ -128,13 +152,14 @@ class CameraView extends Component {
                 <View style={styles.navContainer}>
                     <Text style={styles.buttonTitle}>Capture Images of
                         the {this.props.navigation.getParam('type')}</Text>
-                    <View style={styles.imgContainer}>
+                    <View pointerEvents={this.state.capturing ? 'none' : 'auto'} style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
-                                   source={this.state.thumbnail}/>
+                             source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
+                                // source={this.state.capturing ? require("../assets/img/loading.gif") : require("../assets/img/camera.png")}/>
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
@@ -155,11 +180,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         backgroundColor: "#ffffff",
+        zIndex: 0
     },
     cameraContainer: {
         width: Dimensions.get('window').width,
         flex: 1,
         overflow: "hidden",
+        zIndex: 0
+    },
+    flash: {
+        zIndex: 1,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').width * 4 / 3,
+        backgroundColor: "#ffffff",
+        position: "absolute",
     },
     camera: {
         width: Dimensions.get('window').width,
@@ -169,6 +203,7 @@ const styles = StyleSheet.create({
     navContainer: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height / 4,
+        zIndex: 0,
     },
     buttonTitle: {
         color: '#73c4c4',
@@ -189,6 +224,7 @@ const styles = StyleSheet.create({
     image: {
         width: 65,
         height: 65,
+        overlayColor: 'white',
     },
     settingsTouchable: {
         transform: [{
@@ -206,3 +242,48 @@ const styles = StyleSheet.create({
 });
 
 export default CameraView;
+
+const FadeInView = (props) => {
+    const [fadeAnim] = useState(new Animated.Value(0)); // Initial value for opacity: 0
+    //const [fadeAnim2] = useState(new Animated.Value(0)); // Initial value for opacity: 0
+
+    React.useEffect(() => {
+        Animated.sequence([
+            Animated.timing(
+                fadeAnim,
+                {
+                    toValue: 1,
+                    duration: 100,
+                }
+            ),
+            Animated.timing(
+               fadeAnim,
+                {
+                    toValue: 0,
+                    duration: 400,
+                }
+            )
+
+        ]).start();
+    }, []);
+    // React.useEffect(() => {
+    //     Animated.timing(
+    //         fadeAnim,
+    //         {
+    //             toValue: 1,
+    //             duration: 5000,
+    //         }
+    //     ).start();
+    // }, []);
+
+    return (
+        <Animated.View                 // Special animatable View
+            style={{
+                ...props.style,
+                opacity: fadeAnim,         // Bind opacity to animated value
+            }}
+        >
+            {props.children}
+        </Animated.View>
+    );
+};

@@ -21,6 +21,7 @@ class CategoriseView extends Component {
 
     diseases = {
         Cattle: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
             {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
             {label: 'Blackleg', value: 'Blackleg', color: '#000000'},
@@ -32,13 +33,14 @@ class CategoriseView extends Component {
             {label: 'Pasteurellosis', value: 'Pasteurellosis', color: '#000000'},
             {label: 'PGE / GIT Parasite', value: 'PGE / GIT Parasite', color: '#000000'},
             {label: 'Lumpy Skin Disease', value: 'Lumpy Skin Disease', color: '#000000'},
-            {label: 'Lungworm', value: 'lungworm', color: '#000000'},
-            {label: 'Rabies', value: 'rabies', color: '#000000'},
-            {label: 'Trypanosomiasis', value: 'trypanosomiasis', color: '#000000'},
-            {label: 'Tuberculosis', value: 'tuberculosis', color: '#000000'},
-            {label: 'Other', value: 'other', color: '#000000'},
+            {label: 'Lungworm', value: 'Lungworm', color: '#000000'},
+            {label: 'Rabies', value: 'Rabies', color: '#000000'},
+            {label: 'Trypanosomiasis', value: 'Trypanosomiasis', color: '#000000'},
+            {label: 'Tuberculosis', value: 'Tuberculosis', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
         ],
         Horse: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'African Horse Sickness (AHS)', value: 'African Horse Sickness (AHS)', color: '#000000'},
             {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
             {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
@@ -58,9 +60,10 @@ class CategoriseView extends Component {
             {label: 'Strangles', value: 'Strangles', color: '#000000'},
             {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
             {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
-            {label: 'Other', value: 'other', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
         ],
         Donkey: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
             {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
             {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
@@ -69,7 +72,7 @@ class CategoriseView extends Component {
             {label: 'Habronemiasis', value: 'Habronemiasis', color: '#000000'},
             {label: 'Heat Stress', value: 'Heat Stress', color: '#000000'},
             {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Rabies', value: 'rabies', color: '#000000'},
+            {label: 'Rabies', value: 'Rabies', color: '#000000'},
             {label: 'Respiratory (Lower Bacterical)', value: 'Respiratory (Lower Bacterical)', color: '#000000'},
             {label: 'Respiratory (Upper Bacterical)', value: 'Respiratory (Upper Bacterical)', color: '#000000'},
             {label: 'Respiratory (Asthma / Lungworm)', value: 'Respiratory (Asthma / Lungworm)', color: '#000000'},
@@ -77,9 +80,10 @@ class CategoriseView extends Component {
             {label: 'Strangles', value: 'Strangles', color: '#000000'},
             {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
             {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
-            {label: 'Other', value: 'other', color: '#000000'},
+            {label: 'Other', value: 'Other', color: '#000000'},
         ],
         Sheep: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'Coenurosis', value: 'Coenurosis', color: '#000000'},
             {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
             {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
@@ -96,6 +100,7 @@ class CategoriseView extends Component {
             {label: 'Other', value: 'Other', color: '#000000'},
         ],
         Camel: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
             {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
             {label: 'Camel Calf Diarrhoea', value: 'Camel Calf Diarrhoea', color: '#000000'},
@@ -114,6 +119,7 @@ class CategoriseView extends Component {
             {label: 'Other', value: 'Other', color: '#000000'},
         ],
         Goat: [
+            {label: 'Unknown', value: 'Unknown', color: '#000000'},
             {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
             {label: 'CBPP / CCPP', value: 'CBPP / CCPP', color: '#000000'},
             {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
@@ -146,10 +152,16 @@ class CategoriseView extends Component {
         date: new Date(),
         mode: 'date',
         show: false,
-        diseases: []
+        diseases: [],
+        loading: false,
+        loadingText: ""
     };
 
     onUploadPress() {
+        this.setState({
+            loading: true,
+            loadingText: "Uploading..."
+        });
         const body = new FormData();
         this.state.uris.forEach(img => {
             body.append("images[]", {
@@ -169,7 +181,6 @@ class CategoriseView extends Component {
             diagnosis: this.state.diagnosis
         };
         body.append("case", JSON.stringify(curCase));
-
         fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
             {
                 method: 'POST',
@@ -181,14 +192,15 @@ class CategoriseView extends Component {
             })
             .then(response => {
                 if (response.ok) {
-                    // console.log("Request to server successful.");
-                    // console.log(response.status);
-                    // response.text()
-                    //     .then(text => {
-                    //         console.log(text);
-                    //     });
+                    console.log("Request to server successful.");
+                    console.log(response.status);
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
                     this.setState({
                         isUploaded: true,
+                        loading: false,
                     });
                     new Alert.alert(
                         'Uploaded',
@@ -203,6 +215,9 @@ class CategoriseView extends Component {
                     //     .then(text => {
                     //         console.log(text);
                     //     });
+                    this.setState({
+                        loading: false,
+                    });
                     new Alert.alert(
                         'Upload Failed',
                         'Your case information failed to upload.',
@@ -213,15 +228,21 @@ class CategoriseView extends Component {
             })
             .catch(error => {
                 console.log("Error making request : " + error);
+                this.setState({
+                    loading: true,
+                });
             });
     }
-
     //    ________
     //    |  o  o |
     //    | |___| |
     //    |_______|
     //     _|  _|
     onSavePress() {
+        this.setState({
+            loading: true,
+            loadingText: "Saving..."
+        });
         let caseName = this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined
             ? null : this.props.navigation.getParam('caseName');
 
@@ -240,15 +261,14 @@ class CategoriseView extends Component {
                     diagnosis: this.state.diagnosis,
                     uris: this.state.uris,
                     isUploaded: this.state.isUploaded
-                }), errors => {
-                    if (errors !== null && error !== undefined) {
-                        console.log('Key specific error(s) occurred when saving a classification: ' + errors)
-                    }
-                })
+                }))
                     .then(() => {
                         if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
                             AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
                                 .then(() => {
+                                    this.setState({
+                                        loading: false,
+                                    });
                                     this.props.navigation.navigate('homeView');
                                     new Alert.alert(
                                         'Saved',
@@ -256,9 +276,15 @@ class CategoriseView extends Component {
                                     );
                                 })
                                 .catch(error => {
+                                    this.setState({
+                                        loading: false,
+                                    });
                                     console.log('Error occurred when incrementing numCases: ' + error)
                                 });
                         } else {
+                            this.setState({
+                                loading: false,
+                            });
                             this.props.navigation.navigate('homeView');
                             new Alert.alert(
                                 'Saved',
@@ -267,6 +293,9 @@ class CategoriseView extends Component {
                         }
                     })
                     .catch(error => {
+                        this.setState({
+                            loading: false,
+                        });
                         console.log('Error occurred when saving classification: ' + error)
                     });
             })
@@ -285,8 +314,8 @@ class CategoriseView extends Component {
             }
         }
         AsyncStorage.getItem("numCases");
-            // .then(value => console.log(value))
-            // .catch()
+        // .then(value => console.log(value))
+        // .catch()
     }
 
     showDatePicker() {
@@ -315,201 +344,209 @@ class CategoriseView extends Component {
 
     render() {
         const {show, date, mode} = this.state;
-
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Annotate the Image(s)</Text>
-                <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0}
-                        containerStyle={styles.swiperContainer}>
-                    {this.buildPreview(this.state.images)}
-                </Swiper>
-                <View style={styles.topContainer}>
-                    <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
-                        <View style={styles.textEntryContainer}>
-                            <Text style={styles.nameText}>Full Name:</Text>
-                            <TextInput
-                                onChangeText={text => {
-                                    this.setState({name: text})
+                {this.state.loading ?
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                    </View>
+                    : null}
+                <View pointerEvents={this.state.loading ? 'none' : 'auto'}
+                      style={[styles.caseContainer, this.state.loading ? {opacity: 0.4} : {}]}>
+                    <Text style={styles.title}>Annotate the Image(s)</Text>
+                    <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0}
+                            containerStyle={styles.swiperContainer}>
+                        {this.buildPreview(this.state.images)}
+                    </Swiper>
+                    <View style={styles.topContainer}>
+                        <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
+                            <View style={styles.textEntryContainer}>
+                                <Text style={styles.nameText}>Full Name:</Text>
+                                <TextInput
+                                    onChangeText={text => {
+                                        this.setState({name: text})
+                                    }}
+                                    style={styles.nameBox}
+                                    defaultValue={this.state.name}/>
+                            </View>
+                            <View style={styles.textEntryContainer}>
+                                <Text style={styles.dateText}>Date of Observation:</Text>
+                                <TouchableOpacity style={styles.datePicker} onPress={this.showDatePicker.bind(this)}>
+                                    <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
+                                    {show && <RNDateTimePicker value={date}
+                                                               mode={mode}
+                                                               is24Hour={true}
+                                                               display="default"
+                                                               onChange={this.setDate.bind(this)}/>
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                            <Text style={styles.optionTitle}>Location:</Text>
+                            <RNPickerSelect
+                                onValueChange={value => {
+                                    this.setState({location: value})
                                 }}
-                                style={styles.nameBox}
-                                defaultValue={this.state.name}/>
-                        </View>
-                        <View style={styles.textEntryContainer}>
-                            <Text style={styles.dateText}>Date of Observation:</Text>
-                            <TouchableOpacity style={styles.datePicker} onPress={this.showDatePicker.bind(this)}>
-                                <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
-                                {show && <RNDateTimePicker value={date}
-                                                           mode={mode}
-                                                           is24Hour={true}
-                                                           display="default"
-                                                           onChange={this.setDate.bind(this)}/>
-                                }
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.optionTitle}>Location:</Text>
-                        <RNPickerSelect
-                            onValueChange={value => {
-                                this.setState({location: value})
-                            }}
-                            value={this.state.location}
-                            items={[
-                                {label: 'Addis Ababa', value: 'Addis Ababa'},
-                                {label: 'Afar Region', value: 'Afar Region'},
-                                {label: 'Amhara Region', value: 'Amhara Region'},
-                                {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
-                                {label: 'Dire Dawa', value: 'Dire Dawa'},
-                                {label: 'Gamebela Region', value: 'Gamebela Region'},
-                                {label: 'Harari Region', value: 'Harari Region'},
-                                {label: 'Oromia Region', value: 'Oromia Region'},
-                                {label: 'Somali Region', value: 'Somali Region'},
-                                {
-                                    label: 'Southern Nations, Nationalities and Peoples\' Region',
-                                    value: 'Southern Nations, Nationalities and Peoples\' Region'
-                                },
-                                {label: 'Tigray Region', value: 'Tigray Region'},
-                            ]}
-                            useNativeAndroidPickerStyle={false}
-                            textInputProps={{
-                                fontFamily: "sans-serif-light",
-                                fontSize: 20,
-                            }}
-                        />
-                        <Text style={styles.optionTitle}>Species:</Text>
-                        <RNPickerSelect
-                            onValueChange={value => {
-                                this.setState({
-                                    species: value,
-                                    diagnosis: null,
-                                    diseases: this.diseases[value]
-                                })
-                            }}
-                            value={this.state.species}
-                            items={[
-                                {label: 'Cattle', value: 'Cattle'},
-                                {label: 'Goat', value: 'Goat'},
-                                {label: 'Sheep', value: 'Sheep'},
-                                {label: 'Camel', value: 'Camel'},
-                                {label: 'Horse', value: 'Horse'},
-                                {label: 'Donkey', value: 'Donkey'},
-                            ]}
-                            useNativeAndroidPickerStyle={false}
-                            textInputProps={{
-                                fontFamily: "sans-serif-light",
-                                fontSize: 20,
-                            }}
-                        />
-                        <Text style={styles.optionTitle}>Age of Animal:</Text>
-                        <CheckBox
-                            title='0 - 6 Months'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.age === 1}
-                            onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='7 - 12 months'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.age === 2}
-                            onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='13 - 24 Months'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.age === 3}
-                            onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
+                                value={this.state.location}
+                                items={[
+                                    {label: 'Addis Ababa', value: 'Addis Ababa'},
+                                    {label: 'Afar Region', value: 'Afar Region'},
+                                    {label: 'Amhara Region', value: 'Amhara Region'},
+                                    {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
+                                    {label: 'Dire Dawa', value: 'Dire Dawa'},
+                                    {label: 'Gamebela Region', value: 'Gamebela Region'},
+                                    {label: 'Harari Region', value: 'Harari Region'},
+                                    {label: 'Oromia Region', value: 'Oromia Region'},
+                                    {label: 'Somali Region', value: 'Somali Region'},
+                                    {
+                                        label: 'Southern Nations, Nationalities and Peoples\' Region',
+                                        value: 'Southern Nations, Nationalities and Peoples\' Region'
+                                    },
+                                    {label: 'Tigray Region', value: 'Tigray Region'},
+                                ]}
+                                useNativeAndroidPickerStyle={false}
+                                textInputProps={{
+                                    fontFamily: "Avenir-Light'",
+                                    fontSize: 20,
+                                }}
+                            />
+                            <Text style={styles.optionTitle}>Species:</Text>
+                            <RNPickerSelect
+                                onValueChange={value => {
+                                    this.setState({
+                                        species: value,
+                                        diagnosis: null,
+                                        diseases: this.diseases[value]
+                                    })
+                                }}
+                                value={this.state.species}
+                                items={[
+                                    {label: 'Cattle', value: 'Cattle'},
+                                    {label: 'Goat', value: 'Goat'},
+                                    {label: 'Sheep', value: 'Sheep'},
+                                    {label: 'Camel', value: 'Camel'},
+                                    {label: 'Horse', value: 'Horse'},
+                                    {label: 'Donkey', value: 'Donkey'},
+                                ]}
+                                useNativeAndroidPickerStyle={false}
+                                textInputProps={{
+                                    fontFamily: "Avenir-Light'",
+                                    fontSize: 20,
+                                }}
+                            />
+                            <Text style={styles.optionTitle}>Age of Animal:</Text>
+                            <CheckBox
+                                title='0 - 6 Months'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.age === 1}
+                                onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='7 - 12 months'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.age === 2}
+                                onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='13 - 24 Months'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.age === 3}
+                                onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
 
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='Over 24 Months'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.age === 4}
-                            onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <Text style={styles.optionTitle}>Breed of Animal:</Text>
-                        <CheckBox
-                            title='Local'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.breed === 1}
-                            onPress={() => this.setState({breed: this.state.breed === 1 ? 0 : 1})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='Exotic'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.breed === 2}
-                            onPress={() => this.setState({breed: this.state.breed === 2 ? 0 : 2})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='Cross'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.breed === 3}
-                            onPress={() => this.setState({breed: this.state.breed === 3 ? 0 : 3})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <Text style={styles.optionTitle}>Sex of Animal:</Text>
-                        <CheckBox
-                            title='Male'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.sex === 1}
-                            onPress={() => this.setState({sex: this.state.sex === 1 ? 0 : 1})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='Female'
-                            checkedIcon='check-circle'
-                            uncheckedIcon='check-circle'
-                            checked={this.state.sex === 2}
-                            onPress={() => this.setState({sex: this.state.sex === 2 ? 0 : 2})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
-                        <RNPickerSelect
-                            onValueChange={(value) => {
-                                this.setState({diagnosis: value})
-                            }}
-                            value={this.state.diagnosis}
-                            items={this.state.diseases}
-                            useNativeAndroidPickerStyle={false}
-                            textInputProps={{
-                                fontFamily: "sans-serif-light",
-                                fontSize: 20,
-                            }}
-                        />
-                    </ScrollView>
-                </View>
-                <View style={styles.saveContainer}>
-                    {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
-                    <TouchableOpacity onPress={this.onUploadPress.bind(this)}>
-                        <View style={[styles.button]}>
-                            <Text style={styles.buttonText}>Upload Case</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.onSavePress.bind(this)}>
-                        <View style={[styles.button]}>
-                            <Text style={styles.buttonText}>Save</Text>
-                        </View>
-                    </TouchableOpacity>
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='Over 24 Months'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.age === 4}
+                                onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <Text style={styles.optionTitle}>Breed of Animal:</Text>
+                            <CheckBox
+                                title='Local'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.breed === 1}
+                                onPress={() => this.setState({breed: this.state.breed === 1 ? 0 : 1})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='Exotic'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.breed === 2}
+                                onPress={() => this.setState({breed: this.state.breed === 2 ? 0 : 2})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='Cross'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.breed === 3}
+                                onPress={() => this.setState({breed: this.state.breed === 3 ? 0 : 3})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <Text style={styles.optionTitle}>Sex of Animal:</Text>
+                            <CheckBox
+                                title='Male'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.sex === 1}
+                                onPress={() => this.setState({sex: this.state.sex === 1 ? 0 : 1})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <CheckBox
+                                title='Female'
+                                checkedIcon='check-circle'
+                                uncheckedIcon='check-circle'
+                                checked={this.state.sex === 2}
+                                onPress={() => this.setState({sex: this.state.sex === 2 ? 0 : 2})}
+                                textStyle={styles.options}
+                                containerStyle={styles.optionsContainer}
+                            />
+                            <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
+                            <RNPickerSelect
+                                onValueChange={(value) => {
+                                    this.setState({diagnosis: value})
+                                }}
+                                value={this.state.diagnosis}
+                                items={this.state.diseases}
+                                useNativeAndroidPickerStyle={false}
+                                textInputProps={{
+                                    fontFamily: "Avenir-Light'",
+                                    fontSize: 20,
+                                }}
+                            />
+                        </ScrollView>
+                    </View>
+                    <View style={styles.saveContainer}>
+                        {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
+                        <TouchableOpacity onPress={this.onUploadPress.bind(this)}>
+                            <View style={[styles.button]}>
+                                <Text style={styles.buttonText}>Upload Case</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.onSavePress.bind(this)}>
+                            <View style={[styles.button]}>
+                                <Text style={styles.buttonText}>Save</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );
@@ -521,6 +558,39 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ffffff',
+    },
+    caseContainer: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        zIndex: 0,
+    },
+    loadingScreen: {
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 1,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
     title: {
         color: '#73c4c4',
