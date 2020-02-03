@@ -8,7 +8,6 @@ import {
     View,
     ScrollView,
     TextInput,
-    AsyncStorage
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -20,7 +19,6 @@ class SettingsView extends Component {
         cell: false,
         defaultAnimal: null,
     };
-
 
     onSavePress() {
         this.props.navigation.navigate('homeView')

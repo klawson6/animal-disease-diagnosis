@@ -25,7 +25,10 @@ class CameraView extends Component {
         white: require('../assets/img/white.png'),
         loading: require('../assets/img/loading.gif'),
         cases: null,
-        capturing: false
+        capturing: false,
+        type: '',
+        side: "Front",
+        sideImg: require("../assets/img/cow-front2.png")
     };
 
     onContinueButton() {
@@ -122,9 +125,37 @@ class CameraView extends Component {
                         break;
                     }
                 }
-                this.setState({
-                    capturing: false,
-                });
+                switch (this.state.side) {
+                    case "Front":
+                        this.setState({
+                            capturing: false,
+                            side: "Right-hand",
+                            sideImg: require("../assets/img/cow-right.png")
+                        });
+                        break;
+                    case "Right-hand":
+                        this.setState({
+                            capturing: false,
+                            side: "Back",
+                            sideImg: require("../assets/img/cow-tail.png")
+                        });
+                        break;
+                    case "Back":
+                        this.setState({
+                            capturing: false,
+                            side: "Left-hand",
+                            sideImg: require("../assets/img/cow-left.png")
+                        });
+                        break;
+                    case "Left-hand":
+                        this.setState({
+                            capturing: false,
+                            side: "Front",
+                            sideImg: require("../assets/img/cow-front2.png")
+                        });
+                        break;
+                }
+
             })
             .catch(error => {
                 this.setState({
@@ -132,6 +163,11 @@ class CameraView extends Component {
                 });
                 console.log('Could not get assets from folder.', error);
             });
+    }
+
+    constructor(props) {
+        super(props);
+        this.state.type = this.props.navigation.getParam('type');
     }
 
     render() {
@@ -150,16 +186,19 @@ class CameraView extends Component {
                     </View>
                 </View>
                 <View style={styles.navContainer}>
-                    <Text style={styles.buttonTitle}>Capture Images of
-                        the {this.props.navigation.getParam('type')}</Text>
+                    {this.state.type === "Disease" ?
+                        <Text style={styles.buttonTitleDisease}>Capture Images of the Disease</Text>
+                        : <Text style={styles.buttonTitle}>Capture an Image of:{'\n'}The {this.state.side} side</Text>}
+                    {this.state.type === "Healthy Animal" ?
+                        <Image style={styles.image} source={this.state.sideImg}/>
+                        : null}
                     <View pointerEvents={this.state.capturing ? 'none' : 'auto'} style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
-                             source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
+                                   source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
-                                // source={this.state.capturing ? require("../assets/img/loading.gif") : require("../assets/img/camera.png")}/>
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
@@ -184,9 +223,9 @@ const styles = StyleSheet.create({
     },
     cameraContainer: {
         width: Dimensions.get('window').width,
-        flex: 1,
+        //flex: 1,
         overflow: "hidden",
-        zIndex: 0
+        zIndex: 0,
     },
     flash: {
         zIndex: 1,
@@ -200,10 +239,16 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').width * 4 / 3,
         borderRadius: 20,
     },
+    toCapture: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height / 4,
+    },
     navContainer: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height / 4,
         zIndex: 0,
+        flex: 1,
+        flexDirection: "column",
     },
     buttonTitle: {
         color: '#73c4c4',
@@ -211,9 +256,21 @@ const styles = StyleSheet.create({
             ? "sans-serif"
             : 'Avenir-Light',
         fontSize: 20,
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: Dimensions.get('window').height / 75,
+        marginBottom: Dimensions.get('window').height / 75,
         alignSelf: "center",
+        textAlign: "center"
+    },
+    buttonTitleDisease:{
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif"
+            : 'Avenir-Light',
+        fontSize: 25,
+        marginTop: Dimensions.get('window').height / 60,
+        marginBottom: Dimensions.get('window').height / 60,
+        alignSelf: "center",
+        textAlign: "center"
     },
     imgContainer: {
         flex: 1,
@@ -225,6 +282,7 @@ const styles = StyleSheet.create({
         width: 65,
         height: 65,
         overlayColor: 'white',
+        alignSelf: 'center'
     },
     settingsTouchable: {
         transform: [{
@@ -257,7 +315,7 @@ const FadeInView = (props) => {
                 }
             ),
             Animated.timing(
-               fadeAnim,
+                fadeAnim,
                 {
                     toValue: 0,
                     duration: 400,
