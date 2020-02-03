@@ -103,8 +103,12 @@ class GalleryView extends Component {
                 })
                 .then(response => {
                     if (response.ok) {
-                        // console.log("Request to server successful.");
-                        // console.log(response.status);
+                        console.log("Request to server successful.");
+                        console.log(response.status);
+                        // response.text()
+                        //     .then(text => {
+                        //         console.log(text);
+                        //     });
                         c.isUploaded = true;
                         AsyncStorage.setItem(key, JSON.stringify(c))
                             .then(() => {
@@ -115,12 +119,12 @@ class GalleryView extends Component {
                                 resolve(false);
                             })
                     } else {
-                        // console.log("Request to server unsuccessful.");
-                        // console.log(response.status);
-                        response.text()
-                            .then(text => {
-                                console.log(text);
-                            });
+                        console.log("Request to server unsuccessful.");
+                        console.log(response.status);
+                        // response.text()
+                        //     .then(text => {
+                        //         console.log(text);
+                        //     });
                         resolve(false);
                     }
                 })

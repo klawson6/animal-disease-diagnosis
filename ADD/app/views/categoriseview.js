@@ -149,7 +149,7 @@ class CategoriseView extends Component {
         images: null,
         uris: [],
         isUploaded: false,
-        date: new Date(),
+        date: Date.now(),
         mode: 'date',
         show: false,
         diseases: [],
@@ -194,10 +194,10 @@ class CategoriseView extends Component {
                 if (response.ok) {
                     console.log("Request to server successful.");
                     console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
+                    // response.text()
+                    //     .then(text => {
+                    //         console.log(text);
+                    //     });
                     this.setState({
                         isUploaded: true,
                         loading: false,
@@ -209,8 +209,8 @@ class CategoriseView extends Component {
                         {cancelable: false},
                     );
                 } else {
-                    // console.log("Request to server unsuccessful.");
-                    // console.log(response.status);
+                    console.log("Request to server unsuccessful.");
+                    console.log(response.status);
                     // response.text()
                     //     .then(text => {
                     //         console.log(text);
@@ -233,6 +233,7 @@ class CategoriseView extends Component {
                 });
             });
     }
+
     //    ________
     //    |  o  o |
     //    | |___| |
@@ -327,7 +328,7 @@ class CategoriseView extends Component {
     setDate(event, date) {
         if (date !== undefined) {
             this.setState({
-                dateSelected: date.toLocaleDateString(),
+                dateSelected: date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear().toString().slice(2, 4),
                 date: date,
                 show: false
             });
@@ -406,7 +407,7 @@ class CategoriseView extends Component {
                                 ]}
                                 useNativeAndroidPickerStyle={false}
                                 textInputProps={{
-                                    fontFamily: "Avenir-Light'",
+                                    fontFamily: "sans-serif-light",
                                     fontSize: 20,
                                 }}
                             />
@@ -430,7 +431,7 @@ class CategoriseView extends Component {
                                 ]}
                                 useNativeAndroidPickerStyle={false}
                                 textInputProps={{
-                                    fontFamily: "Avenir-Light'",
+                                    fontFamily: "sans-serif-light",
                                     fontSize: 20,
                                 }}
                             />
@@ -528,7 +529,7 @@ class CategoriseView extends Component {
                                 items={this.state.diseases}
                                 useNativeAndroidPickerStyle={false}
                                 textInputProps={{
-                                    fontFamily: "Avenir-Light'",
+                                    fontFamily: "sans-serif-light",
                                     fontSize: 20,
                                 }}
                             />
@@ -564,6 +565,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
         zIndex: 0,
+        color: "#808080"
     },
     loadingScreen: {
         width: Dimensions.get('window').width / 2,
@@ -589,14 +591,14 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     },
     title: {
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 30,
         marginTop: Dimensions.get('window').width / 40,
     },
@@ -655,7 +657,7 @@ const styles = StyleSheet.create({
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     },
     nameBox: {
@@ -670,7 +672,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
         textAlign: 'center',
         alignItems: 'center'
@@ -680,7 +682,7 @@ const styles = StyleSheet.create({
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     },
     datePicker: {
@@ -700,14 +702,14 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     },
     optionTitle: {
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
         marginTop: Dimensions.get('window').width / 40,
         marginBottom: Dimensions.get('window').width / 40,
@@ -717,7 +719,7 @@ const styles = StyleSheet.create({
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-thin"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     },
     optionsContainer: {
@@ -746,7 +748,7 @@ const styles = StyleSheet.create({
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
-            : 'Avenir-Light',
+            : 'Avenir Light',
         fontSize: 20,
     }
 });
