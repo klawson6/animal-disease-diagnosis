@@ -28,12 +28,14 @@ class CameraView extends Component {
         capturing: false,
         type: '',
         side: "Front",
-        sideImg: require("../assets/img/cow-front2.png")
+        sideImg: require("../assets/img/cow-front-lines.png"),
+        done: false
     };
 
     onContinueButton() {
         this.props.navigation.navigate('categoriseView', {
             images: this.case,
+            type: this.state.type
         })
     }
 
@@ -130,32 +132,33 @@ class CameraView extends Component {
                         this.setState({
                             capturing: false,
                             side: "Right-hand",
-                            sideImg: require("../assets/img/cow-right.png")
+                            sideImg: require("../assets/img/cow-right-lines.png")
                         });
                         break;
                     case "Right-hand":
                         this.setState({
                             capturing: false,
                             side: "Back",
-                            sideImg: require("../assets/img/cow-tail.png")
+                            sideImg: require("../assets/img/tail-lines.png")
                         });
                         break;
                     case "Back":
                         this.setState({
                             capturing: false,
                             side: "Left-hand",
-                            sideImg: require("../assets/img/cow-left.png")
+                            sideImg: require("../assets/img/cow-left-lines.png")
                         });
                         break;
                     case "Left-hand":
                         this.setState({
                             capturing: false,
                             side: "Front",
-                            sideImg: require("../assets/img/cow-front2.png")
+                            sideImg: require("../assets/img/cow-front-lines.png"),
+                            done: true,
                         });
+                        this.onContinueButton();
                         break;
                 }
-
             })
             .catch(error => {
                 this.setState({
@@ -176,6 +179,12 @@ class CameraView extends Component {
                 {this.state.capturing ?
                     <FadeInView style={styles.flash}/>
                     : null}
+                {this.state.type === "Healthy Animal" ?
+                    <View style={styles.helpContainer}>
+                        <Image style={styles.helpImg} source={this.state.sideImg}/>
+                        <Image style={styles.helpPhone} source={require("../assets/img/viewfinder2.png")}/>
+                    </View>
+                    : null}
                 <View style={styles.cameraContainer}>
                     <View ref={ref => {
                         this.cameraView = ref;
@@ -187,17 +196,14 @@ class CameraView extends Component {
                 </View>
                 <View style={styles.navContainer}>
                     {this.state.type === "Disease" ?
-                        <Text style={styles.buttonTitleDisease}>Capture Images of the Disease</Text>
+                        <Text style={styles.buttonTitle}>Capture Images of the Disease</Text>
                         : <Text style={styles.buttonTitle}>Capture an Image of:{'\n'}The {this.state.side} side</Text>}
-                    {this.state.type === "Healthy Animal" ?
-                        <Image style={styles.image} source={this.state.sideImg}/>
-                        : null}
                     <View pointerEvents={this.state.capturing ? 'none' : 'auto'} style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
                             <Image style={[styles.image, styles.galleryTouchable]}
                                    source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
+                        <TouchableOpacity disabled={this.state.done} onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
@@ -221,18 +227,43 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
         zIndex: 0
     },
+    flash: {
+        zIndex: 2,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').width * 4 / 3,
+        backgroundColor: "#ffffff",
+        position: "absolute",
+    },
+    helpContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').width * 4 / 3,
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        zIndex: 1,
+    },
+    helpPhone: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width * 7 / 20,
+        opacity: 0.8,
+        transform: [{
+            translateY: Dimensions.get('window').height / 10
+        }],
+        //backgroundColor: "blue"
+    },
+    helpImg: {
+        width: Dimensions.get('window').width * 3 / 7,
+        height: Dimensions.get('window').width * 3 / 7,
+        opacity: 0.8,
+        transform: [{
+            translateY: Dimensions.get('window').height / 14
+        }]
+    },
     cameraContainer: {
         width: Dimensions.get('window').width,
         //flex: 1,
         overflow: "hidden",
         zIndex: 0,
-    },
-    flash: {
-        zIndex: 1,
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').width * 4 / 3,
-        backgroundColor: "#ffffff",
-        position: "absolute",
     },
     camera: {
         width: Dimensions.get('window').width,
@@ -249,19 +280,21 @@ const styles = StyleSheet.create({
         zIndex: 0,
         flex: 1,
         flexDirection: "column",
+        justifyContent: "space-evenly"
     },
     buttonTitle: {
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif"
             : 'Avenir-Light',
-        fontSize: 20,
+        fontSize: 25,
         marginTop: Dimensions.get('window').height / 75,
         marginBottom: Dimensions.get('window').height / 75,
         alignSelf: "center",
-        textAlign: "center"
+        textAlign: "center",
+        //backgroundColor: "blue"
     },
-    buttonTitleDisease:{
+    buttonTitleDisease: {
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif"
@@ -270,13 +303,13 @@ const styles = StyleSheet.create({
         marginTop: Dimensions.get('window').height / 60,
         marginBottom: Dimensions.get('window').height / 60,
         alignSelf: "center",
-        textAlign: "center"
+        textAlign: "center",
     },
     imgContainer: {
-        flex: 1,
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
+        //backgroundColor: "red"
     },
     image: {
         width: 65,
