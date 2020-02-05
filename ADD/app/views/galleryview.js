@@ -149,7 +149,7 @@ class GalleryView extends Component {
                     list.push(
                         <TouchableOpacity style={styles.rowTouchable} key={key + "Touchable"}
                                           onPress={this.openCase.bind(this, key)}>
-                            <View key={rowCount} style={styles.row}>
+                            <View key={rowCount} style={styles.caseTextWrapper}>
                                 {rowElems}
                             </View>
                             <Image style={[styles.uploadIcon]}
@@ -235,14 +235,13 @@ class GalleryView extends Component {
     }
 
     loadImages(album, c) {
-        console.log("Checkpoint 3.1.1");
         MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"], first: 2147483647})
             .then(assets => {
                 let images = {assets: []};
                 assets.assets.forEach(a => {
                     this.state.cases[c].uris.forEach(u => {
                         if (u.name === a.filename) {
-                            images.assets.push(a);
+                            images.assets.push([a, u.side]);
                         }
                     })
                 });
@@ -389,12 +388,12 @@ const styles = StyleSheet.create({
     rowTouchable: {
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: "space-between",
     },
-    row: {
+    caseTextWrapper: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
     },
     uploadIcon: {
         width: Dimensions.get('window').width / 10,
@@ -417,7 +416,7 @@ const styles = StyleSheet.create({
         marginTop: Dimensions.get('window').width / 40,
         marginBottom: Dimensions.get('window').width / 40,
         marginLeft: Dimensions.get('window').width / 50,
-        textAlign: "left"
+        textAlign: "left",
     }
 });
 

@@ -20,6 +20,13 @@ class CameraView extends Component {
         assets: [],
     };
 
+    sideMap = {
+        "Front": 1,
+        "Right-hand": 2,
+        "Back": 3,
+        "Left-hand": 4,
+    };
+
     state = {
         thumbnail: require('../assets/img/white.png'),
         white: require('../assets/img/white.png'),
@@ -28,15 +35,22 @@ class CameraView extends Component {
         capturing: false,
         type: '',
         side: "Front",
-        sideImg: require("../assets/img/cow-front-lines.png"),
+        sideImg: require("../assets/img/cow-front-lines-thin2.png"),
         done: false
     };
 
     onContinueButton() {
-        this.props.navigation.navigate('categoriseView', {
-            images: this.case,
-            type: this.state.type
-        })
+        if (this.state.type === "Healthy Animal" && !this.state.done) {
+            new Alert.alert(
+                'More Pictures Required',
+                'Please take a picture from each of the 4 required angles.'
+            )
+        } else {
+            this.props.navigation.navigate('categoriseView', {
+                images: this.case,
+                type: this.state.type
+            })
+        }
     }
 
     onGalleryButton() {
@@ -47,7 +61,12 @@ class CameraView extends Component {
     }
 
     onSnapButtonCamera() {
-        if (this.camera) {
+        if (this.state.type === "Healthy Animal" && this.state.done) {
+            new Alert.alert(
+                'No More Pictures Required',
+                'You have taken pictures from each of the 4 required angles.\nPlease annotate this case.'
+            )
+        } else if (this.camera) {
             this.setState({
                 capturing: true,
             });
@@ -123,7 +142,7 @@ class CameraView extends Component {
             .then(assets => {
                 for (const a of assets.assets) {
                     if (a.filename === name) {
-                        this.case.assets.push(a);
+                        this.case.assets.push([a, this.state.type === "Disease" ? 0 : this.sideMap[this.state.side]]);
                         break;
                     }
                 }
@@ -132,28 +151,28 @@ class CameraView extends Component {
                         this.setState({
                             capturing: false,
                             side: "Right-hand",
-                            sideImg: require("../assets/img/cow-right-lines.png")
+                            sideImg: require("../assets/img/cow-right-lines-thin.png")
                         });
                         break;
                     case "Right-hand":
                         this.setState({
                             capturing: false,
                             side: "Back",
-                            sideImg: require("../assets/img/tail-lines.png")
+                            sideImg: require("../assets/img/cow-tail-lines-thin.png")
                         });
                         break;
                     case "Back":
                         this.setState({
                             capturing: false,
                             side: "Left-hand",
-                            sideImg: require("../assets/img/cow-left-lines.png")
+                            sideImg: require("../assets/img/cow-left-lines-thin.png")
                         });
                         break;
                     case "Left-hand":
                         this.setState({
                             capturing: false,
                             side: "Front",
-                            sideImg: require("../assets/img/cow-front-lines.png"),
+                            sideImg: require("../assets/img/cow-front-lines-thin2.png"),
                             done: true,
                         });
                         this.onContinueButton();
@@ -182,7 +201,7 @@ class CameraView extends Component {
                 {this.state.type === "Healthy Animal" ?
                     <View style={styles.helpContainer}>
                         <Image style={styles.helpImg} source={this.state.sideImg}/>
-                        <Image style={styles.helpPhone} source={require("../assets/img/viewfinder2.png")}/>
+                        <Image style={styles.helpPhone} source={require("../assets/img/viewfinder2-thin.png")}/>
                     </View>
                     : null}
                 <View style={styles.cameraContainer}>
@@ -203,7 +222,7 @@ class CameraView extends Component {
                             <Image style={[styles.image, styles.galleryTouchable]}
                                    source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity disabled={this.state.done} onPress={this.onSnapButtonCamera.bind(this)}>
+                        <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>

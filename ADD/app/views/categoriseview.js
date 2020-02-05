@@ -154,7 +154,8 @@ class CategoriseView extends Component {
         show: false,
         diseases: [],
         loading: false,
-        loadingText: ""
+        loadingText: "",
+        type: 0
     };
 
     onUploadPress() {
@@ -163,12 +164,14 @@ class CategoriseView extends Component {
             loadingText: "Uploading..."
         });
         const body = new FormData();
+        let sides = [];
         this.state.uris.forEach(img => {
             body.append("images[]", {
                 uri: img.uri,
                 name: img.name,
                 type: "image/jpg"
             });
+            sides.push(img.side);
         });
         let curCase = {
             name: this.state.name,
@@ -178,7 +181,9 @@ class CategoriseView extends Component {
             age: this.state.age,
             breed: this.state.breed,
             sex: this.state.sex,
-            diagnosis: this.state.diagnosis
+            diagnosis: this.state.diagnosis,
+            type: this.state.type,
+            sides: sides,
         };
         body.append("case", JSON.stringify(curCase));
         fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
@@ -194,10 +199,10 @@ class CategoriseView extends Component {
                 if (response.ok) {
                     console.log("Request to server successful.");
                     console.log(response.status);
-                    // response.text()
-                    //     .then(text => {
-                    //         console.log(text);
-                    //     });
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
                     this.setState({
                         isUploaded: true,
                         loading: false,
@@ -211,10 +216,10 @@ class CategoriseView extends Component {
                 } else {
                     console.log("Request to server unsuccessful.");
                     console.log(response.status);
-                    // response.text()
-                    //     .then(text => {
-                    //         console.log(text);
-                    //     });
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
                     this.setState({
                         loading: false,
                     });
@@ -261,7 +266,8 @@ class CategoriseView extends Component {
                     sex: this.state.sex,
                     diagnosis: this.state.diagnosis,
                     uris: this.state.uris,
-                    isUploaded: this.state.isUploaded
+                    isUploaded: this.state.isUploaded,
+                    type: this.state.type
                 }))
                     .then(() => {
                         if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
@@ -304,9 +310,10 @@ class CategoriseView extends Component {
 
     constructor(props) {
         super(props);
+        this.state.type = this.props.navigation.getParam('type') === "Disease" ? 0 : 1;
         this.state.images = this.props.navigation.getParam('images');
         this.state.images.assets.forEach(img => {
-            this.state.uris.push({uri: img.uri, name: img.filename});
+            this.state.uris.push({uri: img[0].uri, name: img[0].filename, side:img[1]});
         });
         if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
@@ -338,7 +345,7 @@ class CategoriseView extends Component {
     buildPreview = function (images) {
         let imgs = [];
         images.assets.forEach(function (img) {
-            imgs.push(<Image style={styles.image} key={img.filename} source={img}/>);
+            imgs.push(<Image style={styles.image} key={img[0].filename} source={img[0]}/>);
         });
         return imgs;
     };
