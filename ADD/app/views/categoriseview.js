@@ -138,12 +138,12 @@ class CategoriseView extends Component {
 
     state = {
         name: null,
-        dateSelected: 'DD/MM/YY',
+        dateSelected: null,
         location: null,
         species: null,
-        age: 0,
-        breed: 0,
-        sex: 0,
+        age: null,
+        breed: null,
+        sex: null,
         diagnosis: null,
         defaultAnimal: null,
         images: null,
@@ -158,21 +158,17 @@ class CategoriseView extends Component {
         type: 0
     };
 
+    checkCase(curCase) {
+        let complete = true;
+        Object.keys(curCase).forEach(k => {
+            if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
+                complete = false;
+        });
+        return complete;
+    }
+
     onUploadPress() {
-        this.setState({
-            loading: true,
-            loadingText: "Uploading..."
-        });
-        const body = new FormData();
         let sides = [];
-        this.state.uris.forEach(img => {
-            body.append("images[]", {
-                uri: img.uri,
-                name: img.name,
-                type: "image/jpg"
-            });
-            sides.push(img.side);
-        });
         let curCase = {
             name: this.state.name,
             dateSelected: this.state.dateSelected,
@@ -185,6 +181,27 @@ class CategoriseView extends Component {
             type: this.state.type,
             sides: sides,
         };
+        if (!this.checkCase(curCase)) {
+            new Alert.alert(
+                'Case Not Completed',
+                'You must fully complete the form before uploading the case.',
+            );
+            return;
+        }
+        this.setState({
+            loading: true,
+            loadingText: "Uploading..."
+        });
+        const body = new FormData();
+        this.state.uris.forEach(img => {
+            body.append("images[]", {
+                uri: img.uri,
+                name: img.name,
+                type: "image/jpg"
+            });
+            sides.push(img.side);
+        });
+
         body.append("case", JSON.stringify(curCase));
         fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
             {
@@ -313,7 +330,7 @@ class CategoriseView extends Component {
         this.state.type = this.props.navigation.getParam('type') === "Disease" ? 0 : 1;
         this.state.images = this.props.navigation.getParam('images');
         this.state.images.assets.forEach(img => {
-            this.state.uris.push({uri: img[0].uri, name: img[0].filename, side:img[1]});
+            this.state.uris.push({uri: img[0].uri, name: img[0].filename, side: img[1]});
         });
         if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
@@ -335,7 +352,7 @@ class CategoriseView extends Component {
     setDate(event, date) {
         if (date !== undefined) {
             this.setState({
-                dateSelected: date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear().toString().slice(2, 4),
+                dateSelected: date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear().toString().slice(2, 4),
                 date: date,
                 show: false
             });
@@ -381,7 +398,9 @@ class CategoriseView extends Component {
                             <View style={styles.textEntryContainer}>
                                 <Text style={styles.dateText}>Date of Observation:</Text>
                                 <TouchableOpacity style={styles.datePicker} onPress={this.showDatePicker.bind(this)}>
-                                    <Text style={styles.dateChosen}>{this.state.dateSelected}</Text>
+                                    <Text style={styles.dateChosen}>
+                                        {this.state.dateSelected === null ? "DD/MM/YY" : this.state.dateSelected}
+                                    </Text>
                                     {show && <RNDateTimePicker value={date}
                                                                mode={mode}
                                                                is24Hour={true}
@@ -527,19 +546,23 @@ class CategoriseView extends Component {
                                 textStyle={styles.options}
                                 containerStyle={styles.optionsContainer}
                             />
-                            <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
-                            <RNPickerSelect
-                                onValueChange={(value) => {
-                                    this.setState({diagnosis: value})
-                                }}
-                                value={this.state.diagnosis}
-                                items={this.state.diseases}
-                                useNativeAndroidPickerStyle={false}
-                                textInputProps={{
-                                    fontFamily: "sans-serif-light",
-                                    fontSize: 20,
-                                }}
-                            />
+                            {this.state.type === 0 ?
+                                <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
+                                : null}
+                            {this.state.type === 0 ?
+                                <RNPickerSelect
+                                    onValueChange={(value) => {
+                                        this.setState({diagnosis: value})
+                                    }}
+                                    value={this.state.diagnosis}
+                                    items={this.state.diseases}
+                                    useNativeAndroidPickerStyle={false}
+                                    textInputProps={{
+                                        fontFamily: "sans-serif-light",
+                                        fontSize: 20,
+                                    }}
+                                />
+                                : null}
                         </ScrollView>
                     </View>
                     <View style={styles.saveContainer}>

@@ -25,6 +25,7 @@ class GalleryView extends Component {
         };
     }
 
+
     componentDidMount() {
         if (this.props.navigation.getParam('home'))
             this.loadAllCases();
@@ -37,6 +38,15 @@ class GalleryView extends Component {
         this.loadAlbum(c);
     }
 
+    checkCases(curCase) {
+        let complete = true;
+        Object.keys(curCase).forEach(k => {
+            if (curCase[k] === null && !(curCase["type"] && k === "diagnosis"))
+                complete = false;
+        });
+        return complete;
+    }
+
     uploadAll() {
         this.setState({
             loading: true,
@@ -45,7 +55,7 @@ class GalleryView extends Component {
         let cases = this.state.cases;
         let fetches = [];
         for (let key in cases) {
-            if (cases.hasOwnProperty(key) && key !== "numCases" && !cases[key].isUploaded) {
+            if (cases.hasOwnProperty(key) && key !== "numCases" && !cases[key].isUploaded && this.checkCases(cases[key])) {
                 fetches.push(this.uploadCase(cases[key], key));
             }
         }

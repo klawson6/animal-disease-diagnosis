@@ -40,11 +40,16 @@ class CameraView extends Component {
     };
 
     onContinueButton() {
-        if (this.state.type === "Healthy Animal" && !this.state.done) {
-            new Alert.alert(
-                'More Pictures Required',
-                'Please take a picture from each of the 4 required angles.'
-            )
+        if ((this.state.type === "Healthy Animal" && !this.state.done) || !this.case.assets.length) {
+            this.state.type === "Healthy Animal" ?
+                new Alert.alert(
+                    'More Pictures Required',
+                    'Please take a picture from each of the 4 required angles.'
+                ) :
+                new Alert.alert(
+                    'Picture(s) Required',
+                    'Please take at least 1 picture of the disease/signs.'
+                )
         } else {
             this.props.navigation.navigate('categoriseView', {
                 images: this.case,
