@@ -8,6 +8,7 @@ import {
     View,
     ScrollView,
     TextInput,
+    AsyncStorage,
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -18,10 +19,30 @@ class SettingsView extends Component {
         wifi: false,
         cell: false,
         defaultAnimal: null,
+        defaultLoc: null,
+        name: null,
     };
 
     onSavePress() {
+        AsyncStorage.setItem("settings", JSON.stringify(this.state))
+            .then(() => {
+                console.log("Settings saved.")
+            })
+            .catch(error => {
+                console.log("Error saving settings: " + error);
+            });
         this.props.navigation.navigate('homeView')
+    }
+
+    componentDidMount() {
+        AsyncStorage.getItem("settings")
+            .then(item => {
+                this.setState(JSON.parse(item));
+                console.log(this.state);
+            })
+            .catch(error => {
+                console.log("Error getting settings from local storage: " + error);
+            })
     }
 
     render() {
@@ -33,19 +54,25 @@ class SettingsView extends Component {
                         <View style={styles.textEntryContainer}>
                             <Text style={styles.textEntryText}>Full Name:</Text>
                             <TextInput
+                                onChangeText={text => {
+                                    this.setState({name: text})
+                                }}
                                 style={styles.textEntryBox}
+                                defaultValue={this.state.name}
                             />
                         </View>
                         <Text style={styles.uploadTitle}>Default Species:</Text>
                         <RNPickerSelect
                             onValueChange={(value) =>
                                 this.setState({defaultAnimal: value})}
+                            value={this.state.defaultAnimal}
                             items={[
-                                {label: 'Cow', value: 'cow'},
-                                {label: 'Goat', value: 'goat'},
-                                {label: 'Sheep', value: 'sheep'},
-                                {label: 'Camel', value: 'camel'},
-                                {label: 'Horse', value: 'horse'},
+                                {label: 'Cattle', value: 'Cattle'},
+                                {label: 'Goat', value: 'Goat'},
+                                {label: 'Sheep', value: 'Sheep'},
+                                {label: 'Camel', value: 'Camel'},
+                                {label: 'Horse', value: 'Horse'},
+                                {label: 'Donkey', value: 'Donkey'},
                             ]}
                             useNativeAndroidPickerStyle={false}
                             textInputProps={{
@@ -54,9 +81,32 @@ class SettingsView extends Component {
                             }}
                         />
                         <Text style={styles.uploadTitle}>Default Location:</Text>
-                        <TextInput onChangeText={text => {
-                            this.setState({location: text})
-                        }} style={styles.locBox}/>
+                        <RNPickerSelect
+                            onValueChange={(value) =>
+                                this.setState({defaultLoc: value})}
+                            value={this.state.defaultLoc}
+                            items={[
+                                {label: 'Addis Ababa', value: 'Addis Ababa'},
+                                {label: 'Afar Region', value: 'Afar Region'},
+                                {label: 'Amhara Region', value: 'Amhara Region'},
+                                {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
+                                {label: 'Dire Dawa', value: 'Dire Dawa'},
+                                {label: 'Gamebela Region', value: 'Gamebela Region'},
+                                {label: 'Harari Region', value: 'Harari Region'},
+                                {label: 'Oromia Region', value: 'Oromia Region'},
+                                {label: 'Somali Region', value: 'Somali Region'},
+                                {
+                                    label: 'Southern Nations, Nationalities and Peoples\' Region',
+                                    value: 'Southern Nations, Nationalities and Peoples\' Region'
+                                },
+                                {label: 'Tigray Region', value: 'Tigray Region'},
+                            ]}
+                            useNativeAndroidPickerStyle={false}
+                            textInputProps={{
+                                fontFamily: "sans-serif-light",
+                                fontSize: 20,
+                            }}
+                        />
                         <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
                         <CheckBox
                             title='WiFi'
@@ -96,7 +146,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    title:{
+    title: {
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
             ? "sans-serif-light"
@@ -116,7 +166,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    scrollContainer:{
+    scrollContainer: {
         width: Dimensions.get('window').width * 4 / 5,
         flex: 1,
         marginTop: Dimensions.get('window').width / 20,
@@ -124,7 +174,7 @@ const styles = StyleSheet.create({
     },
     textEntryContainer: {
         height: Dimensions.get('window').height / 20,
-        marginBottom: Dimensions.get('window').width / 20,        flex: 1,
+        marginBottom: Dimensions.get('window').width / 20, flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -158,7 +208,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: 20,
         marginBottom: 20,
-    },options: {
+    }, options: {
         textAlign: 'center',
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'

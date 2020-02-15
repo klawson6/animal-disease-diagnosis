@@ -268,12 +268,11 @@ class CategoriseView extends Component {
         });
         let caseName = this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined
             ? null : this.props.navigation.getParam('caseName');
-
         AsyncStorage.getItem("numCases")
             .then(value => {
                 if (caseName === null)
                     caseName = "case" + value;
-                AsyncStorage.setItem(caseName, JSON.stringify({
+                let curCase = {
                     name: this.state.name,
                     dateSelected: this.state.dateSelected,
                     location: this.state.location,
@@ -285,7 +284,9 @@ class CategoriseView extends Component {
                     uris: this.state.uris,
                     isUploaded: this.state.isUploaded,
                     type: this.state.type
-                }))
+                };
+                curCase.completed = this.checkCase(curCase);
+                AsyncStorage.setItem(caseName, JSON.stringify(curCase))
                     .then(() => {
                         if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
                             AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))

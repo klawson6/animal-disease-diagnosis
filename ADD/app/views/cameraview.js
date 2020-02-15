@@ -142,6 +142,43 @@ class CameraView extends Component {
             })
     }
 
+    switchSide() {
+        switch (this.state.side) {
+            case "Front":
+                this.setState({
+                    capturing: false,
+                    side: "Right-hand",
+                    sideImg: require("../assets/img/cow-right-lines-thin.png")
+                });
+                break;
+            case "Right-hand":
+                this.setState({
+                    capturing: false,
+                    side: "Back",
+                    sideImg: require("../assets/img/cow-tail-lines-thin.png")
+                });
+                break;
+            case "Back":
+                this.setState({
+                    capturing: false,
+                    side: "Left-hand",
+                    sideImg: require("../assets/img/cow-left-lines-thin.png")
+                });
+                break;
+            case "Left-hand":
+                this.setState({
+                    capturing: false,
+                    side: "Front",
+                    sideImg: require("../assets/img/cow-front-lines-thin2.png"),
+                    done: true,
+                });
+                this.onContinueButton();
+                break;
+            default:
+                console.log("Error in state regarding the side currently being photographed.")
+        }
+    }
+
     addImageToState(album, name) {
         MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
             .then(assets => {
@@ -151,38 +188,11 @@ class CameraView extends Component {
                         break;
                     }
                 }
-                switch (this.state.side) {
-                    case "Front":
-                        this.setState({
-                            capturing: false,
-                            side: "Right-hand",
-                            sideImg: require("../assets/img/cow-right-lines-thin.png")
-                        });
-                        break;
-                    case "Right-hand":
-                        this.setState({
-                            capturing: false,
-                            side: "Back",
-                            sideImg: require("../assets/img/cow-tail-lines-thin.png")
-                        });
-                        break;
-                    case "Back":
-                        this.setState({
-                            capturing: false,
-                            side: "Left-hand",
-                            sideImg: require("../assets/img/cow-left-lines-thin.png")
-                        });
-                        break;
-                    case "Left-hand":
-                        this.setState({
-                            capturing: false,
-                            side: "Front",
-                            sideImg: require("../assets/img/cow-front-lines-thin2.png"),
-                            done: true,
-                        });
-                        this.onContinueButton();
-                        break;
-                }
+                console.log(this.state.type);
+                if (this.state.type !== "Disease")
+                    this.switchSide();
+                else
+                    this.setState({capturing: false});
             })
             .catch(error => {
                 this.setState({

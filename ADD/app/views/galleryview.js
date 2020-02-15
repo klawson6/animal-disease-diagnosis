@@ -38,15 +38,6 @@ class GalleryView extends Component {
         this.loadAlbum(c);
     }
 
-    checkCases(curCase) {
-        let complete = true;
-        Object.keys(curCase).forEach(k => {
-            if (curCase[k] === null && !(curCase["type"] && k === "diagnosis"))
-                complete = false;
-        });
-        return complete;
-    }
-
     uploadAll() {
         this.setState({
             loading: true,
@@ -55,7 +46,7 @@ class GalleryView extends Component {
         let cases = this.state.cases;
         let fetches = [];
         for (let key in cases) {
-            if (cases.hasOwnProperty(key) && key !== "numCases" && !cases[key].isUploaded && this.checkCases(cases[key])) {
+            if (cases.hasOwnProperty(key) && key !== "numCases" && !cases[key].isUploaded && cases[key].completed) {
                 fetches.push(this.uploadCase(cases[key], key));
             }
         }
@@ -94,13 +85,16 @@ class GalleryView extends Component {
     async uploadCase(c, key) {
         return new Promise(resolve => {
             const body = new FormData();
+            let sides = [];
             c.uris.forEach(img => {
                 body.append("images[]", {
                     uri: img.uri,
                     name: img.name,
                     type: "image/jpg"
                 });
+                sides.push(img.side);
             });
+            c.sides = sides;
             body.append("case", JSON.stringify(c));
             fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
                 {
@@ -155,13 +149,15 @@ class GalleryView extends Component {
             Object.keys(cases).forEach(key => {
                 if (key !== "numCases") {
                     rowElems.push(<Text key={key}
-                                        style={styles.caseText}>{cases[key].dateSelected + " - " + cases[key].species + " - " + cases[key].diagnosis}</Text>);
+                                        style={styles.caseText}>{cases[key].dateSelected + " - " + cases[key].species + " - " + (cases[key].type ? "Healthy" : cases[key].diagnosis)}</Text>);
                     list.push(
                         <TouchableOpacity style={styles.rowTouchable} key={key + "Touchable"}
                                           onPress={this.openCase.bind(this, key)}>
                             <View key={rowCount} style={styles.caseTextWrapper}>
                                 {rowElems}
                             </View>
+                            <Image style={[styles.uploadIcon]}
+                                   source={cases[key].completed ? require('../assets/img/filled-in.png') : require('../assets/img/not-filled-in.png')}/>
                             <Image style={[styles.uploadIcon]}
                                    source={cases[key].isUploaded ? require('../assets/img/cloudTick2.png') : require('../assets/img/cloudUp2.png')}/>
                         </TouchableOpacity>
@@ -178,7 +174,7 @@ class GalleryView extends Component {
             let rowElems = [];
             cases.assets.forEach(function (c) {
                 count++;
-                rowElems.push(<Image key={c.uri} style={styles.thumbnail} source={c}/>);
+                rowElems.push(<Image key={c[0].uri} style={styles.thumbnail} source={c[0]}/>);
                 if (count === 3) {
                     list.push(<View key={rowCount} style={styles.row}>{rowElems}</View>);
                     rowElems = [];
@@ -218,6 +214,7 @@ class GalleryView extends Component {
                             cases: cases,
                             loading: false,
                         });
+                        console.log(cases);
                     });
             });
     }
@@ -366,7 +363,7 @@ const styles = StyleSheet.create({
         margin: 15,
     },
     topContainer: {
-        width: Dimensions.get('window').width * 4 / 5,
+        width: Dimensions.get('window').width * 9 / 10,
         borderRadius: 5,
         borderColor: '#808080',
         backgroundColor: '#f9f9f9',
@@ -406,9 +403,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     uploadIcon: {
-        width: Dimensions.get('window').width / 10,
-        height: Dimensions.get('window').width / 10,
-        margin: Dimensions.get('window').width / 40,
+        width: Dimensions.get('window').width / 12,
+        height: Dimensions.get('window').width / 12,
+        margin: Dimensions.get('window').width / 45,
     },
     thumbnail: {
         width: Dimensions.get('window').width / 5,
@@ -416,6 +413,11 @@ const styles = StyleSheet.create({
         marginTop: Dimensions.get('window').height / 45,
         marginBottom: Dimensions.get('window').height / 45,
         borderRadius: 5,
+    },
+    row: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-evenly"
     },
     caseText: {
         color: '#000000',
