@@ -338,10 +338,11 @@ class CategoriseView extends Component {
             if (this.state.species !== null) {
                 this.state.diseases = this.diseases[this.state.species];
             }
+        } else if (this.props.navigation.getParam('settings')) {
+            this.state = Object.assign({}, this.state, this.props.navigation.getParam('settings'));
+            if (this.state.species) this.state.diseases = this.diseases[this.state.species]
         }
-        AsyncStorage.getItem("numCases");
-        // .then(value => console.log(value))
-        // .catch()
+        console.log(this.state);
     }
 
     showDatePicker() {

@@ -46,7 +46,7 @@ class GalleryView extends Component {
         let cases = this.state.cases;
         let fetches = [];
         for (let key in cases) {
-            if (cases.hasOwnProperty(key) && key !== "numCases" && !cases[key].isUploaded && cases[key].completed) {
+            if (cases.hasOwnProperty(key) && key !== "numCases" && key !== "settings" && !cases[key].isUploaded && cases[key].completed) {
                 fetches.push(this.uploadCase(cases[key], key));
             }
         }
@@ -147,7 +147,7 @@ class GalleryView extends Component {
             let rowElems = [];
             let rowCount = 0;
             Object.keys(cases).forEach(key => {
-                if (key !== "numCases") {
+                if (key !== "numCases" && key !== "settings") {
                     rowElems.push(<Text key={key}
                                         style={styles.caseText}>{cases[key].dateSelected + " - " + cases[key].species + " - " + (cases[key].type ? "Healthy" : cases[key].diagnosis)}</Text>);
                     list.push(

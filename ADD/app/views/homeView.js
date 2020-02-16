@@ -9,7 +9,7 @@ import {
     Dimensions,
     AsyncStorage
 } from 'react-native';
-import { ScreenOrientation } from 'expo';
+import {ScreenOrientation} from 'expo';
 import * as Permissions from "expo-permissions";
 import * as MediaLibrary from 'expo-media-library';
 
@@ -18,9 +18,11 @@ class HomeView extends Component {
     state = {
         cases: null,
         hasPermissions: false,
+        loading: false,
     };
 
     componentDidMount() {
+        this.setState({loading: true});
         this.askForPermissions();
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
             .then()
@@ -32,8 +34,10 @@ class HomeView extends Component {
                 if (!keys.includes('numCases')) {
                     AsyncStorage.setItem('numCases', '0');
                 }
+                this.setState({loading: false});
             })
             .catch(error => {
+                this.setState({loading: false});
                 console.log('Error occurred when creating numCases: ' + error)
             });
     }
@@ -77,7 +81,21 @@ class HomeView extends Component {
 
     onSettingsPress() {
         if (this.state.hasPermissions) {
-            this.props.navigation.navigate('settingsView')
+            this.setState({loading: true});
+            AsyncStorage.getItem("settings")
+                .then(item => {
+                    this.setState({loading: false,});
+                    if (item) {
+                        this.props.navigation.navigate('settingsView', {
+                            settings: JSON.parse(item)
+                        });
+                    } else
+                        this.props.navigation.navigate('settingsView');
+                    console.log(this.state);
+                })
+                .catch(error => {
+                    console.log("Error getting settings from local storage: " + error);
+                })
         } else {
             this.askForPermissions();
         }
@@ -124,6 +142,12 @@ class HomeView extends Component {
     render() {
         return (
             <View style={styles.container}>
+                {this.state.loading ?
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>Loading settings...</Text>
+                    </View>
+                    : null}
                 <View style={styles.topContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>
@@ -184,6 +208,7 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
         flex: 4,
         alignItems: 'center',
+        zIndex: 0
     },
     titleContainer: {
         flex: 1,
@@ -257,6 +282,7 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 4,
         //backgroundColor: '#4345ff',
         flex: 1,
+        zIndex: 0
     },
     imgContainer: {
         flex: 1,
@@ -288,7 +314,34 @@ const styles = StyleSheet.create({
             ? "sans-serif-light"
             : 'Avenir-Light',
         fontSize: 18,
-    }
+    },
+    loadingScreen: {
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 1,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
+    },
 });
 
 export default HomeView;

@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
     Dimensions, Alert,
-    Animated
+    Animated, AsyncStorage
 } from 'react-native';
 import {Camera} from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
@@ -36,7 +36,8 @@ class CameraView extends Component {
         type: '',
         side: "Front",
         sideImg: require("../assets/img/cow-front-lines-thin2.png"),
-        done: false
+        done: false,
+        isLoading: false,
     };
 
     onContinueButton() {
@@ -51,10 +52,24 @@ class CameraView extends Component {
                     'Please take at least 1 picture of the disease/signs.'
                 )
         } else {
-            this.props.navigation.navigate('categoriseView', {
-                images: this.case,
-                type: this.state.type
-            })
+            this.setState({isLoading: true});
+            AsyncStorage.getItem("settings")
+                .then(item => {
+                    this.setState({isLoading: false});
+                    this.props.navigation.navigate('categoriseView', {
+                        images: this.case,
+                        type: this.state.type,
+                        settings: JSON.parse(item),
+                    })
+                })
+                .catch(error => {
+                    this.setState({isLoading: false});
+                    console.log("Error getting default information from storage: " + error);
+                    new Alert.alert(
+                        'Error',
+                        'An error occurred loading your default information. Please try again.'
+                    )
+                });
         }
     }
 
@@ -213,6 +228,12 @@ class CameraView extends Component {
                 {this.state.capturing ?
                     <FadeInView style={styles.flash}/>
                     : null}
+                {this.state.isLoading ?
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                    </View>
+                    : null}
                 {this.state.type === "Healthy Animal" ?
                     <View style={styles.helpContainer}>
                         <Image style={styles.helpImg} source={this.state.sideImg}/>
@@ -262,11 +283,38 @@ const styles = StyleSheet.create({
         zIndex: 0
     },
     flash: {
-        zIndex: 2,
+        zIndex: 3,
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').width * 4 / 3,
         backgroundColor: "#ffffff",
         position: "absolute",
+    },
+    loadingScreen: {
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 2,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
     helpContainer: {
         width: Dimensions.get('window').width,

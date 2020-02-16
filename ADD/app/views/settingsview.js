@@ -8,7 +8,7 @@ import {
     View,
     ScrollView,
     TextInput,
-    AsyncStorage,
+    AsyncStorage, Image, Alert,
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
@@ -18,36 +18,44 @@ class SettingsView extends Component {
     state = {
         wifi: false,
         cell: false,
-        defaultAnimal: null,
-        defaultLoc: null,
+        species: null,
+        location: null,
         name: null,
+        loading: null,
     };
 
     onSavePress() {
+        this.setState({loading: true});
         AsyncStorage.setItem("settings", JSON.stringify(this.state))
             .then(() => {
+                this.setState({loading: false});
+                new Alert.alert("Saved", "Your settings have been saved.", [{
+                    text: 'OK',
+                    onPress: () => this.props.navigation.navigate('homeView')
+                }]);
                 console.log("Settings saved.")
             })
             .catch(error => {
+                new Alert.alert("Save Failed", "Your settings could not be saved, an error occurred");
                 console.log("Error saving settings: " + error);
             });
-        this.props.navigation.navigate('homeView')
     }
 
-    componentDidMount() {
-        AsyncStorage.getItem("settings")
-            .then(item => {
-                this.setState(JSON.parse(item));
-                console.log(this.state);
-            })
-            .catch(error => {
-                console.log("Error getting settings from local storage: " + error);
-            })
+    constructor(props) {
+        super(props);
+        if (this.props.navigation.getParam("settings"))
+            this.state = Object.assign({}, this.state, this.props.navigation.getParam("settings"));
     }
 
     render() {
         return (
             <View style={styles.container}>
+                {this.state.loading ?
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>Loading settings...</Text>
+                    </View>
+                    : null}
                 <Text style={styles.title}>Settings</Text>
                 <View style={styles.topContainer}>
                     <ScrollView style={styles.scrollContainer}>
@@ -55,7 +63,7 @@ class SettingsView extends Component {
                             <Text style={styles.textEntryText}>Full Name:</Text>
                             <TextInput
                                 onChangeText={text => {
-                                    this.setState({name: text})
+                                    this.setState(text ? {name: text} : {name: null})
                                 }}
                                 style={styles.textEntryBox}
                                 defaultValue={this.state.name}
@@ -64,9 +72,10 @@ class SettingsView extends Component {
                         <Text style={styles.uploadTitle}>Default Species:</Text>
                         <RNPickerSelect
                             onValueChange={(value) =>
-                                this.setState({defaultAnimal: value})}
-                            value={this.state.defaultAnimal}
+                                this.setState({species: value ? value : null})}
+                            value={this.state.species}
                             items={[
+                                {label: "None", value: ""},
                                 {label: 'Cattle', value: 'Cattle'},
                                 {label: 'Goat', value: 'Goat'},
                                 {label: 'Sheep', value: 'Sheep'},
@@ -83,9 +92,10 @@ class SettingsView extends Component {
                         <Text style={styles.uploadTitle}>Default Location:</Text>
                         <RNPickerSelect
                             onValueChange={(value) =>
-                                this.setState({defaultLoc: value})}
-                            value={this.state.defaultLoc}
+                                this.setState({location: value ? value : null})}
+                            value={this.state.location}
                             items={[
+                                {label: "None", value: ""},
                                 {label: 'Addis Ababa', value: 'Addis Ababa'},
                                 {label: 'Afar Region', value: 'Afar Region'},
                                 {label: 'Amhara Region', value: 'Amhara Region'},
@@ -153,6 +163,7 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 30,
         margin: 15,
+        zIndex: 0
     },
     topContainer: {
         width: Dimensions.get('window').width * 4.5 / 5,
@@ -165,6 +176,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 0
     },
     scrollContainer: {
         width: Dimensions.get('window').width * 4 / 5,
@@ -223,6 +235,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: "center",
         height: Dimensions.get('window').height / 10,
+        zIndex: 0
     },
     button: {
         borderRadius: 10,
@@ -258,6 +271,33 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
         alignItems: 'center'
+    },
+    loadingScreen: {
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 1,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
 });
 
