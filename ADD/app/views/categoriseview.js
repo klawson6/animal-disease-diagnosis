@@ -16,6 +16,7 @@ import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
 import Swiper from 'react-native-swiper'
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
 class CategoriseView extends Component {
 
@@ -164,10 +165,41 @@ class CategoriseView extends Component {
             if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
                 complete = false;
         });
+        if (!complete){
+            new Alert.alert('Case Not Completed', 'You must fully complete the form before uploading the case.',);
+            this.setState({
+                loading: false
+            });
+        }
         return complete;
     }
 
+    checkInternetAccess() {
+        return NetInfo.fetch()
+            .then(state => {
+                if (state.isInternetReachable) {
+                    if (this.state.wifi && state.type === NetInfoStateType.wifi || this.state.cell && state.type === NetInfoStateType.cellular) {
+                        return true;
+                    } else {
+                        new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
+                        return false;
+                    }
+                } else {
+                    new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
+                    return false;
+                }
+            })
+            .catch(error => {
+                new Alert.alert("Error", "An error occurred fetching your network type.");
+                console.log("Error fetching network state: " + error);
+            })
+    }
+
     onUploadPress() {
+        this.setState({
+            loading: true,
+            loadingText: "Uploading..."
+        });
         let sides = [];
         let curCase = {
             name: this.state.name,
@@ -181,77 +213,81 @@ class CategoriseView extends Component {
             type: this.state.type,
             sides: sides,
         };
-        if (!this.checkCase(curCase)) {
-            new Alert.alert(
-                'Case Not Completed',
-                'You must fully complete the form before uploading the case.',
-            );
-            return;
-        }
-        this.setState({
-            loading: true,
-            loadingText: "Uploading..."
-        });
-        const body = new FormData();
-        this.state.uris.forEach(img => {
-            body.append("images[]", {
-                uri: img.uri,
-                name: img.name,
-                type: "image/jpg"
-            });
-            sides.push(img.side);
-        });
-
-        body.append("case", JSON.stringify(curCase));
-        fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
-            {
-                method: 'POST',
-                body: body,
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "multipart/form-data"
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Request to server successful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
-                    this.setState({
-                        isUploaded: true,
-                        loading: false,
-                    });
-                    new Alert.alert(
-                        'Uploaded',
-                        'Your case information has been uploaded.',
-                        [{text: 'OK', onPress: () => this.onSavePress()},],
-                        {cancelable: false},
-                    );
-                } else {
-                    console.log("Request to server unsuccessful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
+        if (!this.checkCase(curCase)) return;
+        this.checkInternetAccess()
+            .then(access =>{
+                if (!access) {
                     this.setState({
                         loading: false,
                     });
-                    new Alert.alert(
-                        'Upload Failed',
-                        'Your case information failed to upload.',
-                        [{text: 'OK', onPress: () => this.onSavePress()},],
-                        {cancelable: false},
-                    );
+                    return;
                 }
+                const body = new FormData();
+                this.state.uris.forEach(img => {
+                    body.append("images[]", {
+                        uri: img.uri,
+                        name: img.name,
+                        type: "image/jpg"
+                    });
+                    sides.push(img.side);
+                });
+                body.append("case", JSON.stringify(curCase));
+                fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
+                    {
+                        method: 'POST',
+                        body: body,
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "multipart/form-data"
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Request to server successful.");
+                            console.log(response.status);
+                            response.text()
+                                .then(text => {
+                                    console.log(text);
+                                });
+                            this.setState({
+                                isUploaded: true,
+                                loading: false,
+                            });
+                            new Alert.alert(
+                                'Uploaded',
+                                'Your case information has been uploaded.',
+                                [{text: 'OK', onPress: () => this.onSavePress()},],
+                                {cancelable: false},
+                            );
+                        } else {
+                            console.log("Request to server unsuccessful.");
+                            console.log(response.status);
+                            response.text()
+                                .then(text => {
+                                    console.log(text);
+                                });
+                            this.setState({
+                                loading: false,
+                            });
+                            new Alert.alert(
+                                'Upload Failed',
+                                'Your case information failed to upload.',
+                                [{text: 'OK', onPress: () => this.onSavePress()},],
+                                {cancelable: false},
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.log("Error making request : " + error);
+                        this.setState({
+                            loading: false,
+                        });
+                    });
             })
             .catch(error => {
-                console.log("Error making request : " + error);
+                console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
                 this.setState({
-                    loading: true,
+                    loading: false,
                 });
             });
     }

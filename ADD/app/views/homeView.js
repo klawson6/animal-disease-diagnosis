@@ -15,92 +15,133 @@ import * as MediaLibrary from 'expo-media-library';
 
 class HomeView extends Component {
 
+    /**
+     *  View dependant fields.
+     *
+     *  hasPermissions:     True if the user can given the app all required permissions (Camera, Media Lib)
+     *  loading:            True if the app is loading any data from storage, tells the Component to display the loading screen.
+     **/
     state = {
-        cases: null,
         hasPermissions: false,
         loading: false,
     };
 
+    /**
+     *  Function executed when this component mounts to the display.
+     *
+     *  Sets the loading state to true.
+     *  Initial request for permissions from the user.
+     *  Looks the app orientation to vertical.
+     *  Initialises the app storage.
+     **/
     componentDidMount() {
-        this.setState({loading: true});
-        this.askForPermissions();
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
-            .then()
-            .catch(error => {
+        this.setState({loading: true}); // Sets the loading state to true.
+        this.askForPermissions(); // Initial request for permissions
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT) // Lock the screen orientation to vertical.
+            .then() // Do nothing on success.
+            .catch(error => { // Log an error for debugging
                 console.log('Error occurred when locking orientation: ' + error)
             });
-        AsyncStorage.getAllKeys()
+        AsyncStorage.getAllKeys() // Fetch all keys to values from the locally stored data
             .then(keys => {
-                if (!keys.includes('numCases')) {
+                if (!keys.includes('numCases')) { // Find the key for the number of cases, if it does not exist, create and initialise it to 0.
                     AsyncStorage.setItem('numCases', '0');
                 }
-                this.setState({loading: false});
+                this.setState({loading: false}); // Set the loading state to false
             })
             .catch(error => {
-                this.setState({loading: false});
+                this.setState({loading: false}); // Set the loading state to false
                 console.log('Error occurred when creating numCases: ' + error)
             });
     }
 
+    /**
+     *  Asks the user for necessary permissions.
+     *  Will set the state of permissions based on the user's response.
+     **/
     askForPermissions() {
         Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
             .then(result => {
-                this.setState({hasPermissions: result.status === 'granted'});
+                this.setState({hasPermissions: result.status === 'granted'}); // Set the state of hasPermissions to true if all permissions were granted.
             });
     }
 
+    /**
+     *  Callback executed when the button in the view corresponding to starting a new healthy case, is clicked.
+     *
+     *  Navigates the view to the CameraView Component if all permissions have been granted.
+     **/
     onHealthyPress() {
-        if (this.state.hasPermissions) {
-            this.props.navigation.navigate('cameraView', {
-                type: "Healthy Animal",
+        if (this.state.hasPermissions) { // Check for granted permissions.
+            this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
+                type: "Healthy Animal", // Passing a parameter to indicate the state of CameraView to be loaded.
             });
         } else {
-            this.askForPermissions();
+            this.askForPermissions(); // Ask for permissions
         }
     }
 
+    /**
+     *  Callback executed when the button in the view corresponding to starting a new disease case, is clicked.
+     *
+     *  Navigates the view to the CameraView Component if all permissions have been granted.
+     **/
     onDiseasePress() {
-        if (this.state.hasPermissions) {
-            this.props.navigation.navigate('cameraView', {
-                type: "Disease",
+        if (this.state.hasPermissions) { // Check for granted permissions.
+            this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
+                type: "Disease", // Passing a parameter to indicate the state of CameraView to be loaded.
             });
         } else {
-            this.askForPermissions();
+            this.askForPermissions(); // Ask for permissions
         }
     }
 
+    /**
+     *  Callback executed when the button in the view corresponding to the case list, is clicked.
+     *
+     *  Navigates the view to the GalleryView Component if all permissions have been granted.
+     **/
     onGalleryPress() {
-        if (this.state.hasPermissions) {
-            this.props.navigation.navigate('galleryView', {
-                home: true,
+        if (this.state.hasPermissions) { // Check for granted permissions.
+            this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
+                home: true, // Passing a parameter to indicate the state of GalleryView to be loaded.
             });
         } else {
-            this.askForPermissions();
+            this.askForPermissions(); // Ask for permissions
         }
     }
 
+    /**
+     *  Callback executed when the button in the view corresponding to the settings, is clicked.
+     *
+     *  Navigates the view to the SettingsView Component if all permissions have been granted.
+     **/
     onSettingsPress() {
-        if (this.state.hasPermissions) {
-            this.setState({loading: true});
-            AsyncStorage.getItem("settings")
-                .then(item => {
-                    this.setState({loading: false,});
-                    if (item) {
-                        this.props.navigation.navigate('settingsView', {
-                            settings: JSON.parse(item)
+        if (this.state.hasPermissions) { // Check for granted permissions.
+            this.setState({loading: true}); // Sets the loading state to true.
+            AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
+                .then(item => { // Lambda callback passing in the resolved promise
+                    this.setState({loading: false,}); // Sets the loading state to false.
+                    if (item) { // If there were saved settings
+                        this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsView.
+                            settings: JSON.parse(item) // Passing an object corresponding to loaded settings as a parameter.
                         });
                     } else
-                        this.props.navigation.navigate('settingsView');
-                    console.log(this.state);
+                        this.props.navigation.navigate('settingsView'); // Navigate the view to SettingsView.
                 })
-                .catch(error => {
-                    console.log("Error getting settings from local storage: " + error);
+                .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
+                    console.log("Error getting settings from local storage: " + error); // Log an error for debugging
                 })
         } else {
-            this.askForPermissions();
+            this.askForPermissions(); // Ask for permissions
         }
     }
 
+    /**
+     *  Callback executed when the button in the view corresponding to "How to Use", is clicked.
+     *
+     *  Will do handy stuff eventually, right now it deletes all app data and images, or logs everything
+     **/
     onHelpPress() {
         // FOR CLEARING STORAGE
         AsyncStorage.clear(error => {
@@ -139,6 +180,9 @@ class HomeView extends Component {
         //     .then(value => console.log(value));
     }
 
+    /**
+     *  The XML that describes the component tree that build this component.
+     **/
     render() {
         return (
             <View style={styles.container}>
@@ -194,6 +238,9 @@ class HomeView extends Component {
     }
 }
 
+/**
+ *  The stylesheet for this component
+ **/
 const styles = StyleSheet.create({
     container: {
         flex: 1,
