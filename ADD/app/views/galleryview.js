@@ -10,15 +10,14 @@ import {
     Alert, AsyncStorage
 } from 'react-native';
 import * as MediaLibrary from "expo-media-library";
+import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
 class GalleryView extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            wifi: false,
-            cell: false,
-            defaultAnimal: null,
+            settings: null,
             cases: null,
             loading: false,
             loadingText: ""
@@ -27,9 +26,12 @@ class GalleryView extends Component {
 
 
     componentDidMount() {
-        if (this.props.navigation.getParam('home'))
+        if (this.props.navigation.getParam('home')) {
+            this.setState({
+                settings: this.props.navigation.getParam('settings')
+            });
             this.loadAllCases();
-        else
+        } else
             this.loadCase();
     }
 
@@ -38,47 +40,84 @@ class GalleryView extends Component {
         this.loadAlbum(c);
     }
 
+    checkInternetAccess() {
+        console.log(this.state);
+        return NetInfo.fetch()
+            .then(state => {
+                if (state.isInternetReachable) {
+                    if (this.state.settings.wifi && state.type === NetInfoStateType.wifi || this.state.settings.cell && state.type === NetInfoStateType.cellular) {
+                        return true;
+                    } else {
+                        new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
+                        return false;
+                    }
+                } else {
+                    new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
+                    return false;
+                }
+            })
+            .catch(error => {
+                new Alert.alert("Error", "An error occurred fetching your network type.");
+                console.log("Error fetching network state: " + error);
+            })
+    }
+
     uploadAll() {
         this.setState({
             loading: true,
             loadingText: "Uploading cases..."
         });
-        let cases = this.state.cases;
-        let fetches = [];
-        for (let key in cases) {
-            if (cases.hasOwnProperty(key) && key !== "numCases" && key !== "settings" && !cases[key].isUploaded && cases[key].completed) {
-                fetches.push(this.uploadCase(cases[key], key));
-            }
-        }
-        Promise.all(fetches)
-            .then(responses => {
-                if (responses.length === 0) {
+        this.checkInternetAccess()
+            .then(access => {
+                if (!access) {
                     this.setState({
-                        loading: false
+                        loading: false,
                     });
-                    new Alert.alert('Nothing to Upload', 'There are no cases to be uploaded.');
                     return;
                 }
-                let errors = false;
-                responses.forEach(key => {
-                    if (key)
-                        cases[key].isUploaded = true;
-                    else
-                        errors = true;
-                });
+                let cases = this.state.cases;
+                let fetches = [];
+                for (let key in cases) {
+                    if (cases.hasOwnProperty(key) && key !== "numCases" && key !== "settings" && !cases[key].isUploaded && cases[key].completed) {
+                        fetches.push(this.uploadCase(cases[key], key));
+                    }
+                }
+                Promise.all(fetches)
+                    .then(responses => {
+                        if (responses.length === 0) {
+                            this.setState({
+                                loading: false
+                            });
+                            new Alert.alert('Nothing to Upload', 'There are no cases to be uploaded.');
+                            return;
+                        }
+                        let errors = false;
+                        responses.forEach(key => {
+                            if (key)
+                                cases[key].isUploaded = true;
+                            else
+                                errors = true;
+                        });
+                        this.setState({
+                            cases: cases,
+                            loading: false
+                        });
+                        errors ?
+                            new Alert.alert(
+                                'Unsuccessful Upload',
+                                'There have been 1 or more unsuccessful uploads. Upload status of successfully uploaded cases have been updated.'
+                            ) :
+                            new Alert.alert(
+                                'Uploaded',
+                                'Your cases have all been successfully uploaded.'
+                            )
+                    });
+            })
+            .catch(error => {
+                console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
                 this.setState({
-                    cases: cases,
-                    loading: false
+                    loading: false,
                 });
-                errors ?
-                    new Alert.alert(
-                        'Unsuccessful Upload',
-                        'There have been 1 or more unsuccessful uploads. Upload status of successfully uploaded cases have been updated.'
-                    ) :
-                    new Alert.alert(
-                        'Uploaded',
-                        'Your cases have all been successfully uploaded.'
-                    )
             });
     }
 
@@ -271,7 +310,8 @@ class GalleryView extends Component {
         this.props.navigation.navigate('categoriseView', {
             images: this.state.images,
             case: this.state.cases[c],
-            caseName: c
+            caseName: c,
+            settings: {wifi: this.state.settings.wifi, cell: this.state.settings.cell}
         })
     }
 

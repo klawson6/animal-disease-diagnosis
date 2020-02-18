@@ -47,6 +47,15 @@ class HomeView extends Component {
                 if (!keys.includes('numCases')) { // Find the key for the number of cases, if it does not exist, create and initialise it to 0.
                     AsyncStorage.setItem('numCases', '0');
                 }
+                if (!keys.includes('settings')) { // Find the key for the number of cases, if it does not exist, create and initialise it to 0.
+                    AsyncStorage.setItem('settings', JSON.stringify({
+                        wifi: true,
+                        cell: true,
+                        species: null,
+                        location: null,
+                        name: null
+                    }));
+                }
                 this.setState({loading: false}); // Set the loading state to false
             })
             .catch(error => {
@@ -103,9 +112,24 @@ class HomeView extends Component {
      **/
     onGalleryPress() {
         if (this.state.hasPermissions) { // Check for granted permissions.
-            this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
-                home: true, // Passing a parameter to indicate the state of GalleryView to be loaded.
-            });
+            this.setState({loading: true}); // Sets the loading state to true.
+            AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
+                .then(item => { // Lambda callback passing in the resolved promise
+                    this.setState({loading: false,}); // Sets the loading state to false.
+                    if (item) { // If there were saved settings
+                        this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
+                            home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
+                            settings: JSON.parse(item) // Passing an object corresponding to loaded settings as a parameter.
+                        });
+                    } else
+                        this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
+                            home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
+                        });
+                })
+                .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
+                    this.setState({loading: false,}); // Sets the loading state to false.
+                    console.log("Error getting settings from local storage: " + error); // Log an error for debugging
+                })
         } else {
             this.askForPermissions(); // Ask for permissions
         }
@@ -130,6 +154,7 @@ class HomeView extends Component {
                         this.props.navigation.navigate('settingsView'); // Navigate the view to SettingsView.
                 })
                 .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
+                    this.setState({loading: false,}); // Sets the loading state to false.
                     console.log("Error getting settings from local storage: " + error); // Log an error for debugging
                 })
         } else {

@@ -165,7 +165,7 @@ class CategoriseView extends Component {
             if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
                 complete = false;
         });
-        if (!complete){
+        if (!complete) {
             new Alert.alert('Case Not Completed', 'You must fully complete the form before uploading the case.',);
             this.setState({
                 loading: false
@@ -215,7 +215,7 @@ class CategoriseView extends Component {
         };
         if (!this.checkCase(curCase)) return;
         this.checkInternetAccess()
-            .then(access =>{
+            .then(access => {
                 if (!access) {
                     this.setState({
                         loading: false,
@@ -374,11 +374,9 @@ class CategoriseView extends Component {
             if (this.state.species !== null) {
                 this.state.diseases = this.diseases[this.state.species];
             }
-        } else if (this.props.navigation.getParam('settings')) {
-            this.state = Object.assign({}, this.state, this.props.navigation.getParam('settings'));
-            if (this.state.species) this.state.diseases = this.diseases[this.state.species]
         }
-        console.log(this.state);
+        this.state = Object.assign({}, this.state, this.props.navigation.getParam('settings'));
+        if (this.state.species) this.state.diseases = this.diseases[this.state.species]
     }
 
     showDatePicker() {
