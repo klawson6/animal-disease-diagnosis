@@ -24,7 +24,6 @@ class HomeView extends Component {
     state = {
         hasPermissions: false,
         loading: false,
-        loadingText: "",
     };
 
     /**
@@ -113,7 +112,7 @@ class HomeView extends Component {
      **/
     onGalleryPress() {
         if (this.state.hasPermissions) { // Check for granted permissions.
-            this.setState({loading: true, loadingText: "Loading cases..."}); // Sets the loading state to true.
+            this.setState({loading: true}); // Sets the loading state to true.
             AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
                 .then(item => { // Lambda callback passing in the resolved promise
                     this.setState({loading: false,}); // Sets the loading state to false.
@@ -143,7 +142,7 @@ class HomeView extends Component {
      **/
     onSettingsPress() {
         if (this.state.hasPermissions) { // Check for granted permissions.
-            this.setState({loading: true, loadingText: "Loading settings..."}); // Sets the loading state to true.
+            this.setState({loading: true}); // Sets the loading state to true.
             AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
                 .then(item => { // Lambda callback passing in the resolved promise
                     this.setState({loading: false,}); // Sets the loading state to false.
@@ -213,88 +212,51 @@ class HomeView extends Component {
         return (
             <View style={styles.container}>
                 {this.state.loading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>{this.state.loadingText}</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>Loading settings...</Text>
                     </View>
                     : null}
-                <View style={styles.frontContainer}>
-                    <View style={styles.emptyTop}>
+                <View style={styles.topContainer}>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>
+                            New Case:
+                        </Text>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <View style={styles.buttonRow}>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onHealthyPress.bind(this)}>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg}
-                                               source={require('../assets/img/cow-healthy.png')}/>
-                                        <Text style={styles.buttonText}>Healthy Case</Text>
-                                    </View>
-                                </TouchableOpacity>
+                        {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
+                        <TouchableOpacity onPress={this.onHealthyPress.bind(this)}>
+                            <View style={[styles.button]}>
+                                <Text style={styles.buttonText}>Healthy Animal</Text>
                             </View>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onDiseasePress.bind(this)}>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg}
-                                               source={require('../assets/img/cow-disease.png')}/>
-                                        <Text style={styles.buttonText}>Disease Case</Text>
-                                    </View>
-                                </TouchableOpacity>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.onDiseasePress.bind(this)}>
+                            <View style={[styles.button]}>
+                                <Text style={styles.buttonText}>Diseased Animal</Text>
                             </View>
-                        </View>
-                        <View style={styles.buttonRow}>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onGalleryPress.bind(this)}>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg}
-                                               source={require('../assets/img/folder-blue.png')}/>
-                                        <Text style={styles.buttonText}>Saved Cases</Text>
-                                    </View>
-                                </TouchableOpacity>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.helpContainer}>
+                        <TouchableOpacity onPress={this.onHelpPress.bind(this)}>
+                            <View style={[styles.buttonHelp]}>
+                                <Text style={styles.buttonHelpText}>How to Use</Text>
                             </View>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onHelpPress.bind(this)}>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg}
-                                               source={require('../assets/img/question-blue.png')}/>
-                                        <Text style={styles.buttonText}>How to Use</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={styles.buttonRow}>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg}
-                                               source={require('../assets/img/feedback-blue.png')}/>
-                                        <Text style={styles.buttonText}>Provide Feedback</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onSettingsPress.bind(this)}>
-                                    <View style={styles.button}>
-                                        <Image style={styles.buttonImg} source={require('../assets/img/cog-blue.png')}/>
-                                        <Text style={styles.buttonText}>Settings</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.topBack}>
-                    <View style={styles.topTextContainer}>
-                        <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
-                        <Text style={styles.topText2}>v 1.0.0</Text>
+                <View style={styles.navContainer}>
+                    <View style={styles.imgContainer}>
+                        <TouchableOpacity style={styles.galleryTouchable} onPress={this.onGalleryPress.bind(this)}>
+                            <Image style={[styles.image]}
+                                   source={require('../assets/img/folder.png')}/>
+                            <Text style={styles.caption}>Cases</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.settingsTouchable} onPress={this.onSettingsPress.bind(this)}>
+                            <Image style={[styles.image]}
+                                   source={require("../assets/img/settings.png")}/>
+                            <Text style={styles.caption}>Settings</Text>
+                        </TouchableOpacity>
                     </View>
-                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue2.jpg')}/>
-                </View>
-                <View style={styles.botBack}>
                 </View>
             </View>
         );
@@ -305,128 +267,153 @@ class HomeView extends Component {
  *  The stylesheet for this component
  **/
 const styles = StyleSheet.create({
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 4,
-        position: "absolute",
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
     },
-    darken: {
+    background: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 4
+    },
+    topContainer: {
+        width: Dimensions.get('window').width,
+        flex: 4,
+        alignItems: 'center',
+        zIndex: 0
+    },
+    titleContainer: {
+        flex: 1,
+        flexDirection: 'column-reverse',
+        // backgroundColor: '#000000',
+        //justifyContent: 'space-around',
+    },
+    title: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 30,
+        textShadowColor: '#000000',
+        //flex: 1,
+    },
+    buttonContainer: {
+        flex: 3,
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        //backgroundColor: '#ff6381',
+
+    },
+    button: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        width: Dimensions.get('window').width * 2 / 3,
+        height: Dimensions.get('window').height / 10,
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 25,
+    },
+    helpContainer: {
+        flex: 2,
+        flexDirection: 'column-reverse',
+        //justifyContent: 'space-evenly',
+        alignItems: 'center',
+        //backgroundColor: '#6bff40',
+    },
+    buttonHelp: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
+        width: Dimensions.get('window').width * 2 / 5,
+        height: Dimensions.get('window').height / 14,
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
+    buttonHelpText: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
+    },
+    navContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height / 4,
+        //backgroundColor: '#4345ff',
+        flex: 1,
+        zIndex: 0
+    },
+    imgContainer: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: 'center',
+    },
+    image: {
+        width: 65,
+        height: 65,
+    },
+    settingsTouchable: {
+        transform: [{
+            translateX: 65,
+        }],
+        alignItems: 'center',
+    },
+    galleryTouchable: {
+        transform: [{
+            translateX: -65,
+        }],
+        alignItems: 'center',
+        //backgroundColor: '#000000',
+    },
+    caption: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 18,
     },
     loadingScreen: {
-        alignSelf: "center",
         width: Dimensions.get('window').width / 2,
         height: Dimensions.get('window').height / 4,
         // flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: '#FFFFFF',
-        zIndex: 5,
+        zIndex: 1,
         position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
-        borderRadius: 3,
-        //borderColor: '#003c8f',
-        //borderWidth: 1,
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
     },
     loadingImg: {
         width: Dimensions.get('window').width / 4,
         height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 14,
+        margin: Dimensions.get('window').width / 12,
     },
     loadingText: {
+        //flex: 1,
         color: '#000000',
-        fontSize: 18,
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
-    container: {
-        flex: 1,
-    },
-    frontContainer: {
-        height: Dimensions.get("window").height,
-        zIndex: 2,
-        position: "absolute",
-        width: Dimensions.get("window").width,
-    },
-    emptyTop: {
-        height: Dimensions.get("window").height * 6 / 17,
-    },
-    buttonContainer: {
-        height: Dimensions.get("window").height * 12 / 17,
-    },
-    buttonRow: {
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        width: "100%",
-    },
-    buttonWrapper: {
-        width: Dimensions.get("window").width * 3 / 8,
-        height: Dimensions.get("window").width * 3 / 8,
-        marginBottom: Dimensions.get("window").width / 12,
-        backgroundColor: "white",
-        borderRadius: 4,
-        justifyContent: "center"
-    },
-    button: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: "white",
-        borderRadius: 4,
-        justifyContent: "center"
-    },
-    buttonImg: {
-        width: "40%",
-        height: "40%",
-        alignSelf: "center"
-    },
-    buttonText: {
-        alignSelf: "center",
-        width: "85%",
-        color: "#003c8f",
-        fontSize: 18,
-        textAlign: "center"
-    },
-    topBack: {
-        flex: 3,
-        flexDirection: "column",
-        justifyContent: "center"
-    },
-    topTextContainer: {
-        flex: 2,
-        width: Dimensions.get("window").width,
-        justifyContent: "space-evenly",
-        zIndex: 1,
-        position: "absolute",
-    },
-    topText1: {
-        alignSelf: "center",
-        width: "85%",
-        color: "white",
-        fontSize: 25,
-        textAlign: "center"
-    },
-    topText2: {
-        alignSelf: "center",
-        width: "85%",
-        color: "white",
-        fontSize: 18,
-        textAlign: "center"
-    },
-    topImg: {
-        height: '100%',
-        width: '100%',
-        zIndex: 0,
-        position: "absolute",
-    },
-    botBack: {
-        flex: 5,
-        flexDirection: "column",
-        backgroundColor: "#f5f5f5"
-    }
 });
 
 export default HomeView;

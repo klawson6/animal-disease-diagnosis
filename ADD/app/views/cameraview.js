@@ -229,9 +229,13 @@ class CameraView extends Component {
                     <FadeInView style={styles.flash}/>
                     : null}
                 {this.state.isLoading ?
-                    <View style={styles.loadingScreen}>
-                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                        <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                    <View style={styles.loadContainer}>
+                        <View style={styles.loadingScreen}>
+                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                            <Text style={styles.loadingText}>Loading...</Text>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
                     </View>
                     : null}
                 {this.state.type === "Healthy Animal" ?
@@ -274,6 +278,20 @@ class CameraView extends Component {
 }
 
 const styles = StyleSheet.create({
+    loadContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        zIndex: 4,
+        position: "absolute",
+    },
+    darken: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: "black",
+        opacity: 0.6,
+        position: "absolute",
+        zIndex: 4
+    },
     container: {
         flex: 1,
         flexDirection: 'column',
@@ -290,31 +308,28 @@ const styles = StyleSheet.create({
         position: "absolute",
     },
     loadingScreen: {
+        alignSelf: "center",
         width: Dimensions.get('window').width / 2,
         height: Dimensions.get('window').height / 4,
         // flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: '#FFFFFF',
-        zIndex: 2,
+        zIndex: 5,
         position: 'absolute',
         transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 5,
-        borderColor: '#808080',
-        borderWidth: 1,
+        borderRadius: 3,
+        //borderColor: '#003c8f',
+        //borderWidth: 1,
     },
     loadingImg: {
         width: Dimensions.get('window').width / 4,
         height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 12,
+        margin: Dimensions.get('window').width / 14,
     },
     loadingText: {
-        //flex: 1,
         color: '#000000',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir-Light',
-        fontSize: 20,
+        fontSize: 18,
     },
     helpContainer: {
         width: Dimensions.get('window').width,

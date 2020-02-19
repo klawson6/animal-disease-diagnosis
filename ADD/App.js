@@ -12,7 +12,11 @@ import CategoriseView from "./app/views/categoriseview";
 
 const RootStack = createStackNavigator(
     {
-        homeView: HomeView,
+        homeView: {
+            screen: HomeView, navigationOptions: {
+                headerShown: false
+            }
+        },
         cameraView: CameraView,
         settingsView: SettingsView,
         galleryView: GalleryView,
@@ -22,13 +26,13 @@ const RootStack = createStackNavigator(
         initialRouteName: 'homeView',
         defaultNavigationOptions: {
             headerStyle: {
-                backgroundColor: '#73c4c4',
+                backgroundColor: '#5e92f3',
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
-                fontWeight: 'bold',
+                //fontWeight: 'bold',
                 //fontFamily: "sans-serif-thin"
-                width : Dimensions.get('window').width*4/5,
+                width: Dimensions.get('window').width * 4 / 5,
                 textAlign: 'center'
             },
             title: "Image Collection Tool",

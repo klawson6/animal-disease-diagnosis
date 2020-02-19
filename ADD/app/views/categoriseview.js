@@ -408,9 +408,13 @@ class CategoriseView extends Component {
         return (
             <View style={styles.container}>
                 {this.state.loading ?
-                    <View style={styles.loadingScreen}>
-                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                        <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                    <View style={styles.loadContainer}>
+                        <View style={styles.loadingScreen}>
+                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                            <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
                     </View>
                     : null}
                 <View pointerEvents={this.state.loading ? 'none' : 'auto'}
@@ -621,6 +625,20 @@ class CategoriseView extends Component {
 }
 
 const styles = StyleSheet.create({
+    loadContainer:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        zIndex: 1,
+        position: "absolute",
+    },
+    darken:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: "black",
+        opacity: 0.6,
+        position: "absolute",
+        zIndex: 1
+    },
     container: {
         flex: 1,
         alignItems: 'center',
@@ -634,18 +652,19 @@ const styles = StyleSheet.create({
         color: "#808080"
     },
     loadingScreen: {
+        alignSelf: "center",
         width: Dimensions.get('window').width / 2,
         height: Dimensions.get('window').height / 4,
         // flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: '#FFFFFF',
-        zIndex: 1,
+        zIndex: 2,
         position: 'absolute',
         transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 5,
-        borderColor: '#808080',
-        borderWidth: 1,
+        borderRadius: 3,
+        // borderColor: '#808080',
+        // borderWidth: 1,
     },
     loadingImg: {
         width: Dimensions.get('window').width / 4,
@@ -655,10 +674,7 @@ const styles = StyleSheet.create({
     loadingText: {
         //flex: 1,
         color: '#000000',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
+        fontSize: 18,
     },
     title: {
         color: '#73c4c4',

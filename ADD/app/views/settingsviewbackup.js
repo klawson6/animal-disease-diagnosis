@@ -12,11 +12,6 @@ import {
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
-import {
-    TextField,
-    FilledTextField,
-    OutlinedTextField,
-} from 'react-native-material-textfield';
 
 class SettingsView extends Component {
 
@@ -52,54 +47,27 @@ class SettingsView extends Component {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam("settings"));
     }
 
-    fieldRef = React.createRef();
-
-    onSubmit = () => {
-        let {current: field} = this.fieldRef;
-
-        console.log(field.value());
-    };
-
-    formatText = (text) => {
-        return text.replace(/[^+\d]/g, '');
-    };
-
     render() {
         return (
             <View style={styles.container}>
                 {this.state.loading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>Saving...</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                        <Text style={styles.loadingText}>Loading settings...</Text>
                     </View>
                     : null}
                 <Text style={styles.title}>Settings</Text>
                 <View style={styles.topContainer}>
                     <ScrollView style={styles.scrollContainer}>
                         <View style={styles.textEntryContainer}>
-                            <Image source={require('../assets/img/person-grey.png')} style={styles.optionImg}/>
-                            <FilledTextField label='Name'
-                                             ref={this.fieldRef}
-                                             containerStyle={styles.textFieldContainer}
-                                             inputContainerStyle={styles.textFieldBox}
-                                             lineWidth={2}
-                                             textColor={"black"}
-                                             baseColor={"#c1c1c1"}
-                                             tintColor={"#5e92f3"}
-                                             defaultValue={this.state.name}/>
-                                {/*<TextInput*/}
-                                {/*    onChangeText={text => {*/}
-                                {/*        this.setState(text ? {name: text} : {name: null})*/}
-                                {/*    }}*/}
-                                {/*    placeholder={"Name"}*/}
-                                {/*    placeholderTextColor={"#c1c1c1"}*/}
-                                {/*    style={styles.textEntryBox}*/}
-                                {/*    defaultValue={this.state.name}*/}
-                                {/*/>*/}
+                            <Text style={styles.textEntryText}>Full Name:</Text>
+                            <TextInput
+                                onChangeText={text => {
+                                    this.setState(text ? {name: text} : {name: null})
+                                }}
+                                style={styles.textEntryBox}
+                                defaultValue={this.state.name}
+                            />
                         </View>
                         <Text style={styles.uploadTitle}>Default Species:</Text>
                         <RNPickerSelect
@@ -189,7 +157,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     title: {
-        color: '#767676',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
         fontSize: 30,
         margin: 15,
         zIndex: 0
@@ -199,7 +170,7 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: Dimensions.get('window').width / 20,
         borderRadius: 5,
-        borderColor: '#c1c1c1',
+        borderColor: '#808080',
         backgroundColor: '#f9f9f9',
         borderWidth: 1,
         flexDirection: 'column',
@@ -214,17 +185,10 @@ const styles = StyleSheet.create({
         marginBottom: Dimensions.get('window').width / 20,
     },
     textEntryContainer: {
-        height: Dimensions.get('window').height / 16,
-        marginBottom: Dimensions.get('window').width / 20,
-        flex: 1,
+        height: Dimensions.get('window').height / 20,
+        marginBottom: Dimensions.get('window').width / 20, flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        //backgroundColor: "red"
-    },
-    optionImg: {
-        height: Dimensions.get('window').height / 30,
-        width: Dimensions.get('window').height / 30,
-        marginRight: Dimensions.get('window').height / 60,
     },
     textEntryText: {
         flex: 1,
@@ -234,13 +198,19 @@ const styles = StyleSheet.create({
             : 'Avenir-Light',
         fontSize: 20,
     },
-    textFieldContainer: {
-        //height: Dimensions.get('window').height / 20,
-        flex: 1,
-        //textAlign: 'center',
-    },
-    textFieldBox: {
-        backgroundColor: "#f4f4f4"
+    textEntryBox: {
+        borderRadius: 3,
+        borderWidth: 1,
+        borderColor: '#ebebeb',
+        backgroundColor: '#f9f9f9',
+        height: Dimensions.get('window').height / 20,
+        flex: 2,
+        color: 'black',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
+        textAlign: 'center',
     },
     uploadTitle: {
         color: '#73c4c4',
@@ -302,34 +272,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignItems: 'center'
     },
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 1,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 1
-    },
     loadingScreen: {
-        alignSelf: "center",
         width: Dimensions.get('window').width / 2,
         height: Dimensions.get('window').height / 4,
         // flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: '#FFFFFF',
-        zIndex: 2,
+        zIndex: 1,
         position: 'absolute',
         transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 3,
-        // borderColor: '#808080',
-        // borderWidth: 1,
+        borderRadius: 5,
+        borderColor: '#808080',
+        borderWidth: 1,
     },
     loadingImg: {
         width: Dimensions.get('window').width / 4,
@@ -339,7 +294,10 @@ const styles = StyleSheet.create({
     loadingText: {
         //flex: 1,
         color: '#000000',
-        fontSize: 18,
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
 });
 
