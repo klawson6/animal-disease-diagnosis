@@ -7,16 +7,17 @@ import {
     TouchableOpacity,
     View,
     ScrollView,
-    TextInput,
-    AsyncStorage, Image, Alert,
+    AsyncStorage, Image, Alert
 } from 'react-native';
-import {CheckBox} from 'react-native-elements'
-import RNPickerSelect from 'react-native-picker-select';
 import {
-    TextField,
-    FilledTextField,
-    OutlinedTextField,
-} from 'react-native-material-textfield';
+    DefaultTheme,
+    Menu,
+    Switch,
+    TextInput,
+    Provider as PaperProvider,
+    Divider,
+    Button
+} from "react-native-paper";
 
 class SettingsView extends Component {
 
@@ -27,6 +28,10 @@ class SettingsView extends Component {
         location: null,
         name: null,
         loading: null,
+        locExpanded: false,
+        specExpanded: false,
+        locationShown: null,
+        speciesShown: null,
     };
 
     onSavePress() {
@@ -52,132 +57,186 @@ class SettingsView extends Component {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam("settings"));
     }
 
-    fieldRef = React.createRef();
-
-    onSubmit = () => {
-        let {current: field} = this.fieldRef;
-
-        console.log(field.value());
+    _handleSpeciesPress = (val) => {
+        this.setState({
+            speciesExpanded: !this.state.speciesExpanded,
+            species: val ? val : this.state.species,
+            speciesShown: this.state.speciesExpanded ? val ? val : this.state.species : this.state.species ? this.state.species : " "
+        });
     };
 
-    formatText = (text) => {
-        return text.replace(/[^+\d]/g, '');
+    _handleLocPress = (val) => {
+        this.setState({
+            locExpanded: !this.state.locExpanded,
+            location: val ? val : this.state.location,
+            locationShown: this.state.locExpanded ? val ? val : this.state.location : this.state.location ? this.state.location : " "
+        });
     };
 
     render() {
+        const theme = {
+            ...DefaultTheme,
+            roundness: 5,
+            colors: {
+                ...DefaultTheme.colors,
+                primary: '#1565c0',
+                accent: '#5e92f3',
+            },
+        };
+
         return (
-            <View style={styles.container}>
-                {this.state.loading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>Saving...</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
+            <PaperProvider theme={theme}>
+                <View style={styles.container}>
+                    {/*{this.state.loading ?*/}
+                    {/*    <View style={styles.loadContainer}>*/}
+                    {/*        <View style={styles.loadingScreen}>*/}
+                    {/*            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>*/}
+                    {/*            <Text style={styles.loadingText}>Saving...</Text>*/}
+                    {/*        </View>*/}
+                    {/*        <View style={styles.darken}>*/}
+                    {/*        </View>*/}
+                    {/*    </View>*/}
+                    {/*    : null}*/}
+                    <Text style={styles.title}>Settings</Text>
+                    <View style={styles.topContainer}>
+                        <ScrollView style={styles.scrollContainer}>
+                            <View style={styles.textEntryContainer}>
+                                <Image source={require('../assets/img/person-grey.png')} style={styles.optionImg}/>
+                                <TextInput
+                                    label='Default Identifier'
+                                    value={this.state.name}
+                                    onChangeText={text => this.setState({name: text})}
+                                    style={styles.textInput}
+                                />
+                            </View>
+                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            <View style={styles.textEntryContainer}>
+                                <Image source={require('../assets/img/species-choice.png')} style={styles.optionImg}/>
+                                <View style={styles.textInput}>
+                                    <Menu
+                                        visible={this.state.speciesExpanded}
+                                        onDismiss={this._handleSpeciesPress.bind(this, null)}
+                                        statusBarHeight={0}
+                                        selectionColor={"#1565c0"}
+                                        anchor={
+                                            <TouchableOpacity onPress={this._handleSpeciesPress.bind(this, null)}>
+                                                <TextInput
+                                                    label='Default Species'
+                                                    value={this.state.speciesShown}
+                                                    editable={false}
+                                                    underlineColor={this.state.speciesExpanded ? "#1565c0" : null}
+                                                />
+                                                <Image source={require('../assets/img/down-arrow.png')}
+                                                       style={styles.dropdownImg}/>
+                                            </TouchableOpacity>
+                                        }>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Cattle")
+                                        }} title="Cattle"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Goat")
+                                        }} title="Goat"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Sheep")
+                                        }} title="Sheep"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Camel")
+                                        }} title="Camel"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Horse")
+                                        }} title="Horse"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleSpeciesPress("Donkey")
+                                        }} title="Donkey"/>
+                                    </Menu>
+                                </View>
+                            </View>
+                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            <View style={styles.textEntryContainer}>
+                                <Image source={require('../assets/img/pin.png')} style={styles.optionImg}/>
+                                <View style={styles.textInput}>
+                                    <Menu
+                                        visible={this.state.locExpanded}
+                                        onDismiss={this._handleLocPress.bind(this, null)}
+                                        statusBarHeight={0}
+                                        selectionColor={"#1565c0"}
+                                        anchor={
+                                            <TouchableOpacity onPress={this._handleLocPress.bind(this, null)}>
+                                                <TextInput
+                                                    label='Default Location'
+                                                    value={this.state.locationShown}
+                                                    editable={false}/>
+                                                <Image source={require('../assets/img/down-arrow.png')}
+                                                       style={styles.dropdownImg}/>
+                                            </TouchableOpacity>
+                                        }>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Addis Ababa")
+                                        }} title="Addis Ababa"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Afar Region")
+                                        }} title="Afar Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Amhara Region")
+                                        }} title="Amhara Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Benishangul-Gumuz Region")
+                                        }} title="Benishangul-Gumuz Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Dire Dawa")
+                                        }} title="Dire Dawa"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Gamebela Region")
+                                        }} title="Gamebela Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Harari Region")
+                                        }} title="Harari Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Oromia Region")
+                                        }} title="Oromia Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Somali Region")
+                                        }} title="Somali Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Southern Nations, Nationalities and Peoples\' Region")
+                                        }} title="Southern Nations, Nationalities and Peoples\' Region"/>
+                                        <Menu.Item onPress={() => {
+                                            this._handleLocPress("Tigray Region")
+                                        }} title="Tigray Region"/>
+                                    </Menu>
+                                </View>
+                            </View>
+                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            {/*<Text style={styles.uploadTitle}>Upload Cases Using:</Text>*/}
+                            <View style={[styles.switchContainer, {marginTop: Dimensions.get('window').width / 20}]}>
+                                <Text style={styles.switchText}>Wi-Fi Uploads: </Text>
+                                <Switch
+                                    value={this.state.wifi}
+                                    onValueChange={() => {
+                                        this.setState({wifi: !this.state.wifi});
+                                    }}
+                                    style={styles.switchIcon}
+                                />
+                            </View>
+                            <View style={styles.switchContainer}>
+                                <Text style={styles.switchText}>Cellular Uploads: </Text>
+                                <Switch
+                                    value={this.state.cell}
+                                    onValueChange={() => {
+                                        this.setState({cell: !this.state.cell});
+                                    }}
+                                    style={styles.switchIcon}
+                                />
+                            </View>
+                        </ScrollView>
                     </View>
-                    : null}
-                <Text style={styles.title}>Settings</Text>
-                <View style={styles.topContainer}>
-                    <ScrollView style={styles.scrollContainer}>
-                        <View style={styles.textEntryContainer}>
-                            <Image source={require('../assets/img/person-grey.png')} style={styles.optionImg}/>
-                            <FilledTextField label='Name'
-                                             ref={this.fieldRef}
-                                             containerStyle={styles.textFieldContainer}
-                                             inputContainerStyle={styles.textFieldBox}
-                                             lineWidth={2}
-                                             textColor={"black"}
-                                             baseColor={"#c1c1c1"}
-                                             tintColor={"#5e92f3"}
-                                             defaultValue={this.state.name}/>
-                                {/*<TextInput*/}
-                                {/*    onChangeText={text => {*/}
-                                {/*        this.setState(text ? {name: text} : {name: null})*/}
-                                {/*    }}*/}
-                                {/*    placeholder={"Name"}*/}
-                                {/*    placeholderTextColor={"#c1c1c1"}*/}
-                                {/*    style={styles.textEntryBox}*/}
-                                {/*    defaultValue={this.state.name}*/}
-                                {/*/>*/}
-                        </View>
-                        <Text style={styles.uploadTitle}>Default Species:</Text>
-                        <RNPickerSelect
-                            onValueChange={(value) =>
-                                this.setState({species: value ? value : null})}
-                            value={this.state.species}
-                            items={[
-                                {label: "None", value: ""},
-                                {label: 'Cattle', value: 'Cattle'},
-                                {label: 'Goat', value: 'Goat'},
-                                {label: 'Sheep', value: 'Sheep'},
-                                {label: 'Camel', value: 'Camel'},
-                                {label: 'Horse', value: 'Horse'},
-                                {label: 'Donkey', value: 'Donkey'},
-                            ]}
-                            useNativeAndroidPickerStyle={false}
-                            textInputProps={{
-                                fontFamily: "sans-serif-light",
-                                fontSize: 20,
-                            }}
-                        />
-                        <Text style={styles.uploadTitle}>Default Location:</Text>
-                        <RNPickerSelect
-                            onValueChange={(value) =>
-                                this.setState({location: value ? value : null})}
-                            value={this.state.location}
-                            items={[
-                                {label: "None", value: ""},
-                                {label: 'Addis Ababa', value: 'Addis Ababa'},
-                                {label: 'Afar Region', value: 'Afar Region'},
-                                {label: 'Amhara Region', value: 'Amhara Region'},
-                                {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
-                                {label: 'Dire Dawa', value: 'Dire Dawa'},
-                                {label: 'Gamebela Region', value: 'Gamebela Region'},
-                                {label: 'Harari Region', value: 'Harari Region'},
-                                {label: 'Oromia Region', value: 'Oromia Region'},
-                                {label: 'Somali Region', value: 'Somali Region'},
-                                {
-                                    label: 'Southern Nations, Nationalities and Peoples\' Region',
-                                    value: 'Southern Nations, Nationalities and Peoples\' Region'
-                                },
-                                {label: 'Tigray Region', value: 'Tigray Region'},
-                            ]}
-                            useNativeAndroidPickerStyle={false}
-                            textInputProps={{
-                                fontFamily: "sans-serif-light",
-                                fontSize: 20,
-                            }}
-                        />
-                        <Text style={styles.uploadTitle}>Upload Cases Using:</Text>
-                        <CheckBox
-                            title='WiFi'
-                            checkedIcon='check-square'
-                            uncheckedIcon='check-square'
-                            checked={this.state.wifi}
-                            onPress={() => this.setState({wifi: !this.state.wifi})}
-                            textStyle={styles.options}
-                            containerStyle={styles.optionsContainer}
-                        />
-                        <CheckBox
-                            title='Cellular Data'
-                            checkedIcon='check-square'
-                            uncheckedIcon='check-square'
-                            checked={this.state.cell}
-                            onPress={() => this.setState({cell: !this.state.cell})}
-                            textStyle={styles.options}
-                        />
-                    </ScrollView>
+                    <View style={styles.saveContainer}>
+                        <Button style={{width: "40%"}} mode="contained" loading={this.state.loading} onPress={this.onSavePress.bind(this)}>
+                            Save
+                        </Button>
+                    </View>
                 </View>
-                <View style={styles.saveContainer}>
-                    {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
-                    <TouchableOpacity onPress={this.onSavePress.bind(this)}>
-                        <View style={[styles.button]}>
-                            <Text style={styles.buttonText}>Save</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            </PaperProvider>
         );
     }
 }
@@ -189,7 +248,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     title: {
-        color: '#767676',
+        color: '#646464',
         fontSize: 30,
         margin: 15,
         zIndex: 0
@@ -213,19 +272,55 @@ const styles = StyleSheet.create({
         marginTop: Dimensions.get('window').width / 20,
         marginBottom: Dimensions.get('window').width / 20,
     },
-    textEntryContainer: {
-        height: Dimensions.get('window').height / 16,
-        marginBottom: Dimensions.get('window').width / 20,
+    textInput: {
+        height: Dimensions.get('window').height / 15,
         flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        //backgroundColor: "red"
+    },
+    dropdownImg: {
+        height: Dimensions.get('window').height / 30,
+        width: Dimensions.get('window').height / 30,
+        zIndex: 1,
+        position: "absolute",
+        alignSelf: "flex-end",
+        transform: [{translateY: Dimensions.get('window').height / 45}, {translateX: -Dimensions.get('window').height / 60}],
     },
     optionImg: {
         height: Dimensions.get('window').height / 30,
         width: Dimensions.get('window').height / 30,
         marginRight: Dimensions.get('window').height / 60,
     },
+    switchContainer: {
+        flex: 1,
+        flexDirection: "row",
+        marginBottom: Dimensions.get('window').height / 30,
+    },
+    switchText: {
+        flex: 1,
+        flexDirection: "row",
+        fontSize: 18,
+        color: "#646464"
+    },
+    switchIcon: {
+        flex: 1,
+        flexDirection: "row",
+        alignContent: "center"
+    },
+    uploadTitle: {
+        color: '#646464',
+        fontSize: 18,
+        marginTop: 20,
+        marginBottom: 20,
+    },
+
+
+    textEntryContainer: {
+        height: Dimensions.get('window').height / 14,
+        marginBottom: Dimensions.get('window').width / 20,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
     textEntryText: {
         flex: 1,
         color: '#73c4c4',
@@ -233,24 +328,12 @@ const styles = StyleSheet.create({
             ? "sans-serif-light"
             : 'Avenir-Light',
         fontSize: 20,
+    }, textFieldBox: {
+        //borderRadius: 20,
+        backgroundColor: "#f1f1f1",
+        height: Dimensions.get('window').height / 14,
     },
-    textFieldContainer: {
-        //height: Dimensions.get('window').height / 20,
-        flex: 1,
-        //textAlign: 'center',
-    },
-    textFieldBox: {
-        backgroundColor: "#f4f4f4"
-    },
-    uploadTitle: {
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir-Light',
-        fontSize: 20,
-        marginTop: 20,
-        marginBottom: 20,
-    }, options: {
+    options: {
         textAlign: 'center',
         color: '#73c4c4',
         fontFamily: Platform.OS === 'android'
@@ -264,7 +347,7 @@ const styles = StyleSheet.create({
     saveContainer: {
         flexDirection: 'row',
         alignItems: "center",
-        height: Dimensions.get('window').height / 10,
+        height: Dimensions.get('window').height * 2 / 10,
         zIndex: 0
     },
     button: {
