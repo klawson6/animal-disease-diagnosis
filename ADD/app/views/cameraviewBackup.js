@@ -259,16 +259,16 @@ class CameraView extends Component {
                         : <Text style={styles.buttonTitle}>Capture an Image of:{'\n'}The {this.state.side} side</Text>}
                     <View pointerEvents={this.state.capturing ? 'none' : 'auto'} style={styles.imgContainer}>
                         <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
-                            <Image style={[styles.imageSmall, styles.galleryTouchable]}
+                            <Image style={[styles.image, styles.galleryTouchable]}
                                    source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
-                                   source={require("../assets/img/material-cam.png")}/>
+                                   source={require("../assets/img/camera.png")}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
-                            <Image style={[styles.imageSmall, styles.settingsTouchable]}
-                                   source={require("../assets/img/arrow2.png")}/>
+                            <Image style={[styles.image, styles.settingsTouchable]}
+                                   source={require("../assets/img/arrow.png")}/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -377,17 +377,30 @@ const styles = StyleSheet.create({
         zIndex: 0,
         flex: 1,
         flexDirection: "column",
-        justifyContent: "space-evenly",
-        backgroundColor: "white"
+        justifyContent: "space-evenly"
     },
     buttonTitle: {
-        color: '#646464',
-        fontSize: 18,
-        // marginTop: Dimensions.get('window').height / 80,
-        // marginBottom: Dimensions.get('window').height / 80,
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif"
+            : 'Avenir-Light',
+        fontSize: 25,
+        marginTop: Dimensions.get('window').height / 75,
+        marginBottom: Dimensions.get('window').height / 75,
         alignSelf: "center",
         textAlign: "center",
         //backgroundColor: "blue"
+    },
+    buttonTitleDisease: {
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif"
+            : 'Avenir-Light',
+        fontSize: 25,
+        marginTop: Dimensions.get('window').height / 60,
+        marginBottom: Dimensions.get('window').height / 60,
+        alignSelf: "center",
+        textAlign: "center",
     },
     imgContainer: {
         flexDirection: "row",
@@ -396,14 +409,8 @@ const styles = StyleSheet.create({
         //backgroundColor: "red"
     },
     image: {
-        width: Dimensions.get('window').width / 6,
-        height: Dimensions.get('window').width / 6,
-        overlayColor: 'white',
-        alignSelf: 'center'
-    },
-    imageSmall:{
-        width: Dimensions.get('window').width / 8,
-        height: Dimensions.get('window').width / 8,
+        width: 65,
+        height: 65,
         overlayColor: 'white',
         alignSelf: 'center'
     },

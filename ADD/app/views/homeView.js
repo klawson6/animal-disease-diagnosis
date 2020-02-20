@@ -292,7 +292,7 @@ class HomeView extends Component {
                         <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
                         <Text style={styles.topText2}>v 1.0.0</Text>
                     </View>
-                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue2.jpg')}/>
+                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue22.png')}/>
                 </View>
                 <View style={styles.botBack}>
                 </View>

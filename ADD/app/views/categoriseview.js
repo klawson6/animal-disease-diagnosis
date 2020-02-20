@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
-import Swiper from 'react-native-swiper'
+import Swiper from '@manjiz/react-native-swiper'
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
@@ -420,8 +420,8 @@ class CategoriseView extends Component {
                 <View pointerEvents={this.state.loading ? 'none' : 'auto'}
                       style={[styles.caseContainer, this.state.loading ? {opacity: 0.4} : {}]}>
                     <Text style={styles.title}>Annotate the Image(s)</Text>
-                    <Swiper activeDotColor={"#73c4c4"} loadMinimal={false} loadMinimalSize={0}
-                            containerStyle={styles.swiperContainer}>
+                    <Swiper activeDotColor={"#1565c0"} loadMinimal={false} loadMinimalSize={0} showsPagination={false}
+                            containerStyle={styles.swiperContainer} width={Dimensions.get('window').width * 3 / 7} height={Dimensions.get('window').width * 4 / 7}>
                         {this.buildPreview(this.state.images)}
                     </Swiper>
                     <View style={styles.topContainer}>
@@ -625,13 +625,13 @@ class CategoriseView extends Component {
 }
 
 const styles = StyleSheet.create({
-    loadContainer:{
+    loadContainer: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
         zIndex: 1,
         position: "absolute",
     },
-    darken:{
+    darken: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
         backgroundColor: "black",
@@ -677,35 +677,27 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     title: {
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 30,
+        color: '#646464',
+        fontSize: 20,
         marginTop: Dimensions.get('window').width / 40,
     },
     swiperContainer: {
-        width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 4 / 5,
-        margin: Dimensions.get('window').width / 20,
-        marginBottom: Dimensions.get('window').width / 40,
-        borderRadius: 5,
-        borderColor: '#808080',
-        backgroundColor: '#f9f9f9',
-        borderWidth: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-    },
-    swiper: {
-        width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 4 / 5,
-        overflow: 'hidden',
+        // width: Dimensions.get('window').width * 3 / 7,
+        // height: Dimensions.get('window').width * 4 / 7,
+        // margin: Dimensions.get('window').width / 20,
+        // //marginBottom: Dimensions.get('window').width / 40,
+        // borderRadius: 5,
+        // borderColor: '#808080',
+        // borderWidth: 1,
+        // flexDirection: 'column',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // overflow: 'hidden',
+        backgroundColor: "red"
     },
     image: {
-        width: Dimensions.get('window').width * 3 / 5,
-        height: Dimensions.get('window').width * 4 / 5,
+        width: Dimensions.get('window').width * 3 / 7,
+        height: Dimensions.get('window').width * 4 / 7,
     },
     topContainer: {
         width: Dimensions.get('window').width * 4.5 / 5,

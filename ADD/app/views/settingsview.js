@@ -15,9 +15,10 @@ import {
     Switch,
     TextInput,
     Provider as PaperProvider,
-    Divider,
     Button
 } from "react-native-paper";
+// import {Divider} from "react-native-elements";
+import {Divider} from "react-native-paper";
 
 class SettingsView extends Component {
 
@@ -109,7 +110,7 @@ class SettingsView extends Component {
                                     style={styles.textInput}
                                 />
                             </View>
-                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            <Divider style={{height: 1, marginBottom: Dimensions.get('window').width / 20}}/>
                             <View style={styles.textEntryContainer}>
                                 <Image source={require('../assets/img/species-choice.png')} style={styles.optionImg}/>
                                 <View style={styles.textInput}>
@@ -151,7 +152,7 @@ class SettingsView extends Component {
                                     </Menu>
                                 </View>
                             </View>
-                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            <Divider style={{height: 1, marginBottom: Dimensions.get('window').width / 20}}/>
                             <View style={styles.textEntryContainer}>
                                 <Image source={require('../assets/img/pin.png')} style={styles.optionImg}/>
                                 <View style={styles.textInput}>
@@ -206,7 +207,7 @@ class SettingsView extends Component {
                                     </Menu>
                                 </View>
                             </View>
-                            <Divider style={{marginBottom: Dimensions.get('window').width / 20}}/>
+                            <Divider style={{height: 1, marginBottom: Dimensions.get('window').width / 20}}/>
                             {/*<Text style={styles.uploadTitle}>Upload Cases Using:</Text>*/}
                             <View style={[styles.switchContainer, {marginTop: Dimensions.get('window').width / 20}]}>
                                 <Text style={styles.switchText}>Wi-Fi Uploads: </Text>
