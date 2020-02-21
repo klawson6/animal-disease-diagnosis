@@ -9,9 +9,6 @@ import {
     ScrollView,
     Alert, AsyncStorage
 } from 'react-native';
-import {
-    Button, DefaultTheme, Provider as PaperProvider,
-} from "react-native-paper";
 import * as MediaLibrary from "expo-media-library";
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
@@ -68,6 +65,7 @@ class GalleryView extends Component {
     uploadAll() {
         this.setState({
             loading: true,
+            loadingText: "Uploading cases..."
         });
         this.checkInternetAccess()
             .then(access => {
@@ -190,7 +188,7 @@ class GalleryView extends Component {
             Object.keys(cases).forEach(key => {
                 if (key !== "numCases" && key !== "settings") {
                     rowElems.push(<Text key={key}
-                                        style={styles.caseText}>{(cases[key].dateSelected ? cases[key].dateSelected : "No Date") + " - " + (cases[key].species ? cases[key].species : "No Species") + " - " + (cases[key].type ? "Healthy" : cases[key].diagnosis ? cases[key].diagnosis : "No Diagnosis")}</Text>);
+                                        style={styles.caseText}>{cases[key].dateSelected + " - " + cases[key].species + " - " + (cases[key].type ? "Healthy" : cases[key].diagnosis)}</Text>);
                     list.push(
                         <TouchableOpacity style={styles.rowTouchable} key={key + "Touchable"}
                                           onPress={this.openCase.bind(this, key)}>
@@ -321,10 +319,11 @@ class GalleryView extends Component {
         if (this.props.navigation.getParam("home")) {
             let button = [];
             button.push(
-                <Button style={styles.button} mode="contained" loading={this.state.loading}
-                        onPress={this.uploadAll.bind(this)} key={"UploadAll"}>
-                    Upload All
-                </Button>);
+                <TouchableOpacity key="uploadall" onPress={this.uploadAll.bind(this)}>
+                    <View key="uploadallview" style={[styles.button]}>
+                        <Text key="uploadalltext" style={styles.buttonText}>Upload All</Text>
+                    </View>
+                </TouchableOpacity>);
             return button;
         } else {
             return [];
@@ -332,29 +331,30 @@ class GalleryView extends Component {
     }
 
     render() {
-        const theme = {
-            ...DefaultTheme,
-            roundness: 5,
-            colors: {
-                ...DefaultTheme.colors,
-                primary: '#1565c0',
-                accent: '#5e92f3',
-            },
-        };
-
         return (
-            <PaperProvider theme={theme}>
-                <View pointerEvents={this.state.loading ? 'none' : 'auto'} style={styles.container}>
+            <View style={styles.container}>
+                {this.state.loading ?
+                    <View style={styles.loadContainer}>
+                        <View style={styles.loadingScreen}>
+                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
+                            <Text style={styles.loadingText}>{this.state.loadingText}</Text>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
+                    </View>
+                    : null}
+                <View pointerEvents={this.state.loading ? 'none' : 'auto'}
+                      style={[styles.gContainer, this.state.loading ? {opacity: 0.4} : {}]}>
                     <Text
                         style={styles.title}>{this.props.navigation.getParam('home') ? "Cases" : "Current Case"}</Text>
-                    <ScrollView style={styles.caseContainer}>
+                    <ScrollView style={styles.topContainer}>
                         {this.buildGallery(this.state.cases)}
                     </ScrollView>
                     <View style={styles.saveContainer}>
                         {this.getUploadButton()}
                     </View>
                 </View>
-            </PaperProvider>
+            </View>
         );
     }
 }
@@ -362,35 +362,91 @@ class GalleryView extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "column",
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    title: {
-        color: '#646464',
-        fontSize: 25,
-        height: "5%",
-        flexDirection: "column",
+    gContainer: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        zIndex: 0
     },
-    caseContainer: {
+    loadContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        zIndex: 1,
+        position: "absolute",
+    },
+    darken: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: "black",
+        opacity: 0.6,
+        position: "absolute",
+        zIndex: 1
+    },
+    loadingScreen: {
+        alignSelf: "center",
+        width: Dimensions.get('window').width / 2,
+        height: Dimensions.get('window').height / 4,
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#FFFFFF',
+        zIndex: 2,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 3,
+        // borderColor: '#808080',
+        // borderWidth: 1,
+    },
+    loadingImg: {
+        width: Dimensions.get('window').width / 4,
+        height: Dimensions.get('window').width / 4,
+        margin: Dimensions.get('window').width / 12,
+    },
+    loadingText: {
+        //flex: 1,
+        color: '#000000',
         fontSize: 18,
-        height: "85%",
-        flexDirection: "column",
-        width: Dimensions.get("window").width * 9 / 10,
-        borderRadius: 4,
+    },
+    title: {
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 30,
+        margin: 15,
+    },
+    topContainer: {
+        width: Dimensions.get('window').width * 9 / 10,
+        borderRadius: 5,
+        borderColor: '#808080',
+        backgroundColor: '#f9f9f9',
         borderWidth: 1,
-        borderColor: '#646464',
     },
     saveContainer: {
-        fontSize: 18,
-        height: "10%",
-        flexDirection: "column",
-        justifyContent: "center"
+        flexDirection: 'row',
+        alignItems: "center",
+        height: Dimensions.get('window').height / 10,
     },
     button: {
-        width: Dimensions.get("window").width / 2.5,
-        marginRight: Dimensions.get("window").width / 25,
-        marginLeft: Dimensions.get("window").width / 25
+        borderRadius: 10,
+        borderColor: '#808080',
+        borderWidth: 1,
+        width: 160,
+        height: 35,
+        alignItems: 'center',
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'space-evenly'
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: '#73c4c4',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 20,
     },
     rowTouchable: {
         flex: 1,
@@ -420,8 +476,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-evenly"
     },
     caseText: {
-        color: '#646464',
-        fontSize: 18,
+        color: '#000000',
+        fontFamily: Platform.OS === 'android'
+            ? "sans-serif-light"
+            : 'Avenir-Light',
+        fontSize: 19,
         marginTop: Dimensions.get('window').width / 40,
         marginBottom: Dimensions.get('window').width / 40,
         marginLeft: Dimensions.get('window').width / 50,

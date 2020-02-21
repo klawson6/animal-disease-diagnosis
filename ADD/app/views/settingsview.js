@@ -114,23 +114,22 @@ class SettingsView extends Component {
                             <View style={styles.textEntryContainer}>
                                 <Image source={require('../assets/img/species-choice.png')} style={styles.optionImg}/>
                                 <View style={styles.textInput}>
+                                    <TouchableOpacity onPress={this._handleSpeciesPress.bind(this, null)}>
+                                        <TextInput
+                                            label='Default Species'
+                                            value={this.state.speciesShown}
+                                            editable={false}
+                                            underlineColor={this.state.speciesExpanded ? "#1565c0" : null}
+                                        />
+                                        <Image source={require('../assets/img/down-arrow.png')}
+                                               style={styles.dropdownImg}/>
+                                    </TouchableOpacity>
                                     <Menu
                                         visible={this.state.speciesExpanded}
                                         onDismiss={this._handleSpeciesPress.bind(this, null)}
                                         statusBarHeight={0}
                                         selectionColor={"#1565c0"}
-                                        anchor={
-                                            <TouchableOpacity onPress={this._handleSpeciesPress.bind(this, null)}>
-                                                <TextInput
-                                                    label='Default Species'
-                                                    value={this.state.speciesShown}
-                                                    editable={false}
-                                                    underlineColor={this.state.speciesExpanded ? "#1565c0" : null}
-                                                />
-                                                <Image source={require('../assets/img/down-arrow.png')}
-                                                       style={styles.dropdownImg}/>
-                                            </TouchableOpacity>
-                                        }>
+                                        anchor={{ x: Dimensions.get("window").width*14/15, y: Dimensions.get("window").height*1.7/15}}>
                                         <Menu.Item onPress={() => {
                                             this._handleSpeciesPress("Cattle")
                                         }} title="Cattle"/>
@@ -156,21 +155,20 @@ class SettingsView extends Component {
                             <View style={styles.textEntryContainer}>
                                 <Image source={require('../assets/img/pin.png')} style={styles.optionImg}/>
                                 <View style={styles.textInput}>
+                                    <TouchableOpacity onPress={this._handleLocPress.bind(this, null)}>
+                                        <TextInput
+                                            label='Default Location'
+                                            value={this.state.locationShown}
+                                            editable={false}/>
+                                        <Image source={require('../assets/img/down-arrow.png')}
+                                               style={styles.dropdownImg}/>
+                                    </TouchableOpacity>
                                     <Menu
                                         visible={this.state.locExpanded}
                                         onDismiss={this._handleLocPress.bind(this, null)}
                                         statusBarHeight={0}
                                         selectionColor={"#1565c0"}
-                                        anchor={
-                                            <TouchableOpacity onPress={this._handleLocPress.bind(this, null)}>
-                                                <TextInput
-                                                    label='Default Location'
-                                                    value={this.state.locationShown}
-                                                    editable={false}/>
-                                                <Image source={require('../assets/img/down-arrow.png')}
-                                                       style={styles.dropdownImg}/>
-                                            </TouchableOpacity>
-                                        }>
+                                        anchor={{ x: Dimensions.get("window").width*14/15, y: Dimensions.get("window").height*1.7/15}}>
                                         <Menu.Item onPress={() => {
                                             this._handleLocPress("Addis Ababa")
                                         }} title="Addis Ababa"/>
@@ -277,6 +275,13 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 15,
         flex: 1,
     },
+    textEntryContainer: {
+        height: Dimensions.get('window').height / 14,
+        marginBottom: Dimensions.get('window').width / 20,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     dropdownImg: {
         height: Dimensions.get('window').height / 30,
         width: Dimensions.get('window').height / 30,
@@ -312,118 +317,11 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 20,
     },
-
-
-    textEntryContainer: {
-        height: Dimensions.get('window').height / 14,
-        marginBottom: Dimensions.get('window').width / 20,
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
-    textEntryText: {
-        flex: 1,
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir-Light',
-        fontSize: 20,
-    }, textFieldBox: {
-        //borderRadius: 20,
-        backgroundColor: "#f1f1f1",
-        height: Dimensions.get('window').height / 14,
-    },
-    options: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-thin"
-            : 'Avenir-Light',
-        fontSize: 20,
-    },
-    optionsContainer: {
-        margin: 10,
-    },
     saveContainer: {
         flexDirection: 'row',
         alignItems: "center",
         height: Dimensions.get('window').height * 2 / 10,
         zIndex: 0
-    },
-    button: {
-        borderRadius: 10,
-        borderColor: '#808080',
-        borderWidth: 1,
-        width: 160,
-        height: 35,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f9f9f9',
-        justifyContent: 'center',
-    },
-    buttonText: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir-Light',
-        fontSize: 20,
-    },
-    locBox: {
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: '#ebebeb',
-        backgroundColor: '#f9f9f9',
-        height: Dimensions.get('window').height / 20,
-        flex: 1,
-        flexDirection: 'row',
-        color: '#808080',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir-Light',
-        fontSize: 20,
-        textAlign: 'center',
-        alignItems: 'center'
-    },
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 1,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 1
-    },
-    loadingScreen: {
-        alignSelf: "center",
-        width: Dimensions.get('window').width / 2,
-        height: Dimensions.get('window').height / 4,
-        // flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#FFFFFF',
-        zIndex: 2,
-        position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 3,
-        // borderColor: '#808080',
-        // borderWidth: 1,
-    },
-    loadingImg: {
-        width: Dimensions.get('window').width / 4,
-        height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 12,
-    },
-    loadingText: {
-        //flex: 1,
-        color: '#000000',
-        fontSize: 18,
     },
 });
 

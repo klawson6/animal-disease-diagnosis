@@ -1,20 +1,20 @@
 import React, {Component} from 'react';
 import {
-    Platform,
     Dimensions,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ScrollView,
-    TextInput,
     AsyncStorage,
     Image,
-    Alert
+    Alert, TouchableOpacity
 } from 'react-native';
+import {
+    Button, DefaultTheme, Divider, Menu, TextInput, Provider as PaperProvider, Switch, RadioButton
+} from "react-native-paper"
 import {CheckBox} from 'react-native-elements'
 import RNPickerSelect from 'react-native-picker-select';
-import Swiper from '@manjiz/react-native-swiper'
+import Swiper from "@manjiz/react-native-swiper"
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
@@ -22,118 +22,319 @@ class CategoriseView extends Component {
 
     diseases = {
         Cattle: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
-            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
-            {label: 'Blackleg', value: 'Blackleg', color: '#000000'},
-            {label: 'CBPP / CCPP', value: 'CBPP / CCPP', color: '#000000'},
-            {label: 'Colibacillosis', value: 'Colibacillosis', color: '#000000'},
-            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
-            {label: 'Fasciolosis', value: 'Fasciolosis', color: '#000000'},
-            {label: 'Foot & Mouth Disease', value: 'Foot & Mouth Disease', color: '#000000'},
-            {label: 'Pasteurellosis', value: 'Pasteurellosis', color: '#000000'},
-            {label: 'PGE / GIT Parasite', value: 'PGE / GIT Parasite', color: '#000000'},
-            {label: 'Lumpy Skin Disease', value: 'Lumpy Skin Disease', color: '#000000'},
-            {label: 'Lungworm', value: 'Lungworm', color: '#000000'},
-            {label: 'Rabies', value: 'Rabies', color: '#000000'},
-            {label: 'Trypanosomiasis', value: 'Trypanosomiasis', color: '#000000'},
-            {label: 'Tuberculosis', value: 'Tuberculosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Cattle-Unknown"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Cattle-Anthrax"} onPress={() => {
+                this._handleDiseasePress("Anthrax")
+            }} title="Anthrax"/>,
+            <Menu.Item key={"Cattle-Babesiosis"} onPress={() => {
+                this._handleDiseasePress("Babesiosis")
+            }} title="Babesiosis"/>,
+            <Menu.Item key={"Cattle-Blackleg"} onPress={() => {
+                this._handleDiseasePress("Blackleg")
+            }} title="Blackleg"/>,
+            <Menu.Item key={"Cattle-CBPP / CCPP"} onPress={() => {
+                this._handleDiseasePress("CBPP / CCPP")
+            }} title="CBPP / CCPP"/>,
+            <Menu.Item key={"Cattle-Colibacillosis"} onPress={() => {
+                this._handleDiseasePress("Colibacillosis")
+            }} title="Colibacillosis"/>,
+            <Menu.Item key={"Cattle-Cowdriosis"} onPress={() => {
+                this._handleDiseasePress("Cowdriosis")
+            }} title="Cowdriosis"/>,
+            <Menu.Item key={"Cattle-Fasciolosis"} onPress={() => {
+                this._handleDiseasePress("Fasciolosis")
+            }} title="Fasciolosis"/>,
+            <Menu.Item key={"Cattle-Foot & Mouth Disease"} onPress={() => {
+                this._handleDiseasePress("Foot & Mouth Disease")
+            }} title="Foot & Mouth Disease"/>,
+            <Menu.Item key={"Cattle-Pasteurellosis"} onPress={() => {
+                this._handleDiseasePress("Pasteurellosis")
+            }} title="Pasteurellosis"/>,
+            <Menu.Item key={"Cattle-PGE / GIT Parasite"} onPress={() => {
+                this._handleDiseasePress("PGE / GIT Parasite")
+            }} title="PGE / GIT Parasite"/>,
+            <Menu.Item key={"Cattle-Lumpy Skin Disease"} onPress={() => {
+                this._handleDiseasePress("Lumpy Skin Disease")
+            }} title="Lumpy Skin Disease"/>,
+            <Menu.Item key={"Cattle-Rabies"} onPress={() => {
+                this._handleDiseasePress("Rabies")
+            }} title="Rabies"/>,
+            <Menu.Item key={"Cattle-Trypanosomiasis"} onPress={() => {
+                this._handleDiseasePress("Trypanosomiasis")
+            }} title="Trypanosomiasis"/>,
+            <Menu.Item key={"Cattle-Tuberculosis"} onPress={() => {
+                this._handleDiseasePress("Tuberculosis")
+            }} title="Tuberculosis"/>,
+            <Menu.Item key={"Cattle-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ],
         Horse: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'African Horse Sickness (AHS)', value: 'African Horse Sickness (AHS)', color: '#000000'},
-            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
-            {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
-            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
-            {label: 'GI (Non-infectious / Colic)', value: 'GI (Non-infectious / Colic)', color: '#000000'},
-            {label: 'GI (Parasitic)', value: 'GI (Parasitic)', color: '#000000'},
-            {label: 'Habronemiasis', value: 'Habronemiasis', color: '#000000'},
-            {label: 'Heat Stress', value: 'Heat Stress', color: '#000000'},
-            {label: 'Lymphangitis (Epizootic)', value: 'Lymphangitis (Epizootic)', color: '#000000'},
-            {label: 'Lymphangitis (Ulcerative)', value: 'Lymphangitis (Ulcerative)', color: '#000000'},
-            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Rabies', value: 'rabies', color: '#000000'},
-            {label: 'Respiratory (Lower Bacterical)', value: 'Respiratory (Lower Bacterical)', color: '#000000'},
-            {label: 'Respiratory (Upper Bacterical)', value: 'Respiratory (Upper Bacterical)', color: '#000000'},
-            {label: 'Respiratory (Asthma / Lungworm)', value: 'Respiratory (Asthma / Lungworm)', color: '#000000'},
-            {label: 'Respiratory (Viral)', value: 'Respiratory (Viral)', color: '#000000'},
-            {label: 'Strangles', value: 'Strangles', color: '#000000'},
-            {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
-            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Horse-Unknown"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Horse-African Horse Sickness (AHS)"} onPress={() => {
+                this._handleDiseasePress("African Horse Sickness (AHS)")
+            }} title="African Horse Sickness (AHS)"/>,
+            <Menu.Item key={"Horse-Anthrax"} onPress={() => {
+                this._handleDiseasePress("Anthrax")
+            }} title="Anthrax"/>,
+            <Menu.Item key={"Horse-Ascaris (Foals only)"} onPress={() => {
+                this._handleDiseasePress("Ascaris (Foals only)")
+            }} title="Ascaris (Foals only)"/>,
+            <Menu.Item key={"Horse-Babesiosis"} onPress={() => {
+                this._handleDiseasePress("Babesiosis")
+            }} title="Babesiosis"/>,
+            <Menu.Item key={"Horse-GI (Non-infectious / Colic)"} onPress={() => {
+                this._handleDiseasePress("GI (Non-infectious / Colic)")
+            }} title="GI (Non-infectious / Colic)"/>,
+            <Menu.Item key={"Horse-GI (Parasitic)"} onPress={() => {
+                this._handleDiseasePress("GI (Parasitic)")
+            }} title="GI (Parasitic)"/>,
+            <Menu.Item key={"Horse-Habronemiasis"} onPress={() => {
+                this._handleDiseasePress("Habronemiasis")
+            }} title="Habronemiasis"/>,
+            <Menu.Item key={"Horse-Heat Stress"} onPress={() => {
+                this._handleDiseasePress("Heat Stress")
+            }} title="Heat Stress"/>,
+            <Menu.Item key={"Horse-Lymphangitis (Epizootic)"} onPress={() => {
+                this._handleDiseasePress("Lymphangitis (Epizootic)")
+            }} title="Lymphangitis (Epizootic)"/>,
+            <Menu.Item key={"Horse-Lymphangitis (Ulcerative)"} onPress={() => {
+                this._handleDiseasePress("Lymphangitis (Ulcerative)")
+            }} title="Lymphangitis (Ulcerative)"/>,
+            <Menu.Item key={"Horse-Mange Mite"} onPress={() => {
+                this._handleDiseasePress("Mange Mite")
+            }} title="Mange Mite"/>,
+            <Menu.Item key={"Horse-Rabies"} onPress={() => {
+                this._handleDiseasePress("Rabies")
+            }} title="Rabies"/>,
+            <Menu.Item key={"Horse-Respiratory (Lower Bacterical)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Lower Bacterical)")
+            }} title="Respiratory (Lower Bacterical)"/>,
+            <Menu.Item key={"Horse-Respiratory (Upper Bacterical)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Upper Bacterical)")
+            }} title="Respiratory (Upper Bacterical)"/>,
+            <Menu.Item key={"Horse-Respiratory (Asthma / Lungworm)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Asthma / Lungworm)")
+            }} title="Respiratory (Asthma / Lungworm)"/>,
+            <Menu.Item key={"Horse-Respiratory (Viral)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Viral)")
+            }} title="Respiratory (Viral)"/>,
+            <Menu.Item key={"Horse-Strangles"} onPress={() => {
+                this._handleDiseasePress("Strangles")
+            }} title="Strangles"/>,
+            <Menu.Item key={"Horse-Tetanus"} onPress={() => {
+                this._handleDiseasePress("Tetanus")
+            }} title="Tetanus"/>,
+            <Menu.Item key={"Horse-Trypanosomosis"} onPress={() => {
+                this._handleDiseasePress("Trypanosomosis")
+            }} title="Trypanosomosis"/>,
+            <Menu.Item key={"Horse-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ],
         Donkey: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
-            {label: 'Ascaris (Foals only)', value: 'Ascaris (Foals only)', color: '#000000'},
-            {label: 'Babesiosis', value: 'Babesiosis', color: '#000000'},
-            {label: 'GI (Non-infectious / Colic)', value: 'GI (Non-infectious / Colic)', color: '#000000'},
-            {label: 'GI (Parasitic)', value: 'GI (Parasitic)', color: '#000000'},
-            {label: 'Habronemiasis', value: 'Habronemiasis', color: '#000000'},
-            {label: 'Heat Stress', value: 'Heat Stress', color: '#000000'},
-            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Rabies', value: 'Rabies', color: '#000000'},
-            {label: 'Respiratory (Lower Bacterical)', value: 'Respiratory (Lower Bacterical)', color: '#000000'},
-            {label: 'Respiratory (Upper Bacterical)', value: 'Respiratory (Upper Bacterical)', color: '#000000'},
-            {label: 'Respiratory (Asthma / Lungworm)', value: 'Respiratory (Asthma / Lungworm)', color: '#000000'},
-            {label: 'Respiratory (Viral)', value: 'Respiratory (Viral)', color: '#000000'},
-            {label: 'Strangles', value: 'Strangles', color: '#000000'},
-            {label: 'Tetanus', value: 'Tetanus', color: '#000000'},
-            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Donkey-Unknown"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Donkey-Anthrax"} onPress={() => {
+                this._handleDiseasePress("Anthrax")
+            }} title="Anthrax"/>,
+            <Menu.Item key={"Donkey-Ascaris (Foals only)"} onPress={() => {
+                this._handleDiseasePress("Ascaris (Foals only)")
+            }} title="Ascaris (Foals only)"/>,
+            <Menu.Item key={"Donkey-Babesiosis"} onPress={() => {
+                this._handleDiseasePress("Babesiosis")
+            }} title="Babesiosis"/>,
+            <Menu.Item key={"Donkey-GI (Non-infectious / Colic)"} onPress={() => {
+                this._handleDiseasePress("GI (Non-infectious / Colic)")
+            }} title="GI (Non-infectious / Colic)"/>,
+            <Menu.Item key={"Donkey-GI (Parasitic)"} onPress={() => {
+                this._handleDiseasePress("GI (Parasitic)")
+            }} title="GI (Parasitic)"/>,
+            <Menu.Item key={"Donkey-Habronemiasis"} onPress={() => {
+                this._handleDiseasePress("Habronemiasis")
+            }} title="Habronemiasis"/>,
+            <Menu.Item key={"Donkey-Heat Stress"} onPress={() => {
+                this._handleDiseasePress("Heat Stress")
+            }} title="Heat Stress"/>,
+            <Menu.Item key={"Donkey-Mange Mite"} onPress={() => {
+                this._handleDiseasePress("Mange Mite")
+            }} title="Mange Mite"/>,
+            <Menu.Item key={"Donkey-Rabies"} onPress={() => {
+                this._handleDiseasePress("Rabies")
+            }} title="Rabies"/>,
+            <Menu.Item key={"Donkey-Respiratory (Lower Bacterical)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Lower Bacterical)")
+            }} title="Respiratory (Lower Bacterical)"/>,
+            <Menu.Item key={"Donkey-Respiratory (Upper Bacterical)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Upper Bacterical)")
+            }} title="Respiratory (Upper Bacterical)"/>,
+            <Menu.Item key={"Donkey-Respiratory (Asthma / Lungworm)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Asthma / Lungworm)")
+            }} title="Respiratory (Asthma / Lungworm)"/>,
+            <Menu.Item key={"Donkey-Respiratory (Viral)"} onPress={() => {
+                this._handleDiseasePress("Respiratory (Viral)")
+            }} title="Respiratory (Viral)"/>,
+            <Menu.Item key={"Donkey-Strangles"} onPress={() => {
+                this._handleDiseasePress("Strangles")
+            }} title="Strangles"/>,
+            <Menu.Item key={"Donkey-Tetanus"} onPress={() => {
+                this._handleDiseasePress("Tetanus")
+            }} title="Tetanus"/>,
+            <Menu.Item key={"Donkey-Trypanosomosis"} onPress={() => {
+                this._handleDiseasePress("Trypanosomosis")
+            }} title="Trypanosomosis"/>,
+            <Menu.Item key={"Donkey-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ],
         Sheep: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'Coenurosis', value: 'Coenurosis', color: '#000000'},
-            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
-            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
-            {label: 'Fasciolosis', value: 'Fasciolosis', color: '#000000'},
-            {label: 'Haemonchosis', value: 'Haemonchosis', color: '#000000'},
-            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
-            {label: 'Lungworm', value: 'Lungworm', color: '#000000'},
-            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Nasal Bot', value: 'Nasal Bot', color: '#000000'},
-            {label: 'Pasteurellosis', value: 'Pasteurellosis)', color: '#000000'},
-            {label: 'Pox', value: 'Pox', color: '#000000'},
-            {label: 'Peste des Petits Ruminants (PPR)', value: 'Peste des Petits Ruminants (PPR)', color: '#000000'},
-            {label: 'Trichostrongiulosis', value: 'Trichostrongiulosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Sheep-Unknown"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Sheep-Coenurosis"} onPress={() => {
+                this._handleDiseasePress("Coenurosis")
+            }} title="Coenurosis"/>,
+            <Menu.Item key={"Sheep-Contagious Ecthyma (ORF)"} onPress={() => {
+                this._handleDiseasePress("Contagious Ecthyma (ORF)")
+            }} title="Contagious Ecthyma (ORF)"/>,
+            <Menu.Item key={"Sheep-Cowdriosis"} onPress={() => {
+                this._handleDiseasePress("Cowdriosis")
+            }} title="Cowdriosis"/>,
+            <Menu.Item key={"Sheep-Fasciolosis"} onPress={() => {
+                this._handleDiseasePress("Fasciolosis")
+            }} title="Fasciolosis"/>,
+            <Menu.Item key={"Sheep-Haemonchosis"} onPress={() => {
+                this._handleDiseasePress("Haemonchosis")
+            }} title="Haemonchosis"/>,
+            <Menu.Item key={"Sheep-Hypocalcemia / Pregnancy Tox"} onPress={() => {
+                this._handleDiseasePress("Hypocalcemia / Pregnancy Tox")
+            }} title="Hypocalcemia / Pregnancy Tox"/>,
+            <Menu.Item key={"Sheep-Lungworm"} onPress={() => {
+                this._handleDiseasePress("Lungworm")
+            }} title="Lungworm"/>,
+            <Menu.Item key={"Sheep-Mange Mite"} onPress={() => {
+                this._handleDiseasePress("Mange Mite")
+            }} title="Mange Mite"/>,
+            <Menu.Item key={"Sheep-Nasal Bot"} onPress={() => {
+                this._handleDiseasePress("Nasal Bot")
+            }} title="Nasal Bot"/>,
+            <Menu.Item key={"Sheep-Pasteurellosis"} onPress={() => {
+                this._handleDiseasePress("Pasteurellosis")
+            }} title="Pasteurellosis"/>,
+            <Menu.Item key={"Sheep-Pox"} onPress={() => {
+                this._handleDiseasePress("Pox")
+            }} title="Pox"/>,
+            <Menu.Item key={"Sheep-Peste des Petits Ruminants (PPR)"} onPress={() => {
+                this._handleDiseasePress("Peste des Petits Ruminants (PPR)")
+            }} title="Peste des Petits Ruminants (PPR)"/>,
+            <Menu.Item key={"Sheep-Trichostrongiulosis"} onPress={() => {
+                this._handleDiseasePress("Trichostrongiulosis")
+            }} title="Trichostrongiulosis"/>,
+            <Menu.Item key={"Sheep-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ],
         Camel: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'Anthrax', value: 'Anthrax', color: '#000000'},
-            {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
-            {label: 'Camel Calf Diarrhoea', value: 'Camel Calf Diarrhoea', color: '#000000'},
-            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
-            {label: 'Hemorrhagic Septicemia', value: 'Hemorrhagic Septicemia', color: '#000000'},
-            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
-            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Mastitis', value: 'Mastitis', color: '#000000'},
-            {label: 'Pasteurellosis', value: 'Pasteurellosis', color: '#000000'},
-            {label: 'Plant Poisoning', value: 'Plant Poisoning)', color: '#000000'},
-            {label: 'Pox', value: 'Pox', color: '#000000'},
-            {label: 'Pus / Abscess', value: 'Pus / Abscess', color: '#000000'},
-            {label: 'Respiratory Infections', value: 'Respiratory Infections', color: '#000000'},
-            {label: 'SDS / Unknown Camel Disease', value: 'SDS / Unknown Camel Disease', color: '#000000'},
-            {label: 'Trypanosomosis', value: 'Trypanosomosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Camel-Unknown"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Camel-Anthrax"} onPress={() => {
+                this._handleDiseasePress("Anthrax")
+            }} title="Anthrax"/>,
+            <Menu.Item key={"Camel-Brucellosis"} onPress={() => {
+                this._handleDiseasePress("Brucellosis")
+            }} title="Brucellosis"/>,
+            <Menu.Item key={"Camel-Camel Calf Diarrhoea"} onPress={() => {
+                this._handleDiseasePress("Camel Calf Diarrhoea")
+            }} title="Camel Calf Diarrhoea"/>,
+            <Menu.Item key={"Camel-Contagious Ecthyma (ORF)"} onPress={() => {
+                this._handleDiseasePress("Contagious Ecthyma (ORF)")
+            }} title="Contagious Ecthyma (ORF)"/>,
+            <Menu.Item key={"Camel-Hemorrhagic Septicemia"} onPress={() => {
+                this._handleDiseasePress("Hemorrhagic Septicemia")
+            }} title="Hemorrhagic Septicemia"/>,
+            <Menu.Item key={"Camel-Hypocalcemia / Pregnancy Tox"} onPress={() => {
+                this._handleDiseasePress("Hypocalcemia / Pregnancy Tox")
+            }} title="Hypocalcemia / Pregnancy Tox"/>,
+            <Menu.Item key={"Camel-Mange Mite"} onPress={() => {
+                this._handleDiseasePress("Mange Mite")
+            }} title="Mange Mite"/>,
+            <Menu.Item key={"Camel-Mastitis"} onPress={() => {
+                this._handleDiseasePress("Mastitis")
+            }} title="Mastitis"/>,
+            <Menu.Item key={"Camel-Pasteurellosis"} onPress={() => {
+                this._handleDiseasePress("Pasteurellosis")
+            }} title="Pasteurellosis"/>,
+            <Menu.Item key={"Camel-Plant Poisoning"} onPress={() => {
+                this._handleDiseasePress("Plant Poisoning")
+            }} title="Plant Poisoning"/>,
+            <Menu.Item key={"Camel-Pox"} onPress={() => {
+                this._handleDiseasePress("Pox")
+            }} title="Pox"/>,
+            <Menu.Item key={"Camel-Pus / Abscess"} onPress={() => {
+                this._handleDiseasePress("Pus / Abscess")
+            }} title="Pus / Abscess"/>,
+            <Menu.Item key={"Camel-Respiratory Infections"} onPress={() => {
+                this._handleDiseasePress("Respiratory Infections")
+            }} title="Respiratory Infections"/>,
+            <Menu.Item key={"Camel-SDS / Unknown Camel Disease"} onPress={() => {
+                this._handleDiseasePress("SDS / Unknown Camel Disease")
+            }} title="SDS / Unknown Camel Disease"/>,
+            <Menu.Item key={"Camel-Trypanosomosis"} onPress={() => {
+                this._handleDiseasePress("Trypanosomosis")
+            }} title="Trypanosomosis"/>,
+            <Menu.Item key={"Camel-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ],
         Goat: [
-            {label: 'Unknown', value: 'Unknown', color: '#000000'},
-            {label: 'Brucellosis', value: 'Brucellosis', color: '#000000'},
-            {label: 'CBPP / CCPP', value: 'CBPP / CCPP', color: '#000000'},
-            {label: 'Contagious Ecthyma (ORF)', value: 'Contagious Ecthyma (ORF)', color: '#000000'},
-            {label: 'Cowdriosis', value: 'Cowdriosis', color: '#000000'},
-            {label: 'Hypocalcemia / Pregnancy Tox', value: 'Hypocalcemia / Pregnancy Tox', color: '#000000'},
-            {label: 'Lungworm', value: 'Lungwormx', color: '#000000'},
-            {label: 'Mange Mite', value: 'Mange Mite', color: '#000000'},
-            {label: 'Mastitis', value: 'Mastitis', color: '#000000'},
-            {label: 'Pox', value: 'Pox', color: '#000000'},
-            {label: 'Pus / Abscess', value: 'Pus / Abscess', color: '#000000'},
-            {label: 'Peste des Petits Ruminants (PPR)', value: 'Peste des Petits Ruminants (PPR)', color: '#000000'},
-            {label: 'Trichostrongiulosis', value: 'Trichostrongiulosis', color: '#000000'},
-            {label: 'Other', value: 'Other', color: '#000000'},
+            <Menu.Item key={"Goat-Babesiosis"} onPress={() => {
+                this._handleDiseasePress("Unknown")
+            }} title="Unknown"/>,
+            <Menu.Item key={"Goat-Brucellosis"} onPress={() => {
+                this._handleDiseasePress("Brucellosis")
+            }} title="Brucellosis"/>,
+            <Menu.Item key={"Goat-CBPP / CCPP"} onPress={() => {
+                this._handleDiseasePress("CBPP / CCPP")
+            }} title="CBPP / CCPP"/>,
+            <Menu.Item key={"Goat-Contagious Ecthyma (ORF)"} onPress={() => {
+                this._handleDiseasePress("Contagious Ecthyma (ORF)")
+            }} title="Contagious Ecthyma (ORF)"/>,
+            <Menu.Item key={"Goat-Cowdriosis"} onPress={() => {
+                this._handleDiseasePress("Cowdriosis")
+            }} title="Cowdriosis"/>,
+            <Menu.Item key={"Goat-Hypocalcemia / Pregnancy Tox"} onPress={() => {
+                this._handleDiseasePress("Hypocalcemia / Pregnancy Tox")
+            }} title="Hypocalcemia / Pregnancy Tox"/>,
+            <Menu.Item key={"Goat-Lungworm"} onPress={() => {
+                this._handleDiseasePress("Lungworm")
+            }} title="Lungworm"/>,
+            <Menu.Item key={"Goat-Mange Mite"} onPress={() => {
+                this._handleDiseasePress("Mange Mite")
+            }} title="Mange Mite"/>,
+            <Menu.Item key={"Goat-Mastitis"} onPress={() => {
+                this._handleDiseasePress("Mastitis")
+            }} title="Mastitis"/>,
+            <Menu.Item key={"Goat-Pox"} onPress={() => {
+                this._handleDiseasePress("Pox")
+            }} title="Pox"/>,
+            <Menu.Item key={"Goat-Pus / Abscess"} onPress={() => {
+                this._handleDiseasePress("Pus / Abscess")
+            }} title="Pus / Abscess"/>,
+            <Menu.Item key={"Goat-Peste des Petits Ruminants (PPR)"} onPress={() => {
+                this._handleDiseasePress("Peste des Petits Ruminants (PPR)")
+            }} title="Peste des Petits Ruminants (PPR)"/>,
+            <Menu.Item key={"Goat-Trichostrongiulosis"} onPress={() => {
+                this._handleDiseasePress("Trichostrongiulosis")
+            }} title="Trichostrongiulosis"/>,
+            <Menu.Item key={"Goat-Other"} onPress={() => {
+                this._handleDiseasePress("Other")
+            }} title="Other"/>,
         ]
     };
 
@@ -154,21 +355,21 @@ class CategoriseView extends Component {
         mode: 'date',
         show: false,
         diseases: [],
-        loading: false,
-        loadingText: "",
+        saveLoading: false,
+        uploadLoading: false,
         type: 0
     };
 
-    checkCase(curCase) {
+    checkCase(curCase, alert) {
         let complete = true;
         Object.keys(curCase).forEach(k => {
             if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
                 complete = false;
         });
-        if (!complete) {
+        if (!complete && alert) {
             new Alert.alert('Case Not Completed', 'You must fully complete the form before uploading the case.',);
             this.setState({
-                loading: false
+                uploadLoading: false
             });
         }
         return complete;
@@ -197,8 +398,7 @@ class CategoriseView extends Component {
 
     onUploadPress() {
         this.setState({
-            loading: true,
-            loadingText: "Uploading..."
+            uploadLoading: true,
         });
         let sides = [];
         let curCase = {
@@ -213,12 +413,12 @@ class CategoriseView extends Component {
             type: this.state.type,
             sides: sides,
         };
-        if (!this.checkCase(curCase)) return;
+        if (!this.checkCase(curCase, true)) return;
         this.checkInternetAccess()
             .then(access => {
                 if (!access) {
                     this.setState({
-                        loading: false,
+                        uploadLoading: false,
                     });
                     return;
                 }
@@ -251,7 +451,7 @@ class CategoriseView extends Component {
                                 });
                             this.setState({
                                 isUploaded: true,
-                                loading: false,
+                                uploadLoading: false,
                             });
                             new Alert.alert(
                                 'Uploaded',
@@ -267,7 +467,7 @@ class CategoriseView extends Component {
                                     console.log(text);
                                 });
                             this.setState({
-                                loading: false,
+                                uploadLoading: false,
                             });
                             new Alert.alert(
                                 'Upload Failed',
@@ -280,14 +480,14 @@ class CategoriseView extends Component {
                     .catch(error => {
                         console.log("Error making request : " + error);
                         this.setState({
-                            loading: false,
+                            uploadLoading: false,
                         });
                     });
             })
             .catch(error => {
                 console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
                 this.setState({
-                    loading: false,
+                    uploadLoading: false,
                 });
             });
     }
@@ -299,8 +499,7 @@ class CategoriseView extends Component {
     //     _|  _|
     onSavePress() {
         this.setState({
-            loading: true,
-            loadingText: "Saving..."
+            saveLoading: true,
         });
         let caseName = this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined
             ? null : this.props.navigation.getParam('caseName');
@@ -321,14 +520,14 @@ class CategoriseView extends Component {
                     isUploaded: this.state.isUploaded,
                     type: this.state.type
                 };
-                curCase.completed = this.checkCase(curCase);
+                curCase.completed = this.checkCase(curCase, false);
                 AsyncStorage.setItem(caseName, JSON.stringify(curCase))
                     .then(() => {
                         if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
                             AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
                                 .then(() => {
                                     this.setState({
-                                        loading: false,
+                                        saveLoading: false,
                                     });
                                     this.props.navigation.navigate('homeView');
                                     new Alert.alert(
@@ -338,13 +537,13 @@ class CategoriseView extends Component {
                                 })
                                 .catch(error => {
                                     this.setState({
-                                        loading: false,
+                                        saveLoading: false,
                                     });
                                     console.log('Error occurred when incrementing numCases: ' + error)
                                 });
                         } else {
                             this.setState({
-                                loading: false,
+                                saveLoading: false,
                             });
                             this.props.navigation.navigate('homeView');
                             new Alert.alert(
@@ -355,7 +554,7 @@ class CategoriseView extends Component {
                     })
                     .catch(error => {
                         this.setState({
-                            loading: false,
+                            saveLoading: false,
                         });
                         console.log('Error occurred when saving classification: ' + error)
                     });
@@ -371,6 +570,9 @@ class CategoriseView extends Component {
         });
         if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
             this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
+            this.state.speciesShown = this.state.species;
+            this.state.locationShown = this.state.location;
+            this.state.diagnosisShown = this.state.diagnosis;
             if (this.state.species !== null) {
                 this.state.diseases = this.diseases[this.state.species];
             }
@@ -390,7 +592,7 @@ class CategoriseView extends Component {
             this.setState({
                 dateSelected: date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear().toString().slice(2, 4),
                 date: date,
-                show: false
+                show: false,
             });
         }
     }
@@ -398,433 +600,559 @@ class CategoriseView extends Component {
     buildPreview = function (images) {
         let imgs = [];
         images.assets.forEach(function (img) {
-            imgs.push(<Image style={styles.image} key={img[0].filename} source={img[0]}/>);
+            imgs.push(<Image style={styles.image}
+                             key={img[0].filename}
+                             source={img[0]}/>);
         });
         return imgs;
     };
 
-    render() {
-        const {show, date, mode} = this.state;
-        return (
-            <View style={styles.container}>
-                {this.state.loading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>{this.state.loadingText}</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
-                    </View>
-                    : null}
-                <View pointerEvents={this.state.loading ? 'none' : 'auto'}
-                      style={[styles.caseContainer, this.state.loading ? {opacity: 0.4} : {}]}>
-                    <Text style={styles.title}>Annotate the Image(s)</Text>
-                    <Swiper activeDotColor={"#1565c0"} loadMinimal={false} loadMinimalSize={0} showsPagination={false}
-                            containerStyle={styles.swiperContainer} width={Dimensions.get('window').width * 3 / 7} height={Dimensions.get('window').width * 4 / 7}>
-                        {this.buildPreview(this.state.images)}
-                    </Swiper>
-                    <View style={styles.topContainer}>
-                        <ScrollView scrollIndicatorInsets={{right: -20}} style={styles.scrollContainer}>
-                            <View style={styles.textEntryContainer}>
-                                <Text style={styles.nameText}>Full Name:</Text>
-                                <TextInput
-                                    onChangeText={text => {
-                                        this.setState({name: text})
-                                    }}
-                                    style={styles.nameBox}
-                                    defaultValue={this.state.name}/>
-                            </View>
-                            <View style={styles.textEntryContainer}>
-                                <Text style={styles.dateText}>Date of Observation:</Text>
-                                <TouchableOpacity style={styles.datePicker} onPress={this.showDatePicker.bind(this)}>
-                                    <Text style={styles.dateChosen}>
-                                        {this.state.dateSelected === null ? "DD/MM/YY" : this.state.dateSelected}
-                                    </Text>
-                                    {show && <RNDateTimePicker value={date}
-                                                               mode={mode}
-                                                               is24Hour={true}
-                                                               display="default"
-                                                               onChange={this.setDate.bind(this)}/>
-                                    }
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={styles.optionTitle}>Location:</Text>
-                            <RNPickerSelect
-                                onValueChange={value => {
-                                    this.setState({location: value})
-                                }}
-                                value={this.state.location}
-                                items={[
-                                    {label: 'Addis Ababa', value: 'Addis Ababa'},
-                                    {label: 'Afar Region', value: 'Afar Region'},
-                                    {label: 'Amhara Region', value: 'Amhara Region'},
-                                    {label: 'Benishangul-Gumuz Region', value: 'Benishangul-Gumuz Region'},
-                                    {label: 'Dire Dawa', value: 'Dire Dawa'},
-                                    {label: 'Gamebela Region', value: 'Gamebela Region'},
-                                    {label: 'Harari Region', value: 'Harari Region'},
-                                    {label: 'Oromia Region', value: 'Oromia Region'},
-                                    {label: 'Somali Region', value: 'Somali Region'},
-                                    {
-                                        label: 'Southern Nations, Nationalities and Peoples\' Region',
-                                        value: 'Southern Nations, Nationalities and Peoples\' Region'
-                                    },
-                                    {label: 'Tigray Region', value: 'Tigray Region'},
-                                ]}
-                                useNativeAndroidPickerStyle={false}
-                                textInputProps={{
-                                    fontFamily: "sans-serif-light",
-                                    fontSize: 20,
-                                }}
-                            />
-                            <Text style={styles.optionTitle}>Species:</Text>
-                            <RNPickerSelect
-                                onValueChange={value => {
-                                    this.setState({
-                                        species: value,
-                                        diagnosis: null,
-                                        diseases: this.diseases[value]
-                                    })
-                                }}
-                                value={this.state.species}
-                                items={[
-                                    {label: 'Cattle', value: 'Cattle'},
-                                    {label: 'Goat', value: 'Goat'},
-                                    {label: 'Sheep', value: 'Sheep'},
-                                    {label: 'Camel', value: 'Camel'},
-                                    {label: 'Horse', value: 'Horse'},
-                                    {label: 'Donkey', value: 'Donkey'},
-                                ]}
-                                useNativeAndroidPickerStyle={false}
-                                textInputProps={{
-                                    fontFamily: "sans-serif-light",
-                                    fontSize: 20,
-                                }}
-                            />
-                            <Text style={styles.optionTitle}>Age of Animal:</Text>
-                            <CheckBox
-                                title='0 - 6 Months'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.age === 1}
-                                onPress={() => this.setState({age: this.state.age === 1 ? 0 : 1})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='7 - 12 months'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.age === 2}
-                                onPress={() => this.setState({age: this.state.age === 2 ? 0 : 2})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='13 - 24 Months'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.age === 3}
-                                onPress={() => this.setState({age: this.state.age === 3 ? 0 : 3})}
+    _handleSpeciesPress = (val) => {
+        this.setState({
+            speciesExpanded: !this.state.speciesExpanded,
+            species: val ? val : this.state.species,
+            speciesShown: this.state.speciesExpanded ? val ? val : this.state.species : this.state.species ? this.state.species : " ",
+            diagnosis: null,
+            diseases: this.diseases[val]
+        });
+    };
 
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='Over 24 Months'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.age === 4}
-                                onPress={() => this.setState({age: this.state.age === 4 ? 0 : 4})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <Text style={styles.optionTitle}>Breed of Animal:</Text>
-                            <CheckBox
-                                title='Local'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.breed === 1}
-                                onPress={() => this.setState({breed: this.state.breed === 1 ? 0 : 1})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='Exotic'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.breed === 2}
-                                onPress={() => this.setState({breed: this.state.breed === 2 ? 0 : 2})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='Cross'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.breed === 3}
-                                onPress={() => this.setState({breed: this.state.breed === 3 ? 0 : 3})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <Text style={styles.optionTitle}>Sex of Animal:</Text>
-                            <CheckBox
-                                title='Male'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.sex === 1}
-                                onPress={() => this.setState({sex: this.state.sex === 1 ? 0 : 1})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            <CheckBox
-                                title='Female'
-                                checkedIcon='check-circle'
-                                uncheckedIcon='check-circle'
-                                checked={this.state.sex === 2}
-                                onPress={() => this.setState({sex: this.state.sex === 2 ? 0 : 2})}
-                                textStyle={styles.options}
-                                containerStyle={styles.optionsContainer}
-                            />
-                            {this.state.type === 0 ?
-                                <Text style={styles.optionTitle}>Presumed Diagnosis:</Text>
-                                : null}
-                            {this.state.type === 0 ?
-                                <RNPickerSelect
-                                    onValueChange={(value) => {
-                                        this.setState({diagnosis: value})
-                                    }}
-                                    value={this.state.diagnosis}
-                                    items={this.state.diseases}
-                                    useNativeAndroidPickerStyle={false}
-                                    textInputProps={{
-                                        fontFamily: "sans-serif-light",
-                                        fontSize: 20,
-                                    }}
-                                />
-                                : null}
-                        </ScrollView>
+    _handleLocPress = (val) => {
+        this.setState({
+            locExpanded: !this.state.locExpanded,
+            location: val ? val : this.state.location,
+            locationShown: this.state.locExpanded ? val ? val : this.state.location : this.state.location ? this.state.location : " "
+        });
+    };
+
+    _handleDiseasePress = (val) => {
+        this.setState({
+            diseaseExpanded: !this.state.diseaseExpanded,
+            diagnosis: val ? val : this.state.diagnosis,
+
+            diagnosisShown:
+                this.state.diseaseExpanded ?
+                    val ?
+                        val :
+                        this.state.diagnosis :
+                    this.state.species ?
+                        this.state.diagnosis ?
+                            this.state.diagnosis :
+                            " " :
+                        "No species specified..."
+        });
+    };
+
+    render() {
+        const theme = {
+            ...DefaultTheme,
+            roundness: 5,
+            colors: {
+                ...DefaultTheme.colors,
+                primary: '#1565c0',
+                accent: '#5e92f3',
+            },
+        };
+
+        return (
+            <PaperProvider theme={theme}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Annotate the Image(s)</Text>
+                    <View style={styles.swipeWrapper}>
+                        <Swiper
+                            containerStyle={styles.swipeContainer}
+                            activeDotColor={"#1565c0"}
+                            loadMinimal={false}
+                            loop={false}
+                            width={Dimensions.get("window").width / 3}
+                            height={"100%"}>
+                            {this.buildPreview(this.state.images)}
+                        </Swiper>
                     </View>
-                    <View style={styles.saveContainer}>
-                        {/*Binding this, means the scope of onPressButton is kept to the component, so this refers to this and not the function*/}
-                        <TouchableOpacity onPress={this.onUploadPress.bind(this)}>
-                            <View style={[styles.button]}>
-                                <Text style={styles.buttonText}>Upload Case</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onSavePress.bind(this)}>
-                            <View style={[styles.button]}>
-                                <Text style={styles.buttonText}>Save</Text>
-                            </View>
-                        </TouchableOpacity>
+                    <View style={styles.formContainer}>
+                        <View style={styles.formEmpty}/>
+                        <View style={styles.scrollContainer}>
+                            <ScrollView scrollIndicatorInsets={{right: -100}}>
+                                <View style={styles.textEntryContainer}>
+                                    <Image source={require('../assets/img/person-grey.png')} style={styles.optionImg}/>
+                                    <TextInput
+                                        label='Identifier'
+                                        value={this.state.name}
+                                        onChangeText={text => this.setState({name: text})}
+                                        style={styles.textInput}
+                                    />
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <View style={styles.textEntryContainer}>
+                                    <Image source={require('../assets/img/calendar-grey.png')}
+                                           style={styles.optionImg}/>
+                                    <View style={styles.textInput}>
+                                        <TouchableOpacity onPress={this.showDatePicker.bind(this)}>
+                                            <TextInput
+                                                label={this.state.dateSelected === null ? "Date (DD/MM/YY)" : "Date of Observation"}
+                                                value={this.state.dateSelected}
+                                                placeholder
+                                                editable={false}
+                                                underlineColor={this.state.show ? "#1565c0" : null}
+                                                style={{
+                                                    paddingRight: Dimensions.get("window").width / 10,
+                                                    width: "100%"
+                                                }}/>
+                                        </TouchableOpacity>
+                                        {this.state.show && <RNDateTimePicker value={this.state.date}
+                                                                              mode={this.state.mode}
+                                                                              is24Hour={true}
+                                                                              display="default"
+                                                                              onChange={this.setDate.bind(this)}/>
+                                        }
+                                    </View>
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <View style={styles.textEntryContainer}>
+                                    <Image source={require('../assets/img/pin.png')} style={styles.optionImg}/>
+                                    <View style={styles.textInput}>
+                                        <TouchableOpacity onPress={this._handleLocPress.bind(this, null)}>
+                                            <TextInput
+                                                label='Location'
+                                                value={this.state.locationShown}
+                                                editable={false}
+                                                underlineColor={this.state.speciesExpanded ? "#1565c0" : null}
+                                                style={{
+                                                    paddingRight: Dimensions.get("window").width / 10,
+                                                    width: "100%"
+                                                }}/>
+                                            <Image source={require('../assets/img/down-arrow.png')}
+                                                   style={styles.dropdownImg}/>
+                                        </TouchableOpacity>
+                                        <Menu
+                                            visible={this.state.locExpanded}
+                                            onDismiss={this._handleLocPress.bind(this, null)}
+                                            statusBarHeight={0}
+                                            selectionColor={"#1565c0"}
+                                            anchor={{
+                                                x: Dimensions.get("window").width * 14 / 15,
+                                                y: Dimensions.get("window").height * 11.4 / 15
+                                            }}>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Addis Ababa")
+                                            }} title="Addis Ababa"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Afar Region")
+                                            }} title="Afar Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Amhara Region")
+                                            }} title="Amhara Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Benishangul-Gumuz Region")
+                                            }} title="Benishangul-Gumuz Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Dire Dawa")
+                                            }} title="Dire Dawa"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Gamebela Region")
+                                            }} title="Gamebela Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Harari Region")
+                                            }} title="Harari Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Oromia Region")
+                                            }} title="Oromia Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Somali Region")
+                                            }} title="Somali Region"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("SNNPR")
+                                            }} title="SNNPR"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleLocPress("Tigray Region")
+                                            }} title="Tigray Region"/>
+                                            {/*// TODO Have SNNPR be fully typed, but not cause scroll bug*/}
+                                        </Menu>
+                                    </View>
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <View style={styles.textEntryContainer}>
+                                    <Image source={require('../assets/img/species-choice.png')}
+                                           style={styles.optionImg}/>
+                                    <View style={styles.textInput}>
+                                        <TouchableOpacity onPress={this._handleSpeciesPress.bind(this, null)}>
+                                            <TextInput
+                                                label='Species'
+                                                value={this.state.speciesShown}
+                                                editable={false}
+                                                underlineColor={this.state.speciesExpanded ? "#1565c0" : null}
+                                            />
+                                            <Image source={require('../assets/img/down-arrow.png')}
+                                                   style={styles.dropdownImg}/>
+                                        </TouchableOpacity>
+                                        <Menu
+                                            visible={this.state.speciesExpanded}
+                                            onDismiss={this._handleSpeciesPress.bind(this, null)}
+                                            statusBarHeight={0}
+                                            selectionColor={"#1565c0"}
+                                            anchor={{
+                                                x: Dimensions.get("window").width * 14 / 15,
+                                                y: Dimensions.get("window").height * 11.4 / 15
+                                            }}>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Cattle")
+                                            }} title="Cattle"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Goat")
+                                            }} title="Goat"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Sheep")
+                                            }} title="Sheep"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Camel")
+                                            }} title="Camel"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Horse")
+                                            }} title="Horse"/>
+                                            <Menu.Item onPress={() => {
+                                                this._handleSpeciesPress("Donkey")
+                                            }} title="Donkey"/>
+                                        </Menu>
+                                    </View>
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <Text style={styles.radioTitle}>Age of Animal:</Text>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="0 - 6 Months"
+                                        status={this.state.age === 1 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({age: this.state.age === 1 ? 0 : 1});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({age: this.state.age === 1 ? 0 : 1});
+                                    }}>
+                                        <Text style={styles.radioText}>0 - 6 Months</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="7 - 12 Months"
+                                        status={this.state.age === 2 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({age: this.state.age === 2 ? 0 : 2});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({age: this.state.age === 2 ? 0 : 2});
+                                    }}>
+                                        <Text style={styles.radioText}>7 - 12 Months</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="13 - 24 Months"
+                                        status={this.state.age === 3 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({age: this.state.age === 3 ? 0 : 3});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({age: this.state.age === 3 ? 0 : 3});
+                                    }}>
+                                        <Text style={styles.radioText}>13 - 24 Months</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Over 24 Months"
+                                        status={this.state.age === 4 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({age: this.state.age === 4 ? 0 : 4});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({age: this.state.age === 4 ? 0 : 4});
+                                    }}>
+                                        <Text style={styles.radioText}>Over 24 Months</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <Text style={styles.radioTitle}>Breed of Animal:</Text>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Local"
+                                        status={this.state.breed === 1 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({breed: this.state.breed === 1 ? 0 : 1});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({breed: this.state.breed === 1 ? 0 : 1});
+                                    }}>
+                                        <Text style={styles.radioText}>Local</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Cross"
+                                        status={this.state.breed === 2 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({breed: this.state.breed === 2 ? 0 : 2});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({breed: this.state.breed === 2 ? 0 : 2});
+                                    }}>
+                                        <Text style={styles.radioText}>Cross</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Exotic"
+                                        status={this.state.breed === 3 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({breed: this.state.breed === 3 ? 0 : 3});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({breed: this.state.breed === 3 ? 0 : 3});
+                                    }}>
+                                        <Text style={styles.radioText}>Exotic</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <Divider style={{
+                                    height: 1,
+                                    marginRight: Dimensions.get('window').width / 30,
+                                    marginLeft: Dimensions.get('window').width / 30,
+                                    marginBottom: Dimensions.get('window').width / 30
+                                }}/>
+                                <Text style={styles.radioTitle}>Sex of Animal:</Text>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Male"
+                                        status={this.state.sex === 1 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({sex: this.state.sex === 1 ? 0 : 1});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({sex: this.state.sex === 1 ? 0 : 1});
+                                    }}>
+                                        <Text style={styles.radioText}>Male</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.radioButtonContainer}>
+                                    <RadioButton
+                                        value="Female"
+                                        status={this.state.sex === 2 ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            this.setState({sex: this.state.sex === 2 ? 0 : 2});
+                                        }}
+                                    />
+                                    <TouchableOpacity style={styles.radioTouchable} onPress={() => {
+                                        this.setState({sex: this.state.sex === 2 ? 0 : 2});
+                                    }}>
+                                        <Text style={styles.radioText}>Female</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                {this.state.type === 0 ?
+                                    <Divider style={{
+                                        height: 1,
+                                        marginRight: Dimensions.get('window').width / 30,
+                                        marginLeft: Dimensions.get('window').width / 30,
+                                        marginBottom: Dimensions.get('window').width / 30
+                                    }}/>
+                                    : null}
+                                {this.state.type === 0 ?
+                                    <View
+                                        style={[styles.textEntryContainer, {marginBottom: Dimensions.get('window').width / 30}]}>
+                                        <Image source={require('../assets/img/disease.png')}
+                                               style={styles.optionImg}/>
+                                        <View style={styles.textInput}>
+                                            <TouchableOpacity onPress={this._handleDiseasePress.bind(this, null)}>
+                                                <TextInput
+                                                    label='Presumed Disease'
+                                                    value={this.state.diagnosisShown}
+                                                    editable={false}
+                                                    underlineColor={this.state.diseaseExpanded ? "#1565c0" : null}
+                                                />
+                                                <Image source={require('../assets/img/down-arrow.png')}
+                                                       style={styles.dropdownImg}/>
+                                            </TouchableOpacity>
+                                            <Menu
+                                                visible={this.state.diseaseExpanded}
+                                                onDismiss={this._handleDiseasePress.bind(this, null)}
+                                                statusBarHeight={0}
+                                                selectionColor={"#1565c0"}
+                                                anchor={{
+                                                    x: Dimensions.get("window").width * 14 / 15,
+                                                    y: Dimensions.get("window").height * 11.4 / 15
+                                                }}>
+                                                {this.state.diseases}
+                                            </Menu>
+                                        </View>
+                                    </View>
+                                    : null}
+                            </ScrollView>
+                        </View>
+                    </View>
+                    <View style={styles.actionContainer}>
+                        <View style={styles.buttonContainer}>
+                            <Button style={styles.button} mode="contained" loading={this.state.uploadLoading}
+                                    onPress={this.onUploadPress.bind(this)}>
+                                Upload Case
+                            </Button>
+                            <Button style={styles.button} mode="contained" loading={this.state.saveLoading}
+                                    onPress={this.onSavePress.bind(this)}>
+                                Save
+                            </Button>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </PaperProvider>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 1,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 1
-    },
     container: {
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    caseContainer: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        zIndex: 0,
-        color: "#808080"
-    },
-    loadingScreen: {
-        alignSelf: "center",
-        width: Dimensions.get('window').width / 2,
-        height: Dimensions.get('window').height / 4,
-        // flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#FFFFFF',
-        zIndex: 2,
-        position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 3,
-        // borderColor: '#808080',
-        // borderWidth: 1,
-    },
-    loadingImg: {
-        width: Dimensions.get('window').width / 4,
-        height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 12,
-    },
-    loadingText: {
-        //flex: 1,
-        color: '#000000',
-        fontSize: 18,
-    },
     title: {
         color: '#646464',
-        fontSize: 20,
-        marginTop: Dimensions.get('window').width / 40,
+        fontSize: 25,
+        flex: 1.25,
+        flexDirection: "column"
     },
-    swiperContainer: {
-        // width: Dimensions.get('window').width * 3 / 7,
-        // height: Dimensions.get('window').width * 4 / 7,
-        // margin: Dimensions.get('window').width / 20,
-        // //marginBottom: Dimensions.get('window').width / 40,
-        // borderRadius: 5,
-        // borderColor: '#808080',
-        // borderWidth: 1,
-        // flexDirection: 'column',
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // overflow: 'hidden',
-        backgroundColor: "red"
+    swipeWrapper: {
+        flex: 6,
+        flexDirection: "column",
+    },
+    swipeContainer: {
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#646464',
     },
     image: {
-        width: Dimensions.get('window').width * 3 / 7,
-        height: Dimensions.get('window').width * 4 / 7,
+        width: Dimensions.get("window").width / 3,
+        height: "100%"
     },
-    topContainer: {
-        width: Dimensions.get('window').width * 4.5 / 5,
-        flex: 1,
-        margin: Dimensions.get('window').width / 20,
-        marginTop: Dimensions.get('window').width / 40,
-        marginBottom: 0,
-        borderRadius: 5,
-        borderColor: '#808080',
-        backgroundColor: '#f9f9f9',
-        borderWidth: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
+    formContainer: {
+        flex: 11,
+        flexDirection: "column",
+        //justifyContent: 'center',
         alignItems: 'center',
     },
-    scrollContainer: {
-        width: Dimensions.get('window').width * 4 / 5,
+    textInput: {
+        height: Dimensions.get('window').height / 15,
         flex: 1,
-        marginTop: Dimensions.get('window').width / 20,
-        marginBottom: Dimensions.get('window').width / 20,
+    },
+    textInputText: {
+        width: "80%"
     },
     textEntryContainer: {
-        height: Dimensions.get('window').height / 20,
-        marginBottom: Dimensions.get('window').width / 20,
+        height: Dimensions.get('window').height / 14,
+        margin: Dimensions.get('window').width / 40,
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
     },
-    nameText: {
-        flex: 1,
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
+    dropdownImg: {
+        height: Dimensions.get('window').height / 30,
+        width: Dimensions.get('window').height / 30,
+        zIndex: 1,
+        position: "absolute",
+        alignSelf: "flex-end",
+        transform: [{translateY: Dimensions.get('window').height / 45}, {translateX: -Dimensions.get('window').height / 60}],
     },
-    nameBox: {
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: '#ebebeb',
-        backgroundColor: '#f9f9f9',
-        height: Dimensions.get('window').height / 20,
-        flex: 2,
-        flexDirection: 'row',
-        //color: '#808080',
-        color: '#000000',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
-        textAlign: 'center',
-        alignItems: 'center'
+    optionImg: {
+        height: Dimensions.get('window').height / 30,
+        width: Dimensions.get('window').height / 30,
+        marginRight: Dimensions.get('window').height / 60,
     },
-    dateText: {
-        flex: 1.75,
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
+    radioTitle: {
+        color: '#646464',
+        fontSize: 18,
+        marginBottom: Dimensions.get('window').width / 30,
+        marginLeft: Dimensions.get('window').width / 30,
+        marginRight: Dimensions.get('window').width / 30,
     },
-    datePicker: {
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: '#ebebeb',
-        backgroundColor: '#f9f9f9',
-        height: Dimensions.get('window').height / 20,
-        flex: 1,
-        flexDirection: 'row',
-        textAlign: 'center',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    dateChosen: {
-        //color: '#808080',
-        color: '#000000',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
-    },
-    optionTitle: {
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
-        marginTop: Dimensions.get('window').width / 40,
+    radioButtonContainer: {
+        height: Dimensions.get('window').height / 30,
+        marginLeft: Dimensions.get('window').width / 20,
+        //marginTop: Dimensions.get('window').width / 40,
         marginBottom: Dimensions.get('window').width / 40,
-    },
-    options: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-thin"
-            : 'Avenir Light',
-        fontSize: 20,
-    },
-    optionsContainer: {
-        margin: Dimensions.get('window').width / 40,
-    },
-    saveContainer: {
+        flex: 1,
         flexDirection: 'row',
+        alignItems: 'center',
+    },
+    radioText: {
+        color: '#646464',
+        fontSize: 18,
+        marginLeft: Dimensions.get('window').width / 30,
+        marginRight: Dimensions.get('window').width / 30,
+    },
+    radioTouchable: {
+        flex: 1,
+        flexDirection: "row",
+        paddingTop: Dimensions.get('window').width / 60,
+        paddingBottom: Dimensions.get('window').width / 60,
+    },
+    actionContainer: {
+        flex: 3,
+        flexDirection: "column",
+        justifyContent: "center",
         alignItems: "center",
-        height: Dimensions.get('window').height / 10,
-        overflow: 'hidden'
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-evenly",
     },
     button: {
-        borderRadius: 10,
-        borderColor: '#808080',
-        borderWidth: 1,
-        width: Dimensions.get('window').width / 3,
-        height: Dimensions.get('window').height / 27,
-        marginLeft: Dimensions.get('window').width / 15,
-        marginRight: Dimensions.get('window').width / 15,
-        alignItems: 'center',
-        backgroundColor: '#f9f9f9',
-        justifyContent: 'space-evenly'
+        width: Dimensions.get("window").width / 2.5,
+        marginRight: Dimensions.get("window").width / 25,
+        marginLeft: Dimensions.get("window").width / 25
     },
-    buttonText: {
-        textAlign: 'center',
-        color: '#73c4c4',
-        fontFamily: Platform.OS === 'android'
-            ? "sans-serif-light"
-            : 'Avenir Light',
-        fontSize: 20,
-    }
+    scrollContainer: {
+        width: Dimensions.get("window").width * 9 / 10,
+        flex: 25,
+        flexDirection: "column",
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#646464',
+
+    },
+    formEmpty: {
+        flex: 1,
+        flexDirection: "column",
+        backgroundColor: "yellow"
+    },
+
+
 });
 
 export default CategoriseView;
