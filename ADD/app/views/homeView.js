@@ -23,8 +23,8 @@ class HomeView extends Component {
      **/
     state = {
         hasPermissions: false,
-        loading: false,
-        loadingText: "",
+        // loading: false,
+        // loadingText: "",
     };
 
     /**
@@ -36,7 +36,7 @@ class HomeView extends Component {
      *  Initialises the app storage.
      **/
     componentDidMount() {
-        this.setState({loading: true}); // Sets the loading state to true.
+        // this.setState({loading: true}); // Sets the loading state to true.
         this.askForPermissions(); // Initial request for permissions
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT) // Lock the screen orientation to vertical.
             .then() // Do nothing on success.
@@ -57,10 +57,10 @@ class HomeView extends Component {
                         name: null
                     }));
                 }
-                this.setState({loading: false}); // Set the loading state to false
+                // this.setState({loading: false}); // Set the loading state to false
             })
             .catch(error => {
-                this.setState({loading: false}); // Set the loading state to false
+                // this.setState({loading: false}); // Set the loading state to false
                 console.log('Error occurred when creating numCases: ' + error)
             });
     }
@@ -113,10 +113,10 @@ class HomeView extends Component {
      **/
     onGalleryPress() {
         if (this.state.hasPermissions) { // Check for granted permissions.
-            this.setState({loading: true, loadingText: "Loading cases..."}); // Sets the loading state to true.
+            // this.setState({loading: true, loadingText: "Loading cases..."}); // Sets the loading state to true.
             AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
                 .then(item => { // Lambda callback passing in the resolved promise
-                    this.setState({loading: false,}); // Sets the loading state to false.
+                    // this.setState({loading: false,}); // Sets the loading state to false.
                     if (item) { // If there were saved settings
                         this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
                             home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
@@ -128,7 +128,7 @@ class HomeView extends Component {
                         });
                 })
                 .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
-                    this.setState({loading: false,}); // Sets the loading state to false.
+                    // this.setState({loading: false,}); // Sets the loading state to false.
                     console.log("Error getting settings from local storage: " + error); // Log an error for debugging
                 })
         } else {
@@ -143,10 +143,10 @@ class HomeView extends Component {
      **/
     onSettingsPress() {
         if (this.state.hasPermissions) { // Check for granted permissions.
-            this.setState({loading: true, loadingText: "Loading settings..."}); // Sets the loading state to true.
+            // this.setState({loading: true, loadingText: "Loading settings..."}); // Sets the loading state to true.
             AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
                 .then(item => { // Lambda callback passing in the resolved promise
-                    this.setState({loading: false,}); // Sets the loading state to false.
+                    // this.setState({loading: false,}); // Sets the loading state to false.
                     if (item) { // If there were saved settings
                         this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsView.
                             settings: JSON.parse(item) // Passing an object corresponding to loaded settings as a parameter.
@@ -155,7 +155,7 @@ class HomeView extends Component {
                         this.props.navigation.navigate('settingsView'); // Navigate the view to SettingsView.
                 })
                 .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
-                    this.setState({loading: false,}); // Sets the loading state to false.
+                    // this.setState({loading: false,}); // Sets the loading state to false.
                     console.log("Error getting settings from local storage: " + error); // Log an error for debugging
                 })
         } else {
@@ -163,12 +163,14 @@ class HomeView extends Component {
         }
     }
 
+    onHelpPress(){
+        this.props.navigation.navigate('helpView'); // Navigate the view to SettingsView.
+    }
+
     /**
-     *  Callback executed when the button in the view corresponding to "How to Use", is clicked.
-     *
-     *  Will do handy stuff eventually, right now it deletes all app data and images, or logs everything
+     *  Deletes all app data and images, or logs everything
      **/
-    onHelpPress() {
+    onClearPress() {
         // FOR CLEARING STORAGE
         AsyncStorage.clear(error => {
             if (error !== null && error !== undefined) {
@@ -212,16 +214,16 @@ class HomeView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                {this.state.loading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>{this.state.loadingText}</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
-                    </View>
-                    : null}
+                {/*{this.state.loading ?*/}
+                {/*    <View style={styles.loadContainer}>*/}
+                {/*        <View style={styles.loadingScreen}>*/}
+                {/*            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>*/}
+                {/*            <Text style={styles.loadingText}>{this.state.loadingText}</Text>*/}
+                {/*        </View>*/}
+                {/*        <View style={styles.darken}>*/}
+                {/*        </View>*/}
+                {/*    </View>*/}
+                {/*    : null}*/}
                 <View style={styles.frontContainer}>
                     <View style={styles.emptyTop}>
                     </View>
@@ -231,7 +233,7 @@ class HomeView extends Component {
                                 <TouchableOpacity onPress={this.onHealthyPress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
-                                               source={require('../assets/img/cow-healthy.png')}/>
+                                               source={require('../assets/img/cow-healthy2.png')}/>
                                         <Text style={styles.buttonText}>Healthy Case</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -240,7 +242,7 @@ class HomeView extends Component {
                                 <TouchableOpacity onPress={this.onDiseasePress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
-                                               source={require('../assets/img/cow-disease.png')}/>
+                                               source={require('../assets/img/cow-disease2.png')}/>
                                         <Text style={styles.buttonText}>Disease Case</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -251,7 +253,7 @@ class HomeView extends Component {
                                 <TouchableOpacity onPress={this.onGalleryPress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
-                                               source={require('../assets/img/folder-blue.png')}/>
+                                               source={require('../assets/img/folder-blue2.png')}/>
                                         <Text style={styles.buttonText}>Saved Cases</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -260,7 +262,7 @@ class HomeView extends Component {
                                 <TouchableOpacity onPress={this.onHelpPress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
-                                               source={require('../assets/img/question-blue.png')}/>
+                                               source={require('../assets/img/question-blue2.png')}/>
                                         <Text style={styles.buttonText}>How to Use</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -268,10 +270,10 @@ class HomeView extends Component {
                         </View>
                         <View style={styles.buttonRow}>
                             <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={this.onClearPress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
-                                               source={require('../assets/img/feedback-blue.png')}/>
+                                               source={require('../assets/img/feedback-blue2.png')}/>
                                         <Text style={styles.buttonText}>Provide Feedback</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -279,7 +281,7 @@ class HomeView extends Component {
                             <View elevation={2} style={styles.buttonWrapper}>
                                 <TouchableOpacity onPress={this.onSettingsPress.bind(this)}>
                                     <View style={styles.button}>
-                                        <Image style={styles.buttonImg} source={require('../assets/img/cog-blue.png')}/>
+                                        <Image style={styles.buttonImg} source={require('../assets/img/cog-blue2.png')}/>
                                         <Text style={styles.buttonText}>Settings</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -290,9 +292,9 @@ class HomeView extends Component {
                 <View style={styles.topBack}>
                     <View style={styles.topTextContainer}>
                         <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
-                        <Text style={styles.topText2}>v 1.0.0</Text>
+                        <Text style={styles.topText2}>v 1.1.3</Text>
                     </View>
-                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue22.png')}/>
+                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue-back.png')}/>
                 </View>
                 <View style={styles.botBack}>
                 </View>
@@ -305,44 +307,44 @@ class HomeView extends Component {
  *  The stylesheet for this component
  **/
 const styles = StyleSheet.create({
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 4,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 4
-    },
-    loadingScreen: {
-        alignSelf: "center",
-        width: Dimensions.get('window').width / 2,
-        height: Dimensions.get('window').height / 4,
-        // flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#FFFFFF',
-        zIndex: 5,
-        position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
-        borderRadius: 3,
-        //borderColor: '#003c8f',
-        //borderWidth: 1,
-    },
-    loadingImg: {
-        width: Dimensions.get('window').width / 4,
-        height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 14,
-    },
-    loadingText: {
-        color: '#000000',
-        fontSize: 18,
-    },
+    // loadContainer: {
+    //     width: Dimensions.get('window').width,
+    //     height: Dimensions.get('window').height,
+    //     zIndex: 4,
+    //     position: "absolute",
+    // },
+    // darken: {
+    //     width: Dimensions.get('window').width,
+    //     height: Dimensions.get('window').height,
+    //     backgroundColor: "black",
+    //     opacity: 0.6,
+    //     position: "absolute",
+    //     zIndex: 4
+    // },
+    // loadingScreen: {
+    //     alignSelf: "center",
+    //     width: Dimensions.get('window').width / 2,
+    //     height: Dimensions.get('window').height / 4,
+    //     // flex: 1,
+    //     alignItems: 'center',
+    //     justifyContent: 'space-evenly',
+    //     backgroundColor: '#FFFFFF',
+    //     zIndex: 5,
+    //     position: 'absolute',
+    //     transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
+    //     borderRadius: 3,
+    //     //borderColor: '#003c8f',
+    //     //borderWidth: 1,
+    // },
+    // loadingImg: {
+    //     width: Dimensions.get('window').width / 4,
+    //     height: Dimensions.get('window').width / 4,
+    //     margin: Dimensions.get('window').width / 14,
+    // },
+    // loadingText: {
+    //     color: '#000000',
+    //     fontSize: 18,
+    // },
     container: {
         flex: 1,
     },

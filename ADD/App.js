@@ -9,6 +9,7 @@ import CameraView from "./app/views/cameraview";
 import SettingsView from "./app/views/settingsview";
 import GalleryView from "./app/views/galleryview";
 import CategoriseView from "./app/views/categoriseview";
+import HelpView from "./app/views/helpView"
 
 const RootStack = createStackNavigator(
     {
@@ -21,6 +22,7 @@ const RootStack = createStackNavigator(
         settingsView: SettingsView,
         galleryView: GalleryView,
         categoriseView: CategoriseView,
+        helpView: HelpView
     },
     {
         initialRouteName: 'homeView',

@@ -1,6 +1,5 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, {Component, useState} from 'react';
 import {
-    Platform,
     Image,
     StyleSheet,
     Text,
@@ -30,7 +29,7 @@ class CameraView extends Component {
     state = {
         thumbnail: require('../assets/img/white.png'),
         white: require('../assets/img/white.png'),
-        loading: require('../assets/img/loading.gif'),
+        loading: require('../assets/img/mat-spin.gif'),
         cases: null,
         capturing: false,
         type: '',
@@ -170,7 +169,7 @@ class CameraView extends Component {
                 this.setState({
                     capturing: false,
                     side: "Back",
-                    sideImg: require("../assets/img/cow-tail-lines-thin.png")
+                    sideImg: require("../assets/img/cow-rear-thin.png")
                 });
                 break;
             case "Back":
@@ -228,16 +227,6 @@ class CameraView extends Component {
                 {this.state.capturing ?
                     <FadeInView style={styles.flash}/>
                     : null}
-                {this.state.isLoading ?
-                    <View style={styles.loadContainer}>
-                        <View style={styles.loadingScreen}>
-                            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>
-                            <Text style={styles.loadingText}>Loading...</Text>
-                        </View>
-                        <View style={styles.darken}>
-                        </View>
-                    </View>
-                    : null}
                 {this.state.type === "Healthy Animal" ?
                     <View style={styles.helpContainer}>
                         <Image style={styles.helpImg} source={this.state.sideImg}/>
@@ -266,10 +255,14 @@ class CameraView extends Component {
                             <Image style={styles.image}
                                    source={require("../assets/img/material-cam.png")}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
-                            <Image style={[styles.imageSmall, styles.settingsTouchable]}
-                                   source={require("../assets/img/arrow2.png")}/>
-                        </TouchableOpacity>
+                        {this.state.type === "Healthy Animal" ?
+                            <View style={[styles.imageSmall, styles.settingsTouchable]}>
+                            </View> :
+                            <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
+                                <Image
+                                    style={[styles.imageSmall, styles.settingsTouchable]}
+                                    source={this.state.capturing ? require("../assets/img/mat-spin.gif") : require("../assets/img/arrow2.png")}/>
+                            </TouchableOpacity>}
                     </View>
                 </View>
             </View>
@@ -278,20 +271,6 @@ class CameraView extends Component {
 }
 
 const styles = StyleSheet.create({
-    loadContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 4,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 4
-    },
     container: {
         flex: 1,
         flexDirection: 'column',
@@ -306,30 +285,6 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').width * 4 / 3,
         backgroundColor: "#ffffff",
         position: "absolute",
-    },
-    loadingScreen: {
-        alignSelf: "center",
-        width: Dimensions.get('window').width / 2,
-        height: Dimensions.get('window').height / 4,
-        // flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#FFFFFF',
-        zIndex: 5,
-        position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height / 4}],
-        borderRadius: 3,
-        //borderColor: '#003c8f',
-        //borderWidth: 1,
-    },
-    loadingImg: {
-        width: Dimensions.get('window').width / 4,
-        height: Dimensions.get('window').width / 4,
-        margin: Dimensions.get('window').width / 14,
-    },
-    loadingText: {
-        color: '#000000',
-        fontSize: 18,
     },
     helpContainer: {
         width: Dimensions.get('window').width,
@@ -383,17 +338,13 @@ const styles = StyleSheet.create({
     buttonTitle: {
         color: '#646464',
         fontSize: 18,
-        // marginTop: Dimensions.get('window').height / 80,
-        // marginBottom: Dimensions.get('window').height / 80,
         alignSelf: "center",
         textAlign: "center",
-        //backgroundColor: "blue"
     },
     imgContainer: {
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
-        //backgroundColor: "red"
     },
     image: {
         width: Dimensions.get('window').width / 6,
@@ -401,7 +352,7 @@ const styles = StyleSheet.create({
         overlayColor: 'white',
         alignSelf: 'center'
     },
-    imageSmall:{
+    imageSmall: {
         width: Dimensions.get('window').width / 8,
         height: Dimensions.get('window').width / 8,
         overlayColor: 'white',

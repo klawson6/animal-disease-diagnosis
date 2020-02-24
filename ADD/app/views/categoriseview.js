@@ -10,10 +10,8 @@ import {
     Alert, TouchableOpacity
 } from 'react-native';
 import {
-    Button, DefaultTheme, Divider, Menu, TextInput, Provider as PaperProvider, Switch, RadioButton
+    Button, DefaultTheme, Divider, Menu, TextInput, Provider as PaperProvider, RadioButton
 } from "react-native-paper"
-import {CheckBox} from 'react-native-elements'
-import RNPickerSelect from 'react-native-picker-select';
 import Swiper from "@manjiz/react-native-swiper"
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
