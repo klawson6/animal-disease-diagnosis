@@ -206,7 +206,6 @@ class SettingsView extends Component {
                                 </View>
                             </View>
                             <Divider style={{height: 1, marginBottom: Dimensions.get('window').width / 20}}/>
-                            {/*<Text style={styles.uploadTitle}>Upload Cases Using:</Text>*/}
                             <View style={[styles.switchContainer, {marginTop: Dimensions.get('window').width / 20}]}>
                                 <Text style={styles.switchText}>Wi-Fi Uploads: </Text>
                                 <Switch
@@ -249,7 +248,8 @@ const styles = StyleSheet.create({
     title: {
         color: '#646464',
         fontSize: 30,
-        margin: 15,
+        marginTop: Dimensions.get('window').height /60,
+        marginBottom: Dimensions.get('window').height /60,
         zIndex: 0
     },
     topContainer: {
@@ -310,12 +310,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         alignContent: "center"
-    },
-    uploadTitle: {
-        color: '#646464',
-        fontSize: 18,
-        marginTop: 20,
-        marginBottom: 20,
     },
     saveContainer: {
         flexDirection: 'row',

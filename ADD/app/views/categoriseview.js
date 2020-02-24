@@ -355,10 +355,11 @@ class CategoriseView extends Component {
         diseases: [],
         saveLoading: false,
         uploadLoading: false,
-        type: 0
+        type: 0,
     };
 
     checkCase(curCase, alert) {
+        console.log(curCase);
         let complete = true;
         Object.keys(curCase).forEach(k => {
             if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
@@ -394,11 +395,75 @@ class CategoriseView extends Component {
             })
     }
 
+    uploadCase(curCase, feedback) {
+        const body = new FormData();
+        this.state.uris.forEach(img => {
+            body.append("images[]", {
+                uri: img.uri,
+                name: img.name,
+                type: "image/jpg"
+            });
+            curCase.sides.push(img.side);
+        });
+        body.append("case", JSON.stringify(curCase));
+        body.append("feedback", feedback);
+        fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
+            {
+                method: 'POST',
+                body: body,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Request to server successful.");
+                    console.log(response.status);
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
+                    this.setState({
+                        isUploaded: true,
+                        uploadLoading: false,
+                    });
+                    new Alert.alert(
+                        'Uploaded',
+                        'Your case information has been uploaded.',
+                        [{text: 'OK', onPress: () => this.onSavePress()},],
+                        {cancelable: false},
+                    );
+                } else {
+                    console.log("Request to server unsuccessful.");
+                    console.log(response.status);
+                    response.text()
+                        .then(text => {
+                            console.log(text);
+                        });
+                    this.setState({
+                        uploadLoading: false,
+                    });
+                    new Alert.alert(
+                        'Upload Failed',
+                        'Your case information failed to upload.',
+                        [{text: 'OK', onPress: () => this.onSavePress()},],
+                        {cancelable: false},
+                    );
+                }
+            })
+            .catch(error => {
+                console.log("Error making request : " + error);
+                this.setState({
+                    uploadLoading: false,
+                });
+            });
+    }
+
     onUploadPress() {
         this.setState({
             uploadLoading: true,
         });
-        let sides = [];
         let curCase = {
             name: this.state.name,
             dateSelected: this.state.dateSelected,
@@ -409,9 +474,10 @@ class CategoriseView extends Component {
             sex: this.state.sex,
             diagnosis: this.state.diagnosis,
             type: this.state.type,
-            sides: sides,
+            sides: [],
         };
         if (!this.checkCase(curCase, true)) return;
+        this.state.curCase = curCase;
         this.checkInternetAccess()
             .then(access => {
                 if (!access) {
@@ -420,67 +486,9 @@ class CategoriseView extends Component {
                     });
                     return;
                 }
-                const body = new FormData();
-                this.state.uris.forEach(img => {
-                    body.append("images[]", {
-                        uri: img.uri,
-                        name: img.name,
-                        type: "image/jpg"
-                    });
-                    sides.push(img.side);
+                this.setState({
+                    feedbackPending: true
                 });
-                body.append("case", JSON.stringify(curCase));
-                fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
-                    {
-                        method: 'POST',
-                        body: body,
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "multipart/form-data"
-                        }
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log("Request to server successful.");
-                            console.log(response.status);
-                            response.text()
-                                .then(text => {
-                                    console.log(text);
-                                });
-                            this.setState({
-                                isUploaded: true,
-                                uploadLoading: false,
-                            });
-                            new Alert.alert(
-                                'Uploaded',
-                                'Your case information has been uploaded.',
-                                [{text: 'OK', onPress: () => this.onSavePress()},],
-                                {cancelable: false},
-                            );
-                        } else {
-                            console.log("Request to server unsuccessful.");
-                            console.log(response.status);
-                            response.text()
-                                .then(text => {
-                                    console.log(text);
-                                });
-                            this.setState({
-                                uploadLoading: false,
-                            });
-                            new Alert.alert(
-                                'Upload Failed',
-                                'Your case information failed to upload.',
-                                [{text: 'OK', onPress: () => this.onSavePress()},],
-                                {cancelable: false},
-                            );
-                        }
-                    })
-                    .catch(error => {
-                        console.log("Error making request : " + error);
-                        this.setState({
-                            uploadLoading: false,
-                        });
-                    });
             })
             .catch(error => {
                 console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
@@ -641,6 +649,11 @@ class CategoriseView extends Component {
         });
     };
 
+    _handleFeedback = (val) => {
+        this.setState({feedbackPending: false});
+        this.uploadCase(this.state.curCase, val);
+    };
+
     render() {
         const theme = {
             ...DefaultTheme,
@@ -654,6 +667,35 @@ class CategoriseView extends Component {
 
         return (
             <PaperProvider theme={theme}>
+                {this.state.feedbackPending ?
+                    <View style={styles.feedbackContainer}>
+                        <View style={styles.feedbackScreen}>
+                            <View style={styles.feedbackScreenMargin}>
+                                <Text style={styles.feedbackTitle}>Feedback</Text>
+                                <Text style={styles.feedbackText}>How was your experience capturing and uploading this
+                                    case?</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
+                    </View>
+                    : null}
                 <View style={styles.container}>
                     <Text style={styles.title}>Annotate the Image(s)</Text>
                     <View style={styles.swipeWrapper}>
@@ -1035,6 +1077,68 @@ class CategoriseView extends Component {
 }
 
 const styles = StyleSheet.create({
+    feedbackContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        zIndex: 4,
+        position: "absolute",
+    },
+    darken: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: "black",
+        opacity: 0.6,
+        position: "absolute",
+        zIndex: 4
+    },
+    feedbackScreen: {
+        alignSelf: "center",
+        width: Dimensions.get('window').width * 4 / 5,
+        height: Dimensions.get('window').height / 5,
+        // flex: 1,
+        alignItems: 'center',
+        zIndex: 5,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height / 4}],
+        borderRadius: 3,
+        backgroundColor: '#ffffff',
+        //borderWidth: 1,
+    },
+    feedbackScreenMargin: {
+        width: Dimensions.get('window').width * 4 / 5,
+        height: Dimensions.get('window').height / 5,
+        padding: Dimensions.get('window').width / 30,
+    },
+    feedbackTitle: {
+        flex: 1.5,
+        fontWeight: "bold",
+        flexDirection: 'column',
+        color: 'black',
+        fontSize: 20,
+        width: "100%",
+    },
+    feedbackText: {
+        flex: 3,
+        fontSize: 16,
+        flexDirection: 'column',
+        width: "100%",
+    },
+    feedbackImgWrapper: {
+        flex: 1.5,
+        flexDirection: 'column',
+        width: "100%",
+    },
+    feedbackImgContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        paddingLeft: Dimensions.get('window').width / 30,
+        paddingRight: Dimensions.get('window').width / 30,
+    },
+    feedbackImg: {
+        width: Dimensions.get('window').width / 12,
+        height: Dimensions.get('window').width / 12,
+    },
     container: {
         flex: 1,
         alignItems: 'center',

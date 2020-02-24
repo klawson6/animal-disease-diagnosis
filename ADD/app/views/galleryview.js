@@ -344,6 +344,35 @@ class GalleryView extends Component {
 
         return (
             <PaperProvider theme={theme}>
+                {this.state.feedbackPending ?
+                    <View style={styles.feedbackContainer}>
+                        <View style={styles.feedbackScreen}>
+                            <View style={styles.feedbackScreenMargin}>
+                                <Text style={styles.feedbackTitle}>Feedback</Text>
+                                <Text style={styles.feedbackText}>How was your experience capturing and uploading this
+                                    case?</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedback(3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
+                    </View>
+                    : null}
                 <View pointerEvents={this.state.loading ? 'none' : 'auto'} style={styles.container}>
                     <Text
                         style={styles.title}>{this.props.navigation.getParam('home') ? "Cases" : "Current Case"}</Text>

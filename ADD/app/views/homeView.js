@@ -4,6 +4,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     View,
     Image,
     Dimensions,
@@ -12,6 +13,7 @@ import {
 import {ScreenOrientation} from 'expo';
 import * as Permissions from "expo-permissions";
 import * as MediaLibrary from 'expo-media-library';
+import {Provider as PaperProvider} from "react-native-paper";
 
 class HomeView extends Component {
 
@@ -163,7 +165,7 @@ class HomeView extends Component {
         }
     }
 
-    onHelpPress(){
+    onHelpPress() {
         this.props.navigation.navigate('helpView'); // Navigate the view to SettingsView.
     }
 
@@ -208,6 +210,10 @@ class HomeView extends Component {
         //     .then(value => console.log(value));
     }
 
+    _handleFeedbackPress = (val) => {
+        this.setState({feedbackPending: true, feedback: val});
+    };
+
     /**
      *  The XML that describes the component tree that build this component.
      **/
@@ -224,6 +230,35 @@ class HomeView extends Component {
                 {/*        </View>*/}
                 {/*    </View>*/}
                 {/*    : null}*/}
+                {this.state.feedbackPending ?
+                    <View style={styles.feedbackContainer}>
+                        <View style={styles.feedbackScreen}>
+                            <View style={styles.feedbackScreenMargin}>
+                                <Text style={styles.feedbackTitle}>Feedback</Text>
+                                <Text style={styles.feedbackText}>How was your experience capturing and uploading this
+                                    case?</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.darken}>
+                        </View>
+                    </View>
+                    : null}
                 <View style={styles.frontContainer}>
                     <View style={styles.emptyTop}>
                     </View>
@@ -270,7 +305,7 @@ class HomeView extends Component {
                         </View>
                         <View style={styles.buttonRow}>
                             <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this.onClearPress.bind(this)}>
+                                <TouchableOpacity onPress={this._handleFeedbackPress.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
                                                source={require('../assets/img/feedback-blue2.png')}/>
@@ -281,7 +316,8 @@ class HomeView extends Component {
                             <View elevation={2} style={styles.buttonWrapper}>
                                 <TouchableOpacity onPress={this.onSettingsPress.bind(this)}>
                                     <View style={styles.button}>
-                                        <Image style={styles.buttonImg} source={require('../assets/img/cog-blue2.png')}/>
+                                        <Image style={styles.buttonImg}
+                                               source={require('../assets/img/cog-blue2.png')}/>
                                         <Text style={styles.buttonText}>Settings</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -294,7 +330,8 @@ class HomeView extends Component {
                         <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
                         <Text style={styles.topText2}>v 1.1.3</Text>
                     </View>
-                    <Image resizeMode={"cover"} style={styles.topImg} source={require('../assets/img/cows-blue-back.png')}/>
+                    <Image resizeMode={"cover"} style={styles.topImg}
+                           source={require('../assets/img/cows-blue-back.png')}/>
                 </View>
                 <View style={styles.botBack}>
                 </View>
@@ -345,6 +382,68 @@ const styles = StyleSheet.create({
     //     color: '#000000',
     //     fontSize: 18,
     // },
+    feedbackContainer: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        zIndex: 4,
+        position: "absolute",
+    },
+    darken: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: "black",
+        opacity: 0.6,
+        position: "absolute",
+        zIndex: 4
+    },
+    feedbackScreen: {
+        alignSelf: "center",
+        width: Dimensions.get('window').width * 4 / 5,
+        height: Dimensions.get('window').height / 5,
+        // flex: 1,
+        alignItems: 'center',
+        zIndex: 5,
+        position: 'absolute',
+        transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
+        borderRadius: 3,
+        backgroundColor: '#ffffff',
+        //borderWidth: 1,
+    },
+    feedbackScreenMargin: {
+        width: Dimensions.get('window').width * 4 / 5,
+        height: Dimensions.get('window').height / 5,
+        padding: Dimensions.get('window').width / 30,
+    },
+    feedbackTitle: {
+        flex: 1.5,
+        fontWeight: "bold",
+        flexDirection: 'column',
+        color: 'black',
+        fontSize: 20,
+        width: "100%",
+    },
+    feedbackText: {
+        flex: 3,
+        fontSize: 16,
+        flexDirection: 'column',
+        width: "100%",
+    },
+    feedbackImgWrapper: {
+        flex: 1.5,
+        flexDirection: 'column',
+        width: "100%",
+    },
+    feedbackImgContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        paddingLeft: Dimensions.get('window').width / 30,
+        paddingRight: Dimensions.get('window').width / 30,
+    },
+    feedbackImg: {
+        width: Dimensions.get('window').width / 12,
+        height: Dimensions.get('window').width / 12,
+    },
     container: {
         flex: 1,
     },
