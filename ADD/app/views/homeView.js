@@ -8,6 +8,7 @@ import {
     View,
     Image,
     Dimensions,
+    ScrollView,
     AsyncStorage
 } from 'react-native';
 import {ScreenOrientation} from 'expo';
@@ -210,8 +211,16 @@ class HomeView extends Component {
         //     .then(value => console.log(value));
     }
 
-    _handleFeedbackPress = (val) => {
-        this.setState({feedbackPending: true, feedback: val});
+    _handleFeedbackActive = () => {
+        if (this.state.feedbackPending)
+            this.setState({
+                feedbackPending: !this.state.feedbackPending,
+
+            });
+    };
+
+    _handleFeedbackOption = (key, val) => {
+        this.setState({[key]: val});
     };
 
     /**
@@ -233,27 +242,88 @@ class HomeView extends Component {
                 {this.state.feedbackPending ?
                     <View style={styles.feedbackContainer}>
                         <View style={styles.feedbackScreen}>
-                            <View style={styles.feedbackScreenMargin}>
-                                <Text style={styles.feedbackTitle}>Feedback</Text>
-                                <Text style={styles.feedbackText}>How was your experience capturing and uploading this
-                                    case?</Text>
+                            <ScrollView style={styles.feedbackScreenMargin}>
+                                <View style={styles.titleContainer}>
+                                    <Text style={styles.feedbackTitle}>Feedback</Text>
+                                    <TouchableOpacity onPress={() => {
+                                        this._handleFeedbackActive()
+                                    }} style={styles.closeImgWrapper}>
+                                        <Image style={styles.closeImg} source={require('../assets/img/close.png')}/>
+                                    </TouchableOpacity>
+                                </View>
+                                <Text style={styles.feedbackText}>How is your experience with:{'\n'}</Text>
+                                <Text style={styles.feedbackTextOption}>The overall application?</Text>
                                 <View style={styles.feedbackImgWrapper}>
                                     <View style={styles.feedbackImgContainer}>
-                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(1)}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback1", 1)}>
                                             <Image style={styles.feedbackImg}
-                                                   source={this.state.feedback === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
+                                                   source={this.state.feedback1 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(2)}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback1", 2)}>
                                             <Image style={styles.feedbackImg}
-                                                   source={this.state.feedback === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
+                                                   source={this.state.feedback1 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => this._handleFeedbackPress(3)}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback1", 3)}>
                                             <Image style={styles.feedbackImg}
-                                                   source={this.state.feedback === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
+                                                   source={this.state.feedback1 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                            </View>
+                                <Text style={styles.feedbackTextOption}>Capturing, filling out and
+                                    uploading a HEALTHY case?</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback2", 1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback2 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback2", 2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback2 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback2", 3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback2 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <Text style={styles.feedbackTextOption}>Capturing, filling out and
+                                    uploading a DISEASE case?</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback3", 1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback3 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback3", 2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback3 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback3", 3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback3 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <Text style={styles.feedbackTextOption}>Managing your cases? (Saving, editing and
+                                    uploading)</Text>
+                                <View style={styles.feedbackImgWrapper}>
+                                    <View style={styles.feedbackImgContainer}>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback4", 1)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback4 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback4", 2)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback4 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this._handleFeedbackOption("feedback4", 3)}>
+                                            <Image style={styles.feedbackImg}
+                                                   source={this.state.feedback4 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </ScrollView>
                         </View>
                         <View style={styles.darken}>
                         </View>
@@ -305,7 +375,7 @@ class HomeView extends Component {
                         </View>
                         <View style={styles.buttonRow}>
                             <View elevation={2} style={styles.buttonWrapper}>
-                                <TouchableOpacity onPress={this._handleFeedbackPress.bind(this)}>
+                                <TouchableOpacity onPress={this._handleFeedbackActive.bind(this)}>
                                     <View style={styles.button}>
                                         <Image style={styles.buttonImg}
                                                source={require('../assets/img/feedback-blue2.png')}/>
@@ -399,12 +469,12 @@ const styles = StyleSheet.create({
     feedbackScreen: {
         alignSelf: "center",
         width: Dimensions.get('window').width * 4 / 5,
-        height: Dimensions.get('window').height / 5,
+        height: Dimensions.get('window').height * 4 / 5,
         // flex: 1,
         alignItems: 'center',
         zIndex: 5,
         position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
+        transform: [{translateY: Dimensions.get('window').height / 10}],
         borderRadius: 3,
         backgroundColor: '#ffffff',
         //borderWidth: 1,
@@ -414,23 +484,45 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 5,
         padding: Dimensions.get('window').width / 30,
     },
+    titleContainer: {
+        // width: "100%",
+        height: Dimensions.get('window').height / 24,
+        flexDirection: 'row',
+        flex: 1
+    },
     feedbackTitle: {
-        flex: 1.5,
+        flex: 4,
         fontWeight: "bold",
-        flexDirection: 'column',
         color: 'black',
         fontSize: 20,
-        width: "100%",
+    },
+    closeImgWrapper: {
+        flex: 1,
+        justifyContent: "center"
+    },
+    closeImg: {
+        alignSelf: "flex-end",
+        width: Dimensions.get('window').width / 30,
+        height: Dimensions.get('window').width / 30,
     },
     feedbackText: {
-        flex: 3,
+        // flex: 3,
         fontSize: 16,
-        flexDirection: 'column',
+        // flexDirection: 'column',
         width: "100%",
+        //height: Dimensions.get('window').height / 14
+    },
+    feedbackTextOption: {
+        width: "100%",
+        fontSize: 16,
+        paddingLeft: Dimensions.get('window').width / 30,
+        paddingRight: Dimensions.get('window').width / 30,
     },
     feedbackImgWrapper: {
-        flex: 1.5,
-        flexDirection: 'column',
+        // flex: 1.5,
+        flexDirection: 'row',
+        alignItems: "center",
+        height: Dimensions.get('window').height / 18,
         width: "100%",
     },
     feedbackImgContainer: {
