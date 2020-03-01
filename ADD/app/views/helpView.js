@@ -1,42 +1,32 @@
 import React, {Component} from 'react';
 import {
-    Platform,
     Dimensions,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ScrollView,
-    AsyncStorage, Image, Alert
+    Image,
 } from 'react-native';
 import {
-    DefaultTheme,
-    Menu,
-    Switch,
-    TextInput,
-    Provider as PaperProvider,
-    Button,
     Divider
 } from "react-native-paper";
+import { Linking } from 'expo';
 
 class HelpView extends Component {
 
-    render() {
-        const theme = {
-            ...DefaultTheme,
-            roundness: 5,
-            colors: {
-                ...DefaultTheme.colors,
-                primary: '#1565c0',
-                accent: '#5e92f3',
-            },
-        };
+    _handleEmail = () => {
+        Linking.openURL("mailto:kyle.lawson.2016@uni.strath.ac.uk");
+    };
 
+    render() {
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.scrollContainer}>
                     <Text style={styles.title}>What is this application?</Text>
                     <Image style={styles.thumbnail} source={require("../assets/img/kyle-app.png")}/>
+                    <Text style={styles.link} onPress={this._handleEmail}>
+                        kyle.lawson.2016@uni.strath.ac.uk
+                    </Text>
                     <Text style={styles.sentence}>
                         This application has been designed by myself, Kyle Lawson.
                     </Text>
@@ -60,7 +50,7 @@ class HelpView extends Component {
                     }}/>
                     <Text style={styles.title}>Who is this application for?</Text>
                     <Text style={styles.sentence}>
-                        As part of my project, I am asking students, farmers, and others, who work with livestock
+                        As part of my project, I am asking students, veterinarians, farmers, and others, who work with livestock
                         regularly, to test this application and provide feedback regarding:
                     </Text>
                     <Text style={styles.sentence}>
@@ -181,6 +171,22 @@ class HelpView extends Component {
                         home page.{'\n'}You can also set your upload preferences, limiting uploads to only be permitted
                         via Wi-Fi and/or cellular data.
                     </Text>
+                    <Text style={styles.subheading}>
+                        Feedback
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        There are 3 ways you can provide feedback regarding the usability, user interface, functionality
+                        and issues encountered in this application:{'\n'}
+                    </Text>
+                    <Text style={styles.sentence}>
+                        • When uploading a single case, you will be asked how your experience was capturing, annotating and uploading the case.
+                    </Text>
+                    <Text style={styles.sentence}>
+                        • There is a feedback form, accessible from the home screen, which can be filled in and uploaded when you have your preferred internet connectivity.
+                    </Text>
+                    <Text style={styles.sentence}>
+                        • You can email me (email address above) any time with questions or feedback regarding this application or what it sets out to do. I'm happy to talk about how it works, how the information gathered will be used and why I have asked you to take part in this trial.
+                    </Text>
                     <Divider style={{
                         height: 1,
                         marginTop: Dimensions.get('window').width / 20,
@@ -218,6 +224,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: Dimensions.get('window').width / 30,
         alignSelf: "flex-start"
+    },
+    link: {
+        fontSize: 18,
+        alignSelf: "center",
+        marginBottom: Dimensions.get('window').width / 40,
+        color: '#1565c0',
+        textDecorationLine: "underline"
     },
     sentence: {
         fontSize: 18,

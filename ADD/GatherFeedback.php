@@ -20,26 +20,27 @@ if (mysqli_connect_errno()) {
     die('Failed to connect to MySQL' . mysqli_connect_error());
 }
 
-$body  = file_get_contents('php://input');
+$body = file_get_contents('php://input');
 
-$feedback  = json_decode($_POST["feedback"]);
+$feedback = json_decode($_POST["feedback"]);
 
-$feedback1  = $feedback->feedback1;
-$feedback2  = $feedback->feedback2;
-$feedback3   = $feedback->feedback3;
-$feedback4  = $feedback->feedback4;
-$feedback5   = $feedback->feedback5;
-$feedback6   = $feedback->feedback6;
+$feedback1 = $feedback->feedback1;
+$feedback2 = $feedback->feedback2;
+$feedback3 = $feedback->feedback3;
+$feedback4 = $feedback->feedback4;
+$feedback5 = $feedback->feedback5;
+$feedback6 = $feedback->feedback6;
+$uuid = uniqid();
 
 //echo "\r\n".$uuid.$name.$date.$loc.$spec.$age.$breed.$sex.$diag;
 
-$currentDir      = getcwd();
+$currentDir = getcwd();
 $uploadDirectory = "/kyle/images/";
 
 $fbTable = "Feedback";
 
-if ($stmt = $con->prepare("INSERT INTO $fbTable (Feedback1, Feedback2, Feedback3, Feedback4, Feedback5, Feedback6) VALUES (?,?,?,?,?,?)")) {
-    $stmt->bind_param("iiiiss", $feedback1, $feedback2, $feedback3, $feedback4, $feedback5, $feedback6);
+if ($stmt = $con->prepare("INSERT INTO $fbTable (Identifier, Feedback1, Feedback2, Feedback3, Feedback4, Feedback5, Feedback6) VALUES (?,?,?,?,?,?,?)")) {
+    $stmt->bind_param("siiiiss", $uuid, $feedback1, $feedback2, $feedback3, $feedback4, $feedback5, $feedback6);
     if ($stmt->execute()) {
         $response = $response . "Case info uploaded." . "\r\n";
     } else {

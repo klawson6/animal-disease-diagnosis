@@ -1,17 +1,14 @@
 import React, {Component} from 'react';
 import {
-    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     View,
     Image,
     Dimensions,
     ScrollView,
     AsyncStorage,
     Alert,
-    KeyboardAvoidingView,
     TextInput
 } from 'react-native';
 import {ScreenOrientation} from 'expo';
@@ -264,10 +261,7 @@ class HomeView extends Component {
                         .then(text => {
                             console.log(text);
                         });
-                    this.setState({
-                        uploading: false,
-                        feedbackPending: false
-                    });
+                    this._handleFinishedUpload();
                     new Alert.alert(
                         'Uploaded',
                         'Your feedback has been uploaded. Thank you.',
@@ -281,10 +275,7 @@ class HomeView extends Component {
                         .then(text => {
                             console.log(text);
                         });
-                    this.setState({
-                        feedbackPending: false,
-                        uploading: false,
-                    });
+                    this._handleFinishedUpload();
                     new Alert.alert(
                         'Upload Failed',
                         'Your feedback failed to upload. Please try again on a strong Wi-Fi connection.',
@@ -295,10 +286,7 @@ class HomeView extends Component {
             })
             .catch(error => {
                 console.log("Error making request : " + error);
-                this.setState({
-                    feedbackPending: false,
-                    uploading: false,
-                });
+                this._handleFinishedUpload();
             });
     }
 
@@ -309,20 +297,14 @@ class HomeView extends Component {
                     this.checkInternetAccess(JSON.parse(settings))
                         .then(access => {
                             if (!access) {
-                                this.setState({
-                                    feedbackPending: false,
-                                    uploading: false,
-                                });
+                                this._handleFinishedUpload();
                                 return;
                             }
                             this.uploadFeedback()
                         })
                         .catch(error => {
                             console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
-                            this.setState({
-                                feedbackPending: false,
-                                uploading: false,
-                            });
+                            this._handleFinishedUpload();
                         });
                 }
             })
@@ -331,17 +313,22 @@ class HomeView extends Component {
             });
     }
 
+    _handleFinishedUpload = () =>{
+        this.setState({
+            feedbackPending: false,
+            uploading: false,
+            feedback1: 0,
+            feedback2: 0,
+            feedback3: 0,
+            feedback4: 0,
+            feedback5: null,
+            feedback6: null,
+        });
+    };
+
     _handleFeedbackActive = () => {
         if (this.state.feedbackPending) {
-            this.setState({
-                feedback1: 0,
-                feedback2: 0,
-                feedback3: 0,
-                feedback4: 0,
-                feedback5: null,
-                feedback6: null,
-                feedbackPending: !this.state.feedbackPending,
-            });
+            this._handleFinishedUpload();
         } else {
             this.setState({
                 feedbackPending: !this.state.feedbackPending,
@@ -589,7 +576,7 @@ class HomeView extends Component {
                     <View style={styles.topBack}>
                         <View style={styles.topTextContainer}>
                             <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
-                            <Text style={styles.topText2}>v 1.1.3</Text>
+                            <Text style={styles.topText2}>v 1.2.4</Text>
                         </View>
                         <Image resizeMode={"cover"} style={styles.topImg}
                                source={require('../assets/img/cows-blue-back.png')}/>
