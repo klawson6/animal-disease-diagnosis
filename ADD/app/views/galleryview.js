@@ -135,6 +135,7 @@ class GalleryView extends Component {
                 sides.push(img.side);
             });
             c.sides = sides;
+            c.diagnosis = c.diagnosis ? c.diagnosis : "Healthy";
             body.append("case", JSON.stringify(c));
             fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
                 {

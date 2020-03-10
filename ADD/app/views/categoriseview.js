@@ -472,7 +472,7 @@ class CategoriseView extends Component {
             age: this.state.age,
             breed: this.state.breed,
             sex: this.state.sex,
-            diagnosis: this.state.diagnosis,
+            diagnosis: this.state.diagnosis ? this.state.diagnosis : "Healthy",
             type: this.state.type,
             sides: [],
         };
