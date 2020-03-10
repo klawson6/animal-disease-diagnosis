@@ -16,6 +16,8 @@ import * as Permissions from "expo-permissions";
 import * as MediaLibrary from 'expo-media-library';
 import {Divider, Button, Provider as PaperProvider, DefaultTheme} from "react-native-paper";
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
+import HomeScreenButton from "../Components/HomeScreenButton";
+import FeedbackForm from "../Components/FeedbackForm";
 
 class HomeView extends Component {
 
@@ -30,6 +32,13 @@ class HomeView extends Component {
         // loading: false,
         // loadingText: "",
     };
+
+    _model;
+
+    constructor(props, model) {
+        super(props);
+        this._model = model;
+    }
 
     /**
      *  Function executed when this component mounts to the display.
@@ -293,7 +302,7 @@ class HomeView extends Component {
     onUploadPress() {
         AsyncStorage.getItem("settings")
             .then(settings => {
-                if(settings){
+                if (settings) {
                     this.checkInternetAccess(JSON.parse(settings))
                         .then(access => {
                             if (!access) {
@@ -308,12 +317,12 @@ class HomeView extends Component {
                         });
                 }
             })
-            .catch(err =>{
+            .catch(err => {
                 console.log("Error fetching settings from home page: " + err);
             });
     }
 
-    _handleFinishedUpload = () =>{
+    _handleFinishedUpload = () => {
         this.setState({
             feedbackPending: false,
             uploading: false,
@@ -362,214 +371,42 @@ class HomeView extends Component {
         return (
             <PaperProvider theme={theme}>
                 <View style={styles.container}>
-                    {/*{this.state.loading ?*/}
-                    {/*    <View style={styles.loadContainer}>*/}
-                    {/*        <View style={styles.loadingScreen}>*/}
-                    {/*            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>*/}
-                    {/*            <Text style={styles.loadingText}>{this.state.loadingText}</Text>*/}
-                    {/*        </View>*/}
-                    {/*        <View style={styles.darken}>*/}
-                    {/*        </View>*/}
-                    {/*    </View>*/}
-                    {/*    : null}*/}
                     {this.state.feedbackPending ?
-                        <View style={styles.feedbackContainer}>
-                            <View style={styles.feedbackScreen}>
-                                <ScrollView style={styles.feedbackScreenMargin}>
-                                    <View style={styles.titleContainer}>
-                                        <Text style={styles.feedbackTitle}>Feedback</Text>
-                                        <TouchableOpacity onPress={() => {
-                                            this._handleFeedbackActive()
-                                        }} style={styles.closeImgWrapper}>
-                                            <Image style={styles.closeImg} source={require('../assets/img/close.png')}/>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <Text style={styles.feedbackText}>How is your experience with:{'\n'}</Text>
-                                    <Text style={styles.feedbackTextOption}>The overall application?</Text>
-                                    <View style={styles.feedbackImgWrapper}>
-                                        <View style={styles.feedbackImgContainer}>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback1", 1)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback1 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback1", 2)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback1 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback1", 3)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback1 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.feedbackTextOption}>Capturing, filling out and
-                                        uploading a HEALTHY case?</Text>
-                                    <View style={styles.feedbackImgWrapper}>
-                                        <View style={styles.feedbackImgContainer}>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback2", 1)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback2 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback2", 2)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback2 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback2", 3)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback2 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.feedbackTextOption}>Capturing, filling out and
-                                        uploading a DISEASE case?</Text>
-                                    <View style={styles.feedbackImgWrapper}>
-                                        <View style={styles.feedbackImgContainer}>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback3", 1)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback3 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback3", 2)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback3 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback3", 3)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback3 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.feedbackTextOption}>Managing your cases? (Saving, editing and
-                                        uploading)</Text>
-                                    <View style={styles.feedbackImgWrapper}>
-                                        <View style={styles.feedbackImgContainer}>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback4", 1)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback4 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback4", 2)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback4 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this._handleFeedbackOption("feedback4", 3)}>
-                                                <Image style={styles.feedbackImg}
-                                                       source={this.state.feedback4 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                    <Divider style={{
-                                        height: 1,
-                                        marginRight: Dimensions.get('window').width / 30,
-                                        marginLeft: Dimensions.get('window').width / 30,
-                                        marginBottom: Dimensions.get('window').width / 30
-                                    }}/>
-                                    <Text style={styles.feedbackText}>Please explain what you have experienced using the
-                                        application:{'\n'}</Text>
-                                    <Text style={styles.feedbackTextOption}>Any unexpected
-                                        behaviour in this application (Bugs/Glitches/Crashes)?</Text>
-                                    <TextInput value={this.state.feedback5} multiline={true} placeholder={"Feedback"}
-                                               style={styles.textEntry}
-                                               onChangeText={(value) => {
-                                                   this._handleFeedbackOption("feedback5", value)
-                                               }}/>
-                                    <Text style={styles.feedbackTextOption}>Any features and/or functionality you
-                                        would add/remove from this application?</Text>
-                                    <TextInput value={this.state.feedback6} multiline={true} placeholder={"Feedback"}
-                                               style={styles.textEntry}
-                                               onChangeText={(value) => {
-                                                   this._handleFeedbackOption("feedback6", value)
-                                               }}/>
-                                    <Button style={styles.uploadButton} mode="contained" loading={this.state.uploading}
-                                            onPress={() => {this._handleUpload()}}>
-                                        Upload
-                                    </Button>
-                                    <Divider style={{
-                                        height: 1,
-                                        marginTop: Dimensions.get('window').width / 30,
-                                        marginRight: Dimensions.get('window').width / 30,
-                                        marginLeft: Dimensions.get('window').width / 30,
-                                        marginBottom: Dimensions.get('window').height / 2
-                                    }}/>
-                                </ScrollView>
-                            </View>
-                            <View style={styles.darken}>
-                            </View>
-                        </View>
+                        <FeedbackForm/>
                         : null}
                     <View style={styles.frontContainer}>
                         <View style={styles.emptyTop}>
                         </View>
                         <View style={styles.buttonContainer}>
                             <View style={styles.buttonRow}>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this.onHealthyPress.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/cow-healthy2.png')}/>
-                                            <Text style={styles.buttonText}>Healthy Case</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this.onDiseasePress.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/cow-disease2.png')}/>
-                                            <Text style={styles.buttonText}>Disease Case</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this.onHealthyPress.bind(this)}
+                                                  source={require('../assets/img/cow-healthy2.png')}
+                                                  text={"Healthy Case"}/>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this.onDiseasePress.bind(this)}
+                                                  source={require('../assets/img/cow-disease2.png')}
+                                                  text={"Disease Case"}/>
                             </View>
                             <View style={styles.buttonRow}>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this.onGalleryPress.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/folder-blue2.png')}/>
-                                            <Text style={styles.buttonText}>Saved Cases</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this.onHelpPress.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/question-blue2.png')}/>
-                                            <Text style={styles.buttonText}>How to Use</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this.onGalleryPress.bind(this)}
+                                                  source={require('../assets/img/folder-blue2.png')}
+                                                  text={"Saved Cases"}/>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this.onHealthyPress.bind(this)}
+                                                  source={require('../assets/img/question-blue2.png')}
+                                                  text={"How to Use"}/>
                             </View>
                             <View style={styles.buttonRow}>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this._handleFeedbackActive.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/feedback-blue2.png')}/>
-                                            <Text style={styles.buttonText}>Provide Feedback</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                                <View elevation={2} style={styles.buttonWrapper}>
-                                    <TouchableOpacity onPress={this.onSettingsPress.bind(this)}>
-                                        <View style={styles.button}>
-                                            <Image style={styles.buttonImg}
-                                                   source={require('../assets/img/cog-blue2.png')}/>
-                                            <Text style={styles.buttonText}>Settings</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this._handleFeedbackActive.bind(this)}
+                                                  source={require('../assets/img/feedback-blue2.png')}
+                                                  text={"Provide Feedback"}/>
+                                <HomeScreenButton style={styles.buttonWrapper}
+                                                  onPress={this.onSettingsPress.bind(this)}
+                                                  source={require('../assets/img/cog-blue2.png')}
+                                                  text={"Settings"}/>
                             </View>
                         </View>
                     </View>
@@ -593,145 +430,6 @@ class HomeView extends Component {
  *  The stylesheet for this component
  **/
 const styles = StyleSheet.create({
-    // loadContainer: {
-    //     width: Dimensions.get('window').width,
-    //     height: Dimensions.get('window').height,
-    //     zIndex: 4,
-    //     position: "absolute",
-    // },
-    // darken: {
-    //     width: Dimensions.get('window').width,
-    //     height: Dimensions.get('window').height,
-    //     backgroundColor: "black",
-    //     opacity: 0.6,
-    //     position: "absolute",
-    //     zIndex: 4
-    // },
-    // loadingScreen: {
-    //     alignSelf: "center",
-    //     width: Dimensions.get('window').width / 2,
-    //     height: Dimensions.get('window').height / 4,
-    //     // flex: 1,
-    //     alignItems: 'center',
-    //     justifyContent: 'space-evenly',
-    //     backgroundColor: '#FFFFFF',
-    //     zIndex: 5,
-    //     position: 'absolute',
-    //     transform: [{translateY: Dimensions.get('window').height * 3 / 8}],
-    //     borderRadius: 3,
-    //     //borderColor: '#003c8f',
-    //     //borderWidth: 1,
-    // },
-    // loadingImg: {
-    //     width: Dimensions.get('window').width / 4,
-    //     height: Dimensions.get('window').width / 4,
-    //     margin: Dimensions.get('window').width / 14,
-    // },
-    // loadingText: {
-    //     color: '#000000',
-    //     fontSize: 18,
-    // },
-    feedbackContainer: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        zIndex: 4,
-        position: "absolute",
-    },
-    darken: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: "black",
-        opacity: 0.6,
-        position: "absolute",
-        zIndex: 4
-    },
-    feedbackScreen: {
-        alignSelf: "center",
-        width: Dimensions.get('window').width * 4 / 5,
-        height: Dimensions.get('window').height * 4 / 5,
-        // flex: 1,
-        alignItems: 'center',
-        zIndex: 5,
-        position: 'absolute',
-        transform: [{translateY: Dimensions.get('window').height / 10}],
-        borderRadius: 3,
-        backgroundColor: '#ffffff',
-        //borderWidth: 1,
-    },
-    feedbackScreenMargin: {
-        width: Dimensions.get('window').width * 4 / 5,
-        height: Dimensions.get('window').height * 4 / 5,
-        padding: Dimensions.get('window').width / 30,
-    },
-    titleContainer: {
-        // width: "100%",
-        height: Dimensions.get('window').height / 24,
-        flexDirection: 'row',
-        flex: 1
-    },
-    feedbackTitle: {
-        flex: 4,
-        fontWeight: "bold",
-        color: 'black',
-        fontSize: 20,
-    },
-    closeImgWrapper: {
-        flex: 1,
-        justifyContent: "center"
-    },
-    closeImg: {
-        alignSelf: "flex-end",
-        width: Dimensions.get('window').width / 30,
-        height: Dimensions.get('window').width / 30,
-    },
-    feedbackText: {
-        // flex: 3,
-        fontSize: 16,
-        // flexDirection: 'column',
-        width: "100%",
-        //height: Dimensions.get('window').height / 14
-    },
-    feedbackTextOption: {
-        width: "100%",
-        fontSize: 16,
-        paddingLeft: Dimensions.get('window').width / 30,
-        paddingRight: Dimensions.get('window').width / 30,
-    },
-    feedbackImgWrapper: {
-        // flex: 1.5,
-        flexDirection: 'row',
-        alignItems: "center",
-        height: Dimensions.get('window').height / 18,
-        width: "100%",
-    },
-    feedbackImgContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: "space-between",
-        paddingLeft: Dimensions.get('window').width / 30,
-        paddingRight: Dimensions.get('window').width / 30,
-    },
-    feedbackImg: {
-        width: Dimensions.get('window').width / 12,
-        height: Dimensions.get('window').width / 12,
-    },
-    textEntry: {
-        width: "100%",
-        borderRadius: 4,
-        borderColor: "#646464",
-        borderWidth: 1,
-        fontSize: 16,
-        paddingLeft: Dimensions.get('window').width / 30,
-        paddingRight: Dimensions.get('window').width / 30,
-        marginTop: Dimensions.get('window').width / 30,
-        marginBottom: Dimensions.get('window').width / 30,
-    },
-    uploadButton: {
-        width: Dimensions.get("window").width / 2.5,
-        marginRight: Dimensions.get("window").width / 25,
-        marginLeft: Dimensions.get("window").width / 25,
-        alignSelf: "center"
-    },
     container: {
         flex: 1,
     },
@@ -759,25 +457,6 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 4,
         justifyContent: "center"
-    },
-    button: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: "white",
-        borderRadius: 4,
-        justifyContent: "center"
-    },
-    buttonImg: {
-        width: "40%",
-        height: "40%",
-        alignSelf: "center"
-    },
-    buttonText: {
-        alignSelf: "center",
-        width: "85%",
-        color: "#003c8f",
-        fontSize: 18,
-        textAlign: "center"
     },
     topBack: {
         flex: 3,

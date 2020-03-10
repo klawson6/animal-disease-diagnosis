@@ -10,6 +10,7 @@ import SettingsView from "./app/views/settingsview";
 import GalleryView from "./app/views/galleryview";
 import CategoriseView from "./app/views/categoriseview";
 import HelpView from "./app/views/helpView"
+import ADDModel from "./app/models/ADDModel";
 
 const RootStack = createStackNavigator(
     {
@@ -32,8 +33,6 @@ const RootStack = createStackNavigator(
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
-                //fontWeight: 'bold',
-                //fontFamily: "sans-serif-thin"
                 width: Dimensions.get('window').width * 4 / 5,
                 textAlign: 'center'
             },
@@ -44,9 +43,7 @@ const RootStack = createStackNavigator(
 );
 
 const AppContainer = createAppContainer(RootStack);
-
 export default class App extends React.Component {
-
     render() {
         return <AppContainer/>;
     }

@@ -36,7 +36,8 @@ class HomeView extends Component {
      **/
     componentDidMount() {
         this.setState({loading: true}); // Sets the loading state to true.
-        this.askForPermissions(); // Initial request for permissions
+        //this.askForPermissions(); // Initial request for permissions
+        this._model.askForPermissions();
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT) // Lock the screen orientation to vertical.
             .then() // Do nothing on success.
             .catch(error => { // Log an error for debugging

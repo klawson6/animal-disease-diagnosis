@@ -14,6 +14,7 @@ import { Linking } from 'expo';
 
 class HelpView extends Component {
 
+
     _handleEmail = () => {
         Linking.openURL("mailto:kyle.lawson.2016@uni.strath.ac.uk");
     };
