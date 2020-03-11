@@ -1,6 +1,7 @@
-import {Dimensions, Image, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Dimensions, Image, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet} from "react-native";
 import React, {Component} from "react";
 import {Button, Divider} from "react-native-paper";
+import FeedbackReaction from "./FeedbackReaction";
 
 export default class FeedbackForm extends Component{
 
@@ -8,99 +9,27 @@ export default class FeedbackForm extends Component{
         return (
             <View style={styles.feedbackContainer}>
                 <View style={styles.feedbackScreen}>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.feedbackTitle}>Feedback</Text>
+                        <TouchableOpacity onPress={() => {
+                            this.props.onClose();
+                        }} style={styles.closeImgWrapper}>
+                            <Image style={styles.closeImg} source={require('../assets/img/close.png')}/>
+                        </TouchableOpacity>
+                    </View>
                     <ScrollView style={styles.feedbackScreenMargin}>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.feedbackTitle}>Feedback</Text>
-                            <TouchableOpacity onPress={() => {
-                                this._handleFeedbackActive()
-                            }} style={styles.closeImgWrapper}>
-                                <Image style={styles.closeImg} source={require('../assets/img/close.png')}/>
-                            </TouchableOpacity>
-                        </View>
                         <Text style={styles.feedbackText}>How is your experience with:{'\n'}</Text>
                         <Text style={styles.feedbackTextOption}>The overall application?</Text>
-                        <View style={styles.feedbackImgWrapper}>
-                            <View style={styles.feedbackImgContainer}>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback1", 1)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback1 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback1", 2)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback1 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback1", 3)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback1 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <FeedbackReaction onPress={this.props.onReaction} feedback={this.props.feedback[0]}  feedbackOption={"feedback1"}/>
                         <Text style={styles.feedbackTextOption}>Capturing, filling out and
                             uploading a HEALTHY case?</Text>
-                        <View style={styles.feedbackImgWrapper}>
-                            <View style={styles.feedbackImgContainer}>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback2", 1)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback2 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback2", 2)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback2 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback2", 3)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback2 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <FeedbackReaction onPress={this.props.onReaction} feedback={this.props.feedback[1]}  feedbackOption={"feedback2"}/>
                         <Text style={styles.feedbackTextOption}>Capturing, filling out and
                             uploading a DISEASE case?</Text>
-                        <View style={styles.feedbackImgWrapper}>
-                            <View style={styles.feedbackImgContainer}>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback3", 1)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback3 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback3", 2)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback3 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback3", 3)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback3 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <FeedbackReaction onPress={this.props.onReaction} feedback={this.props.feedback[2]} feedbackOption={"feedback3"}/>
                         <Text style={styles.feedbackTextOption}>Managing your cases? (Saving, editing and
                             uploading)</Text>
-                        <View style={styles.feedbackImgWrapper}>
-                            <View style={styles.feedbackImgContainer}>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback4", 1)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback4 === 1 ? require('../assets/img/sad-selected.png') : require('../assets/img/sad.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback4", 2)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback4 === 2 ? require('../assets/img/neutral-selected.png') : require('../assets/img/neutral.png')}/>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => this._handleFeedbackOption("feedback4", 3)}>
-                                    <Image style={styles.feedbackImg}
-                                           source={this.state.feedback4 === 3 ? require('../assets/img/happy-selected.png') : require('../assets/img/happy.png')}/>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        <FeedbackReaction onPress={this.props.onReaction} feedback={this.props.feedback[3]} feedbackOption={"feedback4"}/>
                         <Divider style={{
                             height: 1,
                             marginRight: Dimensions.get('window').width / 30,
@@ -111,21 +40,21 @@ export default class FeedbackForm extends Component{
                             application:{'\n'}</Text>
                         <Text style={styles.feedbackTextOption}>Any unexpected
                             behaviour in this application (Bugs/Glitches/Crashes)?</Text>
-                        <TextInput value={this.state.feedback5} multiline={true} placeholder={"Feedback"}
+                        <TextInput value={this.props.feedback[4]} multiline={true} placeholder={"Feedback"}
                                    style={styles.textEntry}
                                    onChangeText={(value) => {
-                                       this._handleFeedbackOption("feedback5", value)
+                                       this.props.onReaction("feedback5", value)
                                    }}/>
                         <Text style={styles.feedbackTextOption}>Any features and/or functionality you
                             would add/remove from this application?</Text>
-                        <TextInput value={this.state.feedback6} multiline={true} placeholder={"Feedback"}
+                        <TextInput value={this.props.feedback[6]} multiline={true} placeholder={"Feedback"}
                                    style={styles.textEntry}
                                    onChangeText={(value) => {
-                                       this._handleFeedbackOption("feedback6", value)
+                                       this.props.onReaction("feedback6", value)
                                    }}/>
-                        <Button style={styles.uploadButton} mode="contained" loading={this.state.uploading}
+                        <Button style={styles.uploadButton} mode="contained" loading={this.props.uploading}
                                 onPress={() => {
-                                    this._handleUpload()
+                                    this.props.onUpload()
                                 }}>
                             Upload
                         </Button>
@@ -175,24 +104,26 @@ const styles = StyleSheet.create({
     },
     feedbackScreenMargin: {
         width: Dimensions.get('window').width * 4 / 5,
-        height: Dimensions.get('window').height * 4 / 5,
+        height: Dimensions.get('window').height * 7 / 10,
         padding: Dimensions.get('window').width / 30,
     },
     titleContainer: {
         // width: "100%",
-        height: Dimensions.get('window').height / 24,
+        height: Dimensions.get('window').height / 10,
         flexDirection: 'row',
-        flex: 1
+        flex: 1,
     },
     feedbackTitle: {
         flex: 4,
         fontWeight: "bold",
         color: 'black',
         fontSize: 20,
+        alignSelf: "center"
     },
     closeImgWrapper: {
         flex: 1,
-        justifyContent: "center"
+        justifyContent: "center",
+        marginRight: Dimensions.get('window').width / 30
     },
     closeImg: {
         alignSelf: "flex-end",
@@ -212,24 +143,7 @@ const styles = StyleSheet.create({
         paddingLeft: Dimensions.get('window').width / 30,
         paddingRight: Dimensions.get('window').width / 30,
     },
-    feedbackImgWrapper: {
-        // flex: 1.5,
-        flexDirection: 'row',
-        alignItems: "center",
-        height: Dimensions.get('window').height / 18,
-        width: "100%",
-    },
-    feedbackImgContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: "space-between",
-        paddingLeft: Dimensions.get('window').width / 30,
-        paddingRight: Dimensions.get('window').width / 30,
-    },
-    feedbackImg: {
-        width: Dimensions.get('window').width / 12,
-        height: Dimensions.get('window').width / 12,
-    },
+
     textEntry: {
         width: "100%",
         borderRadius: 4,

@@ -37,25 +37,37 @@ class SettingsView extends Component {
 
     onSavePress() {
         this.setState({loading: true});
-        AsyncStorage.setItem("settings", JSON.stringify(this.state))
-            .then(() => {
+        this.state.model.saveSettings({
+            wifi: this.state.wifi,
+            cell: this.state.cell,
+            species: this.state.species,
+            location: this.state.location,
+            name: this.state.name,
+        })
+            .then(result => {
+                if (result) {
+                    new Alert.alert("Saved", "Your settings have been saved.", [{
+                        text: 'OK',
+                        onPress: () => this.props.navigation.navigate('homeView')
+                    }]);
+                } else {
+                    new Alert.alert("Save Failed", "Your settings could not be saved, an error occurred");
+                }
                 this.setState({loading: false});
-                new Alert.alert("Saved", "Your settings have been saved.", [{
-                    text: 'OK',
-                    onPress: () => this.props.navigation.navigate('homeView')
-                }]);
-                console.log("Settings saved.")
             })
-            .catch(error => {
-                new Alert.alert("Save Failed", "Your settings could not be saved, an error occurred");
-                console.log("Error saving settings: " + error);
-            });
     }
 
     constructor(props) {
         super(props);
-        if (this.props.navigation.getParam("settings"))
-            this.state = Object.assign({}, this.state, this.props.navigation.getParam("settings"));
+        this.state.model = this.props.navigation.getParam("model");
+    }
+
+    componentDidMount() {
+        this.props.navigation.getParam("model").getSettings()
+            .then(settings => {
+                this.setState(settings);
+                console.log(this.state);
+            });
     }
 
     _handleSpeciesPress = (val) => {
@@ -88,16 +100,6 @@ class SettingsView extends Component {
         return (
             <PaperProvider theme={theme}>
                 <View style={styles.container}>
-                    {/*{this.state.loading ?*/}
-                    {/*    <View style={styles.loadContainer}>*/}
-                    {/*        <View style={styles.loadingScreen}>*/}
-                    {/*            <Image style={styles.loadingImg} source={require('../assets/img/loading.gif')}/>*/}
-                    {/*            <Text style={styles.loadingText}>Saving...</Text>*/}
-                    {/*        </View>*/}
-                    {/*        <View style={styles.darken}>*/}
-                    {/*        </View>*/}
-                    {/*    </View>*/}
-                    {/*    : null}*/}
                     <Text style={styles.title}>Settings</Text>
                     <View style={styles.topContainer}>
                         <ScrollView style={styles.scrollContainer}>
@@ -129,7 +131,10 @@ class SettingsView extends Component {
                                         onDismiss={this._handleSpeciesPress.bind(this, null)}
                                         statusBarHeight={0}
                                         selectionColor={"#1565c0"}
-                                        anchor={{ x: Dimensions.get("window").width*14/15, y: Dimensions.get("window").height*1.7/15}}>
+                                        anchor={{
+                                            x: Dimensions.get("window").width * 14 / 15,
+                                            y: Dimensions.get("window").height * 1.7 / 15
+                                        }}>
                                         <Menu.Item onPress={() => {
                                             this._handleSpeciesPress("Cattle")
                                         }} title="Cattle"/>
@@ -168,7 +173,10 @@ class SettingsView extends Component {
                                         onDismiss={this._handleLocPress.bind(this, null)}
                                         statusBarHeight={0}
                                         selectionColor={"#1565c0"}
-                                        anchor={{ x: Dimensions.get("window").width*14/15, y: Dimensions.get("window").height*1.7/15}}>
+                                        anchor={{
+                                            x: Dimensions.get("window").width * 14 / 15,
+                                            y: Dimensions.get("window").height * 1.7 / 15
+                                        }}>
                                         <Menu.Item onPress={() => {
                                             this._handleLocPress("Addis Ababa")
                                         }} title="Addis Ababa"/>
@@ -229,7 +237,8 @@ class SettingsView extends Component {
                         </ScrollView>
                     </View>
                     <View style={styles.saveContainer}>
-                        <Button style={{width: "40%"}} mode="contained" loading={this.state.loading} onPress={this.onSavePress.bind(this)}>
+                        <Button style={{width: "40%"}} mode="contained" loading={this.state.loading}
+                                onPress={this.onSavePress.bind(this)}>
                             Save
                         </Button>
                     </View>
@@ -248,8 +257,8 @@ const styles = StyleSheet.create({
     title: {
         color: '#646464',
         fontSize: 30,
-        marginTop: Dimensions.get('window').height /60,
-        marginBottom: Dimensions.get('window').height /60,
+        marginTop: Dimensions.get('window').height / 60,
+        marginBottom: Dimensions.get('window').height / 60,
         zIndex: 0
     },
     topContainer: {

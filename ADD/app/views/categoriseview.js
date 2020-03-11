@@ -584,7 +584,8 @@ class CategoriseView extends Component {
             }
         }
         this.state = Object.assign({}, this.state, this.props.navigation.getParam('settings'));
-        if (this.state.species) this.state.diseases = this.diseases[this.state.species]
+        if (this.state.species) this.state.diseases = this.diseases[this.state.species];
+        this.props.navigation.getParam("model").setPrintable("WE'VE BEEN FROM HERE");
     }
 
     showDatePicker() {

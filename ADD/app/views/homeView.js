@@ -28,65 +28,23 @@ class HomeView extends Component {
      *  loading:            True if the app is loading any data from storage, tells the Component to display the loading screen.
      **/
     state = {
-        hasPermissions: false,
-        // loading: false,
-        // loadingText: "",
+        feedback1: 0,
+        feedback2: 0,
+        feedback3: 0,
+        feedback4: 0,
+        feedback5: "",
+        feedback6: "",
+        uploading: false,
+        feedbackPending: false
     };
 
-    _model;
-
-    constructor(props, model) {
-        super(props);
-        this._model = model;
-    }
-
     /**
-     *  Function executed when this component mounts to the display.
+     *  Sets initial state once the component mount to the screen
      *
-     *  Sets the loading state to true.
-     *  Initial request for permissions from the user.
-     *  Looks the app orientation to vertical.
-     *  Initialises the app storage.
+     *  model:     The model for the app
      **/
     componentDidMount() {
-        // this.setState({loading: true}); // Sets the loading state to true.
-        this.askForPermissions(); // Initial request for permissions
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT) // Lock the screen orientation to vertical.
-            .then() // Do nothing on success.
-            .catch(error => { // Log an error for debugging
-                console.log('Error occurred when locking orientation: ' + error)
-            });
-        AsyncStorage.getAllKeys() // Fetch all keys to values from the locally stored data
-            .then(keys => {
-                if (!keys.includes('numCases')) { // Find the key for the number of cases, if it does not exist, create and initialise it to 0.
-                    AsyncStorage.setItem('numCases', '0');
-                }
-                if (!keys.includes('settings')) { // Find the key for the number of cases, if it does not exist, create and initialise it to 0.
-                    AsyncStorage.setItem('settings', JSON.stringify({
-                        wifi: true,
-                        cell: true,
-                        species: null,
-                        location: null,
-                        name: null
-                    }));
-                }
-                // this.setState({loading: false}); // Set the loading state to false
-            })
-            .catch(error => {
-                // this.setState({loading: false}); // Set the loading state to false
-                console.log('Error occurred when creating numCases: ' + error)
-            });
-    }
-
-    /**
-     *  Asks the user for necessary permissions.
-     *  Will set the state of permissions based on the user's response.
-     **/
-    askForPermissions() {
-        Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
-            .then(result => {
-                this.setState({hasPermissions: result.status === 'granted'}); // Set the state of hasPermissions to true if all permissions were granted.
-            });
+        this.setState({model: this.props.navigation.getParam("model")});
     }
 
     /**
@@ -95,12 +53,13 @@ class HomeView extends Component {
      *  Navigates the view to the CameraView Component if all permissions have been granted.
      **/
     onHealthyPress() {
-        if (this.state.hasPermissions) { // Check for granted permissions.
+        if (this.state.model.hasPermissions()) { // Check for granted permissions.
             this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
                 type: "Healthy Animal", // Passing a parameter to indicate the state of CameraView to be loaded.
+                model: this.props.navigation.getParam("model")
             });
         } else {
-            this.askForPermissions(); // Ask for permissions
+            this.state.model.initPermissions(); // Ask for permissions
         }
     }
 
@@ -110,12 +69,15 @@ class HomeView extends Component {
      *  Navigates the view to the CameraView Component if all permissions have been granted.
      **/
     onDiseasePress() {
-        if (this.state.hasPermissions) { // Check for granted permissions.
+        if (this.state.model.hasPermissions()) { // Check for granted permissions.
+            console.log("We here");
             this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
                 type: "Disease", // Passing a parameter to indicate the state of CameraView to be loaded.
+                model: this.props.navigation.getParam("model")
             });
         } else {
-            this.askForPermissions(); // Ask for permissions
+            console.log("We here2");
+            this.state.model.initPermissions(); // Ask for permissions
         }
     }
 
@@ -125,7 +87,7 @@ class HomeView extends Component {
      *  Navigates the view to the GalleryView Component if all permissions have been granted.
      **/
     onGalleryPress() {
-        if (this.state.hasPermissions) { // Check for granted permissions.
+        if (this.state.model.hasPermissions()) { // Check for granted permissions.
             // this.setState({loading: true, loadingText: "Loading cases..."}); // Sets the loading state to true.
             AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
                 .then(item => { // Lambda callback passing in the resolved promise
@@ -133,11 +95,13 @@ class HomeView extends Component {
                     if (item) { // If there were saved settings
                         this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
                             home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
-                            settings: JSON.parse(item) // Passing an object corresponding to loaded settings as a parameter.
+                            settings: JSON.parse(item), // Passing an object corresponding to loaded settings as a parameter.
+                            model: this.props.navigation.getParam("model")
                         });
                     } else
                         this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
                             home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
+                            model: this.props.navigation.getParam("model")
                         });
                 })
                 .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
@@ -145,7 +109,7 @@ class HomeView extends Component {
                     console.log("Error getting settings from local storage: " + error); // Log an error for debugging
                 })
         } else {
-            this.askForPermissions(); // Ask for permissions
+            this.state.model.initPermissions(); // Ask for permissions
         }
     }
 
@@ -155,29 +119,17 @@ class HomeView extends Component {
      *  Navigates the view to the SettingsView Component if all permissions have been granted.
      **/
     onSettingsPress() {
-        if (this.state.hasPermissions) { // Check for granted permissions.
-            // this.setState({loading: true, loadingText: "Loading settings..."}); // Sets the loading state to true.
-            AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
-                .then(item => { // Lambda callback passing in the resolved promise
-                    // this.setState({loading: false,}); // Sets the loading state to false.
-                    if (item) { // If there were saved settings
-                        this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsView.
-                            settings: JSON.parse(item) // Passing an object corresponding to loaded settings as a parameter.
-                        });
-                    } else
-                        this.props.navigation.navigate('settingsView'); // Navigate the view to SettingsView.
-                })
-                .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
-                    // this.setState({loading: false,}); // Sets the loading state to false.
-                    console.log("Error getting settings from local storage: " + error); // Log an error for debugging
-                })
+        if (this.state.model.hasPermissions()) { // Check for granted permissions.
+            this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsView.
+                model: this.props.navigation.getParam("model")
+            });
         } else {
-            this.askForPermissions(); // Ask for permissions
+            this.state.model.initPermissions(); // Ask for permissions
         }
     }
 
     onHelpPress() {
-        this.props.navigation.navigate('helpView'); // Navigate the view to SettingsView.
+        this.props.navigation.navigate('helpView'); // Navigate to the how to use page
     }
 
     /**
@@ -221,105 +173,41 @@ class HomeView extends Component {
         //     .then(value => console.log(value));
     }
 
-    checkInternetAccess(settings) {
-        return NetInfo.fetch()
-            .then(state => {
-                if (state.isInternetReachable) {
-                    if (settings.wifi && state.type === NetInfoStateType.wifi || settings.cell && state.type === NetInfoStateType.cellular) {
-                        return true;
-                    } else {
-                        new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
-                        return false;
-                    }
-                } else {
-                    new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
-                    return false;
-                }
-            })
-            .catch(error => {
-                new Alert.alert("Error", "An error occurred fetching your network type.");
-                console.log("Error fetching network state: " + error);
-            })
-    }
-
-    uploadFeedback() {
-        const body = new FormData();
-        let feedback = {
-            feedback1: this.state.feedback1,
-            feedback2: this.state.feedback2,
-            feedback3: this.state.feedback3,
-            feedback4: this.state.feedback4,
-            feedback5: this.state.feedback5,
-            feedback6: this.state.feedback6,
-        };
-        body.append("feedback", JSON.stringify(feedback));
-        fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/GatherFeedback.php',
-            {
-                method: 'POST',
-                body: body,
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "multipart/form-data"
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Request to server successful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
-                    this._handleFinishedUpload();
-                    new Alert.alert(
-                        'Uploaded',
-                        'Your feedback has been uploaded. Thank you.',
-                        [{text: 'OK'},],
-                        {cancelable: false},
-                    );
-                } else {
-                    console.log("Request to server unsuccessful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
-                    this._handleFinishedUpload();
-                    new Alert.alert(
-                        'Upload Failed',
-                        'Your feedback failed to upload. Please try again on a strong Wi-Fi connection.',
-                        [{text: 'OK'}],
-                        {cancelable: false},
-                    );
-                }
-            })
-            .catch(error => {
-                console.log("Error making request : " + error);
-                this._handleFinishedUpload();
-            });
-    }
-
     onUploadPress() {
-        AsyncStorage.getItem("settings")
-            .then(settings => {
-                if (settings) {
-                    this.checkInternetAccess(JSON.parse(settings))
-                        .then(access => {
-                            if (!access) {
-                                this._handleFinishedUpload();
-                                return;
-                            }
-                            this.uploadFeedback()
+        this.state.model.checkInternetAccess()
+            .then(result => {
+                console.log(result);
+                if (result) {
+                    this.state.model.uploadFeedback(
+                        {
+                            "feedback1": this.state.feedback1,
+                            "feedback2": this.state.feedback2,
+                            "feedback3": this.state.feedback3,
+                            "feedback4": this.state.feedback4,
+                            "feedback5": this.state.feedback5,
+                            "feedback6": this.state.feedback6,
                         })
-                        .catch(error => {
-                            console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
+                        .then(result => {
+                            if(result){
+                                new Alert.alert(
+                                    'Uploaded',
+                                    'Your feedback has been uploaded. Thank you.',
+                                    [{text: 'OK'},],
+                                    {cancelable: false},
+                                );
+                            } else {
+                                new Alert.alert(
+                                    'Upload Failed',
+                                    'Your feedback failed to upload. Please try again on a strong Wi-Fi connection.',
+                                    [{text: 'OK'}],
+                                    {cancelable: false},
+                                );
+                            }
                             this._handleFinishedUpload();
-                        });
+                        })
+                } else {
                 }
             })
-            .catch(err => {
-                console.log("Error fetching settings from home page: " + err);
-            });
     }
 
     _handleFinishedUpload = () => {
@@ -372,7 +260,17 @@ class HomeView extends Component {
             <PaperProvider theme={theme}>
                 <View style={styles.container}>
                     {this.state.feedbackPending ?
-                        <FeedbackForm/>
+                        <FeedbackForm onReaction={this._handleFeedbackOption}
+                                      onUpload={this._handleUpload}
+                                      onClose={this._handleFeedbackActive}
+                                      uploading={this.state.uploading}
+                                      feedback={[
+                                          this.state.feedback1,
+                                          this.state.feedback2,
+                                          this.state.feedback3,
+                                          this.state.feedback4,
+                                          this.state.feedback5,
+                                          this.state.feedback6,]}/>
                         : null}
                     <View style={styles.frontContainer}>
                         <View style={styles.emptyTop}>
@@ -394,7 +292,7 @@ class HomeView extends Component {
                                                   source={require('../assets/img/folder-blue2.png')}
                                                   text={"Saved Cases"}/>
                                 <HomeScreenButton style={styles.buttonWrapper}
-                                                  onPress={this.onHealthyPress.bind(this)}
+                                                  onPress={this.onClearPress.bind(this)}
                                                   source={require('../assets/img/question-blue2.png')}
                                                   text={"How to Use"}/>
                             </View>

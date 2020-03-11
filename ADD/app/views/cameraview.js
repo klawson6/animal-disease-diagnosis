@@ -59,6 +59,7 @@ class CameraView extends Component {
                         images: this.case,
                         type: this.state.type,
                         settings: JSON.parse(item),
+                        model: this.props.navigation.getParam("model")
                     })
                 })
                 .catch(error => {
@@ -89,72 +90,37 @@ class CameraView extends Component {
             this.setState({
                 capturing: true,
             });
-            const options = {skipProcessing: true, base64: true, exif: true};
-            this.camera.takePictureAsync(options)
+            this.state.model.takePicture(this.sideMap[this.state.side])
                 .then(photo => {
-                    photo.exif.Orientation = 1;
-                    this.setState({
-                        thumbnail: photo,
-                    });
-                    const {uri} = photo;
-                    MediaLibrary.createAssetAsync(uri)
-                        .then(asset => {
-                            this.saveImage(asset);
-                        })
-                        .catch(error => {
-                            console.log('Error creating asset of captured image.', error);
+                    if (photo) {
+                        this.setState({
+                            thumbnail: photo,
+                            capturing: false
                         });
+                        if (this.state.type === "Healthy Animal") this.switchSide();
+                    } else {
+                        new Alert.alert(
+                            'Error',
+                            'Your image could not be saved.\n' + error
+                        );
+                        this.setState({
+                            capturing: false
+                        });
+                    }
                 })
                 .catch(error => {
-                    console.log('Error taking photo.', error);
-                });
+                    console.log("Error occurred capturing image: " + error);
+                    new Alert.alert(
+                        'Error',
+                        'Your image could not be saved.\n' + error
+                    );
+                    this.setState({
+                        capturing: false
+                    });
+                })
         }
     }
 
-    saveImage(asset) {
-        MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
-            .then(album => {
-                if (asset !== null) {
-                    if (album === null) {
-                        MediaLibrary.createAlbumAsync('Animal Disease Diagnosis', asset, false)
-                            .then(album => {
-                                this.addImageToState(album, asset.filename);
-                            })
-                            .catch(error => {
-                                this.setState({
-                                    capturing: false,
-                                });
-                                console.log('Error saving image to camera roll.', error);
-                                new Alert.alert(
-                                    'Error',
-                                    'Your image could not be saved.\n' + error
-                                )
-                            });
-                    } else {
-                        MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
-                            .then(() => {
-                                this.addImageToState(album, asset.filename);
-                            })
-                            .catch(error => {
-                                this.setState({
-                                    capturing: false,
-                                });
-                                console.log('Error saving image to camera roll.', error);
-                                new Alert.alert(
-                                    'Error',
-                                    'Your image could not be saved.\n' + error
-                                )
-                            });
-                    }
-                }
-            })
-            .catch(error => {
-                this.setState({
-                    capturing: false,
-                });
-                console.log('No folder for Animal Disease Diagnosis to save case.', error);
-            })
-    }
 
     switchSide() {
         switch (this.state.side) {
@@ -193,32 +159,14 @@ class CameraView extends Component {
         }
     }
 
-    addImageToState(album, name) {
-        MediaLibrary.getAssetsAsync({album: album, sortBy: ["creationTime"]})
-            .then(assets => {
-                for (const a of assets.assets) {
-                    if (a.filename === name) {
-                        this.case.assets.push([a, this.state.type === "Disease" ? 0 : this.sideMap[this.state.side]]);
-                        break;
-                    }
-                }
-                console.log(this.state.type);
-                if (this.state.type !== "Disease")
-                    this.switchSide();
-                else
-                    this.setState({capturing: false});
-            })
-            .catch(error => {
-                this.setState({
-                    capturing: false,
-                });
-                console.log('Could not get assets from folder.', error);
-            });
-    }
-
     constructor(props) {
         super(props);
         this.state.type = this.props.navigation.getParam('type');
+        this.state.model = this.props.navigation.getParam('model');
+    }
+
+    componentDidMount() {
+        this.state.model.setCamera(this.camera);
     }
 
     render() {

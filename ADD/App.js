@@ -12,11 +12,17 @@ import CategoriseView from "./app/views/categoriseview";
 import HelpView from "./app/views/helpView"
 import ADDModel from "./app/models/ADDModel";
 
+const model = new ADDModel();
+
 const RootStack = createStackNavigator(
     {
         homeView: {
-            screen: HomeView, navigationOptions: {
+            screen: HomeView,
+            navigationOptions: {
                 headerShown: false
+            },
+            params:{
+                model: model
             }
         },
         cameraView: CameraView,
@@ -43,7 +49,14 @@ const RootStack = createStackNavigator(
 );
 
 const AppContainer = createAppContainer(RootStack);
+
 export default class App extends React.Component {
+
+    constructor(props) {
+        super(props);
+        model.initialise();
+    }
+
     render() {
         return <AppContainer/>;
     }
