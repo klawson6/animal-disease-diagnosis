@@ -9,7 +9,6 @@ import {
     Animated, AsyncStorage
 } from 'react-native';
 import {Camera} from "expo-camera";
-import * as MediaLibrary from 'expo-media-library';
 
 class CameraView extends Component {
 
@@ -39,9 +38,11 @@ class CameraView extends Component {
         isLoading: false,
     };
 
-    onContinueButton() {
-        if ((this.state.type === "Healthy Animal" && !this.state.done) || !this.case.assets.length) {
-            this.state.type === "Healthy Animal" ?
+    model;
+
+    checkImages() {
+        if ((this.state.type && !this.state.done) || !this.model.getCurrentCase().assets.length) {
+            this.state.type ?
                 new Alert.alert(
                     'More Pictures Required',
                     'Please take a picture from each of the 4 required angles.'
@@ -49,39 +50,28 @@ class CameraView extends Component {
                 new Alert.alert(
                     'Picture(s) Required',
                     'Please take at least 1 picture of the disease/signs.'
-                )
-        } else {
-            this.setState({isLoading: true});
-            AsyncStorage.getItem("settings")
-                .then(item => {
-                    this.setState({isLoading: false});
-                    this.props.navigation.navigate('categoriseView', {
-                        images: this.case,
-                        type: this.state.type,
-                        settings: JSON.parse(item),
-                        model: this.props.navigation.getParam("model")
-                    })
-                })
-                .catch(error => {
-                    this.setState({isLoading: false});
-                    console.log("Error getting default information from storage: " + error);
-                    new Alert.alert(
-                        'Error',
-                        'An error occurred loading your default information. Please try again.'
-                    )
-                });
+                );
+            return false;
+        }
+        return true;
+    }
+
+    onContinueButton() {
+        if (this.checkImages()) {
+            this.props.navigation.navigate('categoriseView', {
+                model: this.props.navigation.getParam("model")
+            });
         }
     }
 
     onGalleryButton() {
         this.props.navigation.navigate('galleryView', {
-            case: this.case,
-            home: false,
+            model: this.props.navigation.getParam("model"),
         })
     }
 
     onSnapButtonCamera() {
-        if (this.state.type === "Healthy Animal" && this.state.done) {
+        if (this.state.type && this.state.done) {
             new Alert.alert(
                 'No More Pictures Required',
                 'You have taken pictures from each of the 4 required angles.\nPlease annotate this case.'
@@ -90,14 +80,14 @@ class CameraView extends Component {
             this.setState({
                 capturing: true,
             });
-            this.state.model.takePicture(this.sideMap[this.state.side])
+            this.model.takePicture(this.sideMap[this.state.side])
                 .then(photo => {
                     if (photo) {
                         this.setState({
                             thumbnail: photo,
                             capturing: false
                         });
-                        if (this.state.type === "Healthy Animal") this.switchSide();
+                        if (this.state.type) this.switchSide();
                     } else {
                         new Alert.alert(
                             'Error',
@@ -161,12 +151,12 @@ class CameraView extends Component {
 
     constructor(props) {
         super(props);
-        this.state.type = this.props.navigation.getParam('type');
-        this.state.model = this.props.navigation.getParam('model');
+        this.model = this.props.navigation.getParam('model');
+        this.state.type = this.model.getCaseType();
     }
 
     componentDidMount() {
-        this.state.model.setCamera(this.camera);
+        this.model.setCamera(this.camera);
     }
 
     render() {
@@ -175,7 +165,7 @@ class CameraView extends Component {
                 {this.state.capturing ?
                     <FadeInView style={styles.flash}/>
                     : null}
-                {this.state.type === "Healthy Animal" ?
+                {this.state.type ?
                     <View style={styles.helpContainer}>
                         <Image style={styles.helpImg} source={this.state.sideImg}/>
                         <Image style={styles.helpPhone} source={require("../assets/img/viewfinder2-thin.png")}/>
@@ -191,24 +181,25 @@ class CameraView extends Component {
                     </View>
                 </View>
                 <View style={styles.navContainer}>
-                    {this.state.type === "Disease" ?
-                        <Text style={styles.buttonTitle}>Capture Images of the Disease</Text>
-                        : <Text style={styles.buttonTitle}>Capture an Image of:{'\n'}The {this.state.side} side</Text>}
+                    {this.state.type ?
+                        <Text style={styles.buttonTitle}>Capture an Image of:{'\n'}The {this.state.side} side</Text>
+                        : <Text style={styles.buttonTitle}>Capture Images of the Disease</Text>}
                     <View pointerEvents={this.state.capturing ? 'none' : 'auto'} style={styles.imgContainer}>
-                        <TouchableOpacity onPress={this.onGalleryButton.bind(this)}>
-                            <Image style={[styles.imageSmall, styles.galleryTouchable]}
+                        <TouchableOpacity style={styles.galleryTouchable} onPress={this.onGalleryButton.bind(this)}>
+                            <Image style={styles.imageSmall}
                                    source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/material-cam.png")}/>
                         </TouchableOpacity>
-                        {this.state.type === "Healthy Animal" ?
+                        {this.state.type ?
                             <View style={[styles.imageSmall, styles.settingsTouchable]}>
                             </View> :
-                            <TouchableOpacity onPress={this.onContinueButton.bind(this)}>
+                            <TouchableOpacity style={styles.settingsTouchable}
+                                              onPress={this.onContinueButton.bind(this)}>
                                 <Image
-                                    style={[styles.imageSmall, styles.settingsTouchable]}
+                                    style={styles.imageSmall}
                                     source={this.state.capturing ? require("../assets/img/mat-spin.gif") : require("../assets/img/arrow2.png")}/>
                             </TouchableOpacity>}
                     </View>
@@ -318,6 +309,7 @@ const styles = StyleSheet.create({
         borderColor: '#808080',
         borderWidth: 1,
         borderRadius: 5,
+        overflow: "hidden"
     }
 });
 

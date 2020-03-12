@@ -8,6 +8,7 @@ import HomeView from "./app/views/homeView";
 import CameraView from "./app/views/cameraview";
 import SettingsView from "./app/views/settingsview";
 import GalleryView from "./app/views/galleryview";
+import CasesView from "./app/views/casesview"
 import CategoriseView from "./app/views/categoriseview";
 import HelpView from "./app/views/helpView"
 import ADDModel from "./app/models/ADDModel";
@@ -28,6 +29,7 @@ const RootStack = createStackNavigator(
         cameraView: CameraView,
         settingsView: SettingsView,
         galleryView: GalleryView,
+        casesView: CasesView,
         categoriseView: CategoriseView,
         helpView: HelpView
     },

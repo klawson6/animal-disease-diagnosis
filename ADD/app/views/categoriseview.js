@@ -336,6 +336,8 @@ class CategoriseView extends Component {
         ]
     };
 
+    model;
+
     state = {
         name: null,
         dateSelected: null,
@@ -346,7 +348,7 @@ class CategoriseView extends Component {
         sex: null,
         diagnosis: null,
         defaultAnimal: null,
-        images: null,
+        case: null,
         uris: [],
         isUploaded: false,
         date: Date.now(),
@@ -355,115 +357,26 @@ class CategoriseView extends Component {
         diseases: [],
         saveLoading: false,
         uploadLoading: false,
-        type: 0,
     };
 
-    checkCase(curCase, alert) {
-        console.log(curCase);
-        let complete = true;
-        Object.keys(curCase).forEach(k => {
-            if (curCase[k] === null && !(this.state.type && k === "diagnosis"))
-                complete = false;
-        });
-        if (!complete && alert) {
-            new Alert.alert('Case Not Completed', 'You must fully complete the form before uploading the case.',);
-            this.setState({
-                uploadLoading: false
-            });
+    constructor(props) {
+        super(props);
+        this.model = this.props.navigation.getParam('model');
+        //this.state.type = this.model.getCaseType() === "Disease" ? 0 : 1;
+        //this.state.case = this.model.getCurrentCase();
+        // this.state.case.assets.forEach(img => {
+        //     this.state.uris.push({uri: img[0].uri, name: img[0].filename, side: img[1]});
+        // });
+        this.state = Object.assign({}, this.state, this.model.getCurrentCase());
+        this.state.speciesShown = this.state.species;
+        this.state.locationShown = this.state.location;
+        this.state.diagnosisShown = this.state.diagnosis;
+        if (this.state.species !== null) {
+            this.state.diseases = this.diseases[this.state.species];
         }
-        return complete;
     }
 
-    checkInternetAccess() {
-        return NetInfo.fetch()
-            .then(state => {
-                if (state.isInternetReachable) {
-                    if (this.state.wifi && state.type === NetInfoStateType.wifi || this.state.cell && state.type === NetInfoStateType.cellular) {
-                        return true;
-                    } else {
-                        new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
-                        return false;
-                    }
-                } else {
-                    new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
-                    return false;
-                }
-            })
-            .catch(error => {
-                new Alert.alert("Error", "An error occurred fetching your network type.");
-                console.log("Error fetching network state: " + error);
-            })
-    }
-
-    uploadCase(curCase, feedback) {
-        const body = new FormData();
-        this.state.uris.forEach(img => {
-            body.append("images[]", {
-                uri: img.uri,
-                name: img.name,
-                type: "image/jpg"
-            });
-            curCase.sides.push(img.side);
-        });
-        body.append("case", JSON.stringify(curCase));
-        body.append("feedback", feedback);
-        fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
-            {
-                method: 'POST',
-                body: body,
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "multipart/form-data"
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Request to server successful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
-                    this.setState({
-                        isUploaded: true,
-                        uploadLoading: false,
-                    });
-                    new Alert.alert(
-                        'Uploaded',
-                        'Your case information has been uploaded.',
-                        [{text: 'OK', onPress: () => this.onSavePress()},],
-                        {cancelable: false},
-                    );
-                } else {
-                    console.log("Request to server unsuccessful.");
-                    console.log(response.status);
-                    response.text()
-                        .then(text => {
-                            console.log(text);
-                        });
-                    this.setState({
-                        uploadLoading: false,
-                    });
-                    new Alert.alert(
-                        'Upload Failed',
-                        'Your case information failed to upload.',
-                        [{text: 'OK', onPress: () => this.onSavePress()},],
-                        {cancelable: false},
-                    );
-                }
-            })
-            .catch(error => {
-                console.log("Error making request : " + error);
-                this.setState({
-                    uploadLoading: false,
-                });
-            });
-    }
-
-    onUploadPress() {
-        this.setState({
-            uploadLoading: true,
-        });
+    uploadCase(feedback){
         let curCase = {
             name: this.state.name,
             dateSelected: this.state.dateSelected,
@@ -476,26 +389,51 @@ class CategoriseView extends Component {
             type: this.state.type,
             sides: [],
         };
-        if (!this.checkCase(curCase, true)) return;
-        this.state.curCase = curCase;
-        this.checkInternetAccess()
-            .then(access => {
-                if (!access) {
-                    this.setState({
-                        uploadLoading: false,
-                    });
-                    return;
+        this.model.checkAndUploadCase(curCase, feedback)
+            .then(result =>{
+                switch(result){
+                    case 0:
+                        new Alert.alert('Error', 'An error occurred when saving the case, so it was not saved or uploaded.',);
+                        break;
+                    case 1:
+                        new Alert.alert('Case Not Completed', 'You must fully complete the form before uploading the case.',);
+                        break;
+                    case 2:
+                        // Alert delegated to checkInternetAccess in model
+                        break;
+                    case 3:
+                        new Alert.alert(
+                            'Upload Failed',
+                            'The case was saved, but an error occurred when trying to upload the case.',
+                            [{text: 'OK'}],
+                            {cancelable: false},
+                        );
+                        break;
+                    case 4:
+                        new Alert.alert(
+                            'Upload Failed',
+                            'The case was saved, but the case information failed to upload. Something went wrong with the request to the server.',
+                            [{text: 'OK'}],
+                            {cancelable: false},
+                        );
+                        break;
+                    case 5:
+                        new Alert.alert(
+                            'Uploaded',
+                            'The case information has been uploaded and saved.',
+                            [{text: 'OK'}],
+                            {cancelable: false},
+                        );
+                        this.props.navigation.navigate("homeView");
+                        break;
+                    default:
+                        console.log("Error, upload case not found");
+                        break;
                 }
-                this.setState({
-                    feedbackPending: true
-                });
-            })
-            .catch(error => {
-                console.log("Error fetching network state [FROM CALL TO checkInternetAccess()]: " + error);
                 this.setState({
                     uploadLoading: false,
                 });
-            });
+            })
     }
 
     //    ________
@@ -507,85 +445,37 @@ class CategoriseView extends Component {
         this.setState({
             saveLoading: true,
         });
-        let caseName = this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined
-            ? null : this.props.navigation.getParam('caseName');
-        AsyncStorage.getItem("numCases")
-            .then(value => {
-                if (caseName === null)
-                    caseName = "case" + value;
-                let curCase = {
-                    name: this.state.name,
-                    dateSelected: this.state.dateSelected,
-                    location: this.state.location,
-                    species: this.state.species,
-                    age: this.state.age,
-                    breed: this.state.breed,
-                    sex: this.state.sex,
-                    diagnosis: this.state.diagnosis,
-                    uris: this.state.uris,
-                    isUploaded: this.state.isUploaded,
-                    type: this.state.type
-                };
-                curCase.completed = this.checkCase(curCase, false);
-                AsyncStorage.setItem(caseName, JSON.stringify(curCase))
-                    .then(() => {
-                        if (this.props.navigation.getParam('caseName') === null || this.props.navigation.getParam('caseName') === undefined) {
-                            AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
-                                .then(() => {
-                                    this.setState({
-                                        saveLoading: false,
-                                    });
-                                    this.props.navigation.navigate('homeView');
-                                    new Alert.alert(
-                                        'Saved',
-                                        'Your case has been saved.'
-                                    );
-                                })
-                                .catch(error => {
-                                    this.setState({
-                                        saveLoading: false,
-                                    });
-                                    console.log('Error occurred when incrementing numCases: ' + error)
-                                });
-                        } else {
-                            this.setState({
-                                saveLoading: false,
-                            });
-                            this.props.navigation.navigate('homeView');
-                            new Alert.alert(
-                                'Saved',
-                                'Your case has been saved.'
-                            );
-                        }
-                    })
-                    .catch(error => {
-                        this.setState({
-                            saveLoading: false,
-                        });
-                        console.log('Error occurred when saving classification: ' + error)
+        let curCase = {
+            name: this.state.name,
+            dateSelected: this.state.dateSelected,
+            location: this.state.location,
+            species: this.state.species,
+            age: this.state.age,
+            breed: this.state.breed,
+            sex: this.state.sex,
+            diagnosis: this.state.diagnosis ? this.state.diagnosis : "Healthy",
+        };
+        this.model.saveCase(curCase)
+            .then(result =>{
+                if(result){
+                    this.setState({
+                        saveLoading: false,
                     });
-            })
-    }
-
-    constructor(props) {
-        super(props);
-        this.state.type = this.props.navigation.getParam('type') === "Disease" ? 0 : 1;
-        this.state.images = this.props.navigation.getParam('images');
-        this.state.images.assets.forEach(img => {
-            this.state.uris.push({uri: img[0].uri, name: img[0].filename, side: img[1]});
-        });
-        if (this.props.navigation.getParam('case') !== null && this.props.navigation.getParam('case') !== undefined) {
-            this.state = Object.assign({}, this.state, this.props.navigation.getParam('case'));
-            this.state.speciesShown = this.state.species;
-            this.state.locationShown = this.state.location;
-            this.state.diagnosisShown = this.state.diagnosis;
-            if (this.state.species !== null) {
-                this.state.diseases = this.diseases[this.state.species];
-            }
-        }
-        this.state = Object.assign({}, this.state, this.props.navigation.getParam('settings'));
-        if (this.state.species) this.state.diseases = this.diseases[this.state.species];
-        this.props.navigation.getParam("model").setPrintable("WE'VE BEEN FROM HERE");
+                    this.props.navigation.navigate('homeView');
+                    new Alert.alert(
+                        'Saved',
+                        'Your case has been saved.'
+                    );
+                } else {
+                    this.setState({
+                        saveLoading: false,
+                    });
+                    new Alert.alert(
+                        'Error',
+                        'An error occurred when trying to save your case. Your case could not be saved.'
+                    );
+                }
+            });
     }
 
     showDatePicker() {
@@ -604,9 +494,9 @@ class CategoriseView extends Component {
         }
     }
 
-    buildPreview = function (images) {
+    buildPreview() {
         let imgs = [];
-        images.assets.forEach(function (img) {
+        this.state.assets.forEach(function (img) {
             imgs.push(<Image style={styles.image}
                              key={img[0].filename}
                              source={img[0]}/>);
@@ -650,9 +540,16 @@ class CategoriseView extends Component {
         });
     };
 
+    onUploadPress() {
+        this.setState({
+            uploadLoading: true,
+            feedbackPending: true
+        });
+    }
+
     _handleFeedback = (val) => {
         this.setState({feedbackPending: false});
-        this.uploadCase(this.state.curCase, val);
+        this.uploadCase(val);
     };
 
     render() {
@@ -707,7 +604,7 @@ class CategoriseView extends Component {
                             loop={false}
                             width={Dimensions.get("window").width / 3}
                             height={"100%"}>
-                            {this.buildPreview(this.state.images)}
+                            {this.buildPreview()}
                         </Swiper>
                     </View>
                     <View style={styles.formContainer}>
@@ -1018,15 +915,16 @@ class CategoriseView extends Component {
                                         <Text style={styles.radioText}>Female</Text>
                                     </TouchableOpacity>
                                 </View>
-                                {this.state.type === 0 ?
+                                {this.state.type ?
+                                    null :
                                     <Divider style={{
                                         height: 1,
                                         marginRight: Dimensions.get('window').width / 30,
                                         marginLeft: Dimensions.get('window').width / 30,
                                         marginBottom: Dimensions.get('window').width / 30
-                                    }}/>
-                                    : null}
-                                {this.state.type === 0 ?
+                                    }}/>}
+                                {this.state.type ?
+                                    null :
                                     <View
                                         style={[styles.textEntryContainer, {marginBottom: Dimensions.get('window').width / 30}]}>
                                         <Image source={require('../assets/img/disease.png')}
@@ -1054,8 +952,7 @@ class CategoriseView extends Component {
                                                 {this.state.diseases}
                                             </Menu>
                                         </View>
-                                    </View>
-                                    : null}
+                                    </View>}
                             </ScrollView>
                         </View>
                     </View>

@@ -48,35 +48,23 @@ class HomeView extends Component {
     }
 
     /**
-     *  Callback executed when the button in the view corresponding to starting a new healthy case, is clicked.
+     *  Callback executed when a button in the HomeView is clicked corresponding to a new case.
      *
-     *  Navigates the view to the CameraView Component if all permissions have been granted.
+     *  Navigates the view to the CameraView Component if all permissions have been granted, starting a new case of the specified type.
      **/
-    onHealthyPress() {
+    onCasePress(type){
         if (this.state.model.hasPermissions()) { // Check for granted permissions.
-            this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
-                type: "Healthy Animal", // Passing a parameter to indicate the state of CameraView to be loaded.
-                model: this.props.navigation.getParam("model")
-            });
+            this.state.model.startCase(type) // Setting the type of case to be built
+                .then(result =>{
+                    if(result){
+                        this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
+                            model: this.props.navigation.getParam("model")
+                        });
+                    } else {
+                        new Alert.alert("Error", "Could not start a new case, an error occurred.");
+                    }
+                })
         } else {
-            this.state.model.initPermissions(); // Ask for permissions
-        }
-    }
-
-    /**
-     *  Callback executed when the button in the view corresponding to starting a new disease case, is clicked.
-     *
-     *  Navigates the view to the CameraView Component if all permissions have been granted.
-     **/
-    onDiseasePress() {
-        if (this.state.model.hasPermissions()) { // Check for granted permissions.
-            console.log("We here");
-            this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
-                type: "Disease", // Passing a parameter to indicate the state of CameraView to be loaded.
-                model: this.props.navigation.getParam("model")
-            });
-        } else {
-            console.log("We here2");
             this.state.model.initPermissions(); // Ask for permissions
         }
     }
@@ -93,13 +81,13 @@ class HomeView extends Component {
                 .then(item => { // Lambda callback passing in the resolved promise
                     // this.setState({loading: false,}); // Sets the loading state to false.
                     if (item) { // If there were saved settings
-                        this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
+                        this.props.navigation.navigate('casesView', { // Navigate the view to GalleryView.
                             home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
                             settings: JSON.parse(item), // Passing an object corresponding to loaded settings as a parameter.
                             model: this.props.navigation.getParam("model")
                         });
                     } else
-                        this.props.navigation.navigate('galleryView', { // Navigate the view to GalleryView.
+                        this.props.navigation.navigate('casesView', { // Navigate the view to GalleryView.
                             home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
                             model: this.props.navigation.getParam("model")
                         });
@@ -174,7 +162,7 @@ class HomeView extends Component {
     }
 
     onUploadPress() {
-        this.state.model.checkInternetAccess()
+        this.state.model.checkInternetAccess(true)
             .then(result => {
                 console.log(result);
                 if (result) {
@@ -278,11 +266,11 @@ class HomeView extends Component {
                         <View style={styles.buttonContainer}>
                             <View style={styles.buttonRow}>
                                 <HomeScreenButton style={styles.buttonWrapper}
-                                                  onPress={this.onHealthyPress.bind(this)}
+                                                  onPress={() => this.onCasePress(1)}
                                                   source={require('../assets/img/cow-healthy2.png')}
                                                   text={"Healthy Case"}/>
                                 <HomeScreenButton style={styles.buttonWrapper}
-                                                  onPress={this.onDiseasePress.bind(this)}
+                                                  onPress={() => this.onCasePress(0)}
                                                   source={require('../assets/img/cow-disease2.png')}
                                                   text={"Disease Case"}/>
                             </View>

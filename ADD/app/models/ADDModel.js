@@ -11,10 +11,7 @@ export default class ADDModel {
     case = {
         assets: []
     };
-
-    constructor() {
-
-    }
+    isLoaded = false;
 
     initStorage() {
         AsyncStorage.getAllKeys() // Fetch all keys to values from the locally stored data
@@ -60,7 +57,6 @@ export default class ADDModel {
         Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
             .then(result => {
                 this.permissions = result.status; // Set the state of hasPermissions to true if all permissions were granted.
-                console.log(this.permissions);
             });
     }
 
@@ -83,13 +79,13 @@ export default class ADDModel {
      *  Returns a promise that resolves true if they are connected to the internet by preferred settings,
      *  else returns false and alerts the user
      **/
-    checkInternetAccess() {
+    checkInternetAccess(alert) {
         return new Promise(resolve => {
             this.getSettings()
                 .then(settings => {
                     if (!settings) resolve(false);
                     else {
-                        this.getInternetAccess(settings)
+                        this.getInternetAccess(settings, alert)
                             .then(result => {
                                 resolve(result)
                             })
@@ -109,7 +105,7 @@ export default class ADDModel {
      *  Returns a promise that resolves true if they are connected to the internet by preferred settings,
      *  else returns false and alerts the user
      **/
-    getInternetAccess(settings) {
+    getInternetAccess(settings, alert) {
         return new Promise(resolve => {
             NetInfo.fetch()
                 .then(state => {
@@ -234,6 +230,7 @@ export default class ADDModel {
      */
     takePicture(side) {
         return new Promise(resolve => {
+            if (!this.camera) resolve(null);
             const options = {skipProcessing: true, base64: true, exif: true};
             this.camera.takePictureAsync(options)
                 .then(photo => {
@@ -296,7 +293,6 @@ export default class ADDModel {
         return new Promise(resolve => {
             MediaLibrary.getAlbumAsync('Animal Disease Diagnosis')
                 .then(album => {
-                    console.log("Album at saveAsset: " + album);
                     if (album) {
                         this.addAssetToAlbum(asset, album,)
                             .then(result => {
@@ -322,12 +318,9 @@ export default class ADDModel {
      * Resolves to album if the asset was added to it, else returns false
      */
     addAssetToAlbum(asset, album) {
-        console.log("Album at addAsset: " + album);
         return new Promise(resolve => {
-            console.log("Album at return Promise: " + album);
             MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
                 .then(result => {
-                    console.log("Album at return Promise: " + album);
                     if (result) {
                         resolve(album);
                     } else {
@@ -384,5 +377,236 @@ export default class ADDModel {
                     resolve(false);
                 });
         })
+    }
+
+    /**
+     * Return the case currently being built - Used for displaying images or saved form info in View
+     */
+    getCurrentCase() {
+        return this.case;
+    }
+
+    /**
+     * Initialise the case object for starting to build a new case
+     */
+    startCase(type) {
+        return new Promise(resolve => {
+            this.getSettings()
+                .then(settings => {
+                    this.case = {
+                        type: type,
+                        assets: [],
+                    };
+                    this.case = Object.assign({}, this.case, settings);
+                    this.getNumCases()
+                        .then(result => {
+                            if (result !== null) {
+                                this.case.caseName = "case" + result;
+                            }
+                        });
+                    resolve(true);
+                })
+                .catch(error => {
+                    console.log("Error occurred starting a new case: " + error);
+                    resolve(false);
+                });
+        })
+    }
+
+    /**
+     * Return type of the case currently being built
+     */
+    getCaseType() {
+        return this.case.type;
+    }
+
+    /**
+     * Retrieves the number of cases saved in AsyncStorage
+     *
+     * Returns a promise resolving to the value stored at numCases - The number of cases, else resolves null
+     * @returns {Promise<unknown>}
+     */
+    getNumCases() {
+        return new Promise(resolve => {
+            AsyncStorage.getItem("numCases")
+                .then(value => {
+                    resolve(value);
+                })
+                .catch(error => {
+                    console.log("Error getting number of cases: " + error);
+                    resolve(null);
+                })
+        })
+    }
+
+    /**
+     * Saves the current case being built to the AsyncStorage.
+     * Updates the current case with new form info from the view
+     * Marks the case with completeness.
+     * Increments the number of saved cases.
+     *
+     * Returns a promise resolving to true if the case is saved, updated, marked with completeness and increments the number of saved cases.
+     * Else resolves false.
+     */
+    saveCase(toSave) {
+        return new Promise(resolve => {
+            this.case = Object.assign({}, this.case, toSave);
+            this.case.completed = this.checkCase();
+            AsyncStorage.setItem(this.case.caseName, JSON.stringify(this.case))
+                .then(() => {
+                    if (this.isLoaded) {
+                        resolve(true);
+                    } else {
+                        this.incrementNumCases()
+                            .then(result => {
+                                resolve(result);
+                            })
+                    }
+                })
+                .catch(error => {
+                    console.log('Error occurred when saving classification: ' + error)
+                    resolve(false);
+                });
+        });
+    }
+
+    /**
+     * Increments the number of cases saved in AsyncStorage
+     *
+     * Returns a promise resolving to true if the number of cases in AsyncStorage is incremented, else resolves false.
+     * @returns {Promise<unknown>}
+     */
+    incrementNumCases() {
+        return new Promise(resolve => {
+            this.getNumCases()
+                .then(value => {
+                    AsyncStorage.setItem('numCases', '' + (parseInt(value) + 1))
+                        .then(() => {
+                            resolve(true);
+                        })
+                        .catch(error => {
+                            console.log('Error occurred when incrementing numCases: ' + error);
+                            resolve(false);
+                        });
+                })
+        })
+    }
+
+    /**
+     * Checks for the completeness of the case currently being built.
+     *
+     * Returns true if the case is complete - no null values in required key-vals, else returns false
+     */
+    checkCase() {
+        let complete = true;
+        Object.keys(this.case).forEach(k => {
+            if (this.case[k] === null && !(this.case.type && k === "diagnosis"))
+                complete = false;
+        });
+        return complete;
+    }
+
+    /**
+     * Carries out a completeness check on the case currently being built, updates and saves it, then uploads it with the immediate feedback given.
+     *
+     * Returns a promise resolving to 0, 1, 2, 3, 4, or 5.
+     *      - 0: Case was not saved
+     *      - 1: Case is not complete so isn't uploaded, but is saved
+     *      - 2: Not connected to the internet under preferred conditions, so is not uploaded, but is saved.
+     *      - 3: Error when uploading
+     *      - 4: Error when contacting server
+     *      - 5: Successfully saved and uploaded case
+     */
+    checkAndUploadCase(toUpload, feedback) {
+        return new Promise(resolve => {
+            this.saveCase(toUpload)
+                .then(saved => {
+                    if (saved) {
+                        if (this.case.completed) {
+                            this.checkInternetAccess(true)
+                                .then(connected => {
+                                    if (connected) {
+                                        this.uploadCase(toUpload, feedback)
+                                            .then(result =>{
+                                                resolve(result);
+                                            })
+                                    } else {
+                                        resolve(2)
+                                    }
+                                })
+                        } else {
+                            resolve(1);
+                        }
+                    } else {
+                        resolve(0);
+                    }
+                })
+        });
+    }
+
+    /**
+     * Prepares a FormData object of the case
+     *
+     * Returns the FormData object with the case info set
+     */
+    prepareCaseForm(toUpload, feedback) {
+        const body = new FormData();
+        this.case.assets.forEach(img => {
+            body.append("images[]", {
+                uri: img[0].uri,
+                name: img[0].filename,
+                type: "image/jpg"
+            });
+            toUpload.sides.push(img[1]);
+        });
+        body.append("case", JSON.stringify(toUpload));
+        body.append("feedback", feedback);
+        return body;
+    }
+
+    /**
+     * Uploads the currently being built case with the immediate feedback given.
+     *
+     * Returns a promise resolving to 3, 4, or 5.
+     *      - 3: Error when uploading
+     *      - 4: Error when contacting server
+     *      - 5: Successfully saved and uploaded case
+     */
+    uploadCase(toUpload, feedback) {
+        return new Promise(resolve => {
+            const body = this.prepareCaseForm(toUpload, feedback);
+            fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
+                {
+                    method: 'POST',
+                    body: body,
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data"
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Request to server successful.");
+                        console.log(response.status);
+                        response.text()
+                            .then(text => {
+                                console.log(text);
+                            });
+                        resolve(5);
+                    } else {
+                        console.log("Request to server unsuccessful.");
+                        console.log(response.status);
+                        response.text()
+                            .then(text => {
+                                console.log(text);
+                            });
+                        resolve(4);
+                    }
+                })
+                .catch(error => {
+                    console.log("Error making request : " + error);
+                    resolve(3);
+                });
+        });
     }
 }

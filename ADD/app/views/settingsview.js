@@ -28,16 +28,18 @@ class SettingsView extends Component {
         species: null,
         location: null,
         name: null,
-        loading: null,
+        loading: false,
         locExpanded: false,
         specExpanded: false,
         locationShown: null,
         speciesShown: null,
     };
 
+    model;
+
     onSavePress() {
-        this.setState({loading: true});
-        this.state.model.saveSettings({
+       // this.setState({loading: true});
+        this.model.saveSettings({
             wifi: this.state.wifi,
             cell: this.state.cell,
             species: this.state.species,
@@ -59,14 +61,21 @@ class SettingsView extends Component {
 
     constructor(props) {
         super(props);
-        this.state.model = this.props.navigation.getParam("model");
+        this.model = this.props.navigation.getParam("model");
     }
 
     componentDidMount() {
-        this.props.navigation.getParam("model").getSettings()
+        this.model.getSettings()
             .then(settings => {
-                this.setState(settings);
-                console.log(this.state);
+                this.setState({
+                    wifi: settings.wifi,
+                    cell: settings.cell,
+                    name: settings.name,
+                    location: settings.location,
+                    locationShown: settings.location,
+                    species: settings.species,
+                    speciesShown: settings.species,
+                });
             });
     }
 
@@ -238,7 +247,7 @@ class SettingsView extends Component {
                     </View>
                     <View style={styles.saveContainer}>
                         <Button style={{width: "40%"}} mode="contained" loading={this.state.loading}
-                                onPress={this.onSavePress.bind(this)}>
+                                onPress={() => {this.onSavePress()}}>
                             Save
                         </Button>
                     </View>
