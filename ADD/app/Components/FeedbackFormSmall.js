@@ -9,8 +9,7 @@ export default class FeedbackFormSmall extends Component {
                 <View style={styles.feedbackScreen}>
                     <View style={styles.feedbackScreenMargin}>
                         <Text style={styles.feedbackTitle}>Feedback</Text>
-                        <Text style={styles.feedbackText}>How was your experience capturing and uploading this
-                            case?</Text>
+                        <Text style={styles.feedbackText}>{this.props.message}</Text>
                         <View style={styles.feedbackImgWrapper}>
                             <View style={styles.feedbackImgContainer}>
                                 <TouchableOpacity onPress={() => this.props.onPress(1)}>

@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     View,
     Dimensions, Alert,
-    Animated, AsyncStorage
+    Animated,
 } from 'react-native';
 import {Camera} from "expo-camera";
 
@@ -19,6 +19,7 @@ class CameraView extends Component {
     };
 
     sideMap = {
+        "None": 0,
         "Front": 1,
         "Right-hand": 2,
         "Back": 3,
@@ -153,6 +154,7 @@ class CameraView extends Component {
         super(props);
         this.model = this.props.navigation.getParam('model');
         this.state.type = this.model.getCaseType();
+        this.state.side = this.state.type ? "Front" : "None";
     }
 
     componentDidMount() {

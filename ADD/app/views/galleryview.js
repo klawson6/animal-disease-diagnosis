@@ -3,16 +3,9 @@ import {
     Dimensions, Image,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ScrollView,
-    Alert, AsyncStorage
 } from 'react-native';
-import {
-    Button, DefaultTheme, Provider as PaperProvider,
-} from "react-native-paper";
-import * as MediaLibrary from "expo-media-library";
-import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 
 class GalleryView extends Component {
 

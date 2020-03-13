@@ -2,20 +2,14 @@ import React, {Component} from 'react';
 import {
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     Image,
     Dimensions,
-    ScrollView,
     AsyncStorage,
     Alert,
-    TextInput
 } from 'react-native';
-import {ScreenOrientation} from 'expo';
-import * as Permissions from "expo-permissions";
 import * as MediaLibrary from 'expo-media-library';
-import {Divider, Button, Provider as PaperProvider, DefaultTheme} from "react-native-paper";
-import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
+import {Provider as PaperProvider, DefaultTheme} from "react-native-paper";
 import HomeScreenButton from "../Components/HomeScreenButton";
 import FeedbackForm from "../Components/FeedbackForm";
 

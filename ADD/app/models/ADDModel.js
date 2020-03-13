@@ -6,13 +6,16 @@ import * as MediaLibrary from "expo-media-library";
 
 export default class ADDModel {
 
-    permissions;
-    camera;
-    case = {
+    permissions; // Have all permissions been granted
+    camera; // A reference to the camera object
+    case = { // The current case being built
         assets: []
     };
-    isLoaded = false;
+    isLoaded = false; // Default to a new case
 
+    /**
+     * Initialises storage for cases, number of cases, and settings
+     */
     initStorage() {
         AsyncStorage.getAllKeys() // Fetch all keys to values from the locally stored data
             .then(keys => {
@@ -34,6 +37,9 @@ export default class ADDModel {
             });
     }
 
+    /**
+     * Initialises the orientation restriction to vertical only.
+     */
     initOrientation() {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT) // Lock the screen orientation to vertical.
             .then() // Do nothing on success.
@@ -113,11 +119,11 @@ export default class ADDModel {
                         if (settings.wifi && state.type === NetInfoStateType.wifi || settings.cell && state.type === NetInfoStateType.cellular) {
                             resolve(true);
                         } else {
-                            new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
+                            if (alert) new Alert.alert("Cannot Upload", "You are currently connected to the internet via: " + state.type + "\nPlease connect to the internet using your preferred network type, specified in settings.");
                             resolve(false);
                         }
                     } else {
-                        new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
+                        if (alert) new Alert.alert("No Internet", "Please connect to the internet to upload your case.");
                         resolve(false);
                     }
                 })
@@ -387,6 +393,36 @@ export default class ADDModel {
     }
 
     /**
+     * Get function for all the saved cases
+     *
+     * Returns a promise resolving to an object containing the saved cases.
+     */
+    getCases() {
+        return new Promise(resolve => {
+            let cases = {};
+            AsyncStorage.getAllKeys()
+                .then(keys => {
+                    AsyncStorage.multiGet(keys)
+                        .then(results => {
+                            results.forEach(item => {
+                                if (item[0] !== "numCases" && item[0] !== "settings") cases[item[0]] = JSON.parse(item[1]);
+                            });
+                            resolve(cases);
+                        });
+                });
+        })
+
+    }
+
+    /**
+     * Sets the current case being built to a given case, this is one loaded from AsyncStorage
+     */
+    setCurrentCase(currentCase) {
+        this.case = currentCase;
+        this.isLoaded = true;
+    }
+
+    /**
      * Initialise the case object for starting to build a new case
      */
     startCase(type) {
@@ -402,6 +438,7 @@ export default class ADDModel {
                         .then(result => {
                             if (result !== null) {
                                 this.case.caseName = "case" + result;
+                                this.isLoaded = false;
                             }
                         });
                     resolve(true);
@@ -424,7 +461,6 @@ export default class ADDModel {
      * Retrieves the number of cases saved in AsyncStorage
      *
      * Returns a promise resolving to the value stored at numCases - The number of cases, else resolves null
-     * @returns {Promise<unknown>}
      */
     getNumCases() {
         return new Promise(resolve => {
@@ -474,7 +510,6 @@ export default class ADDModel {
      * Increments the number of cases saved in AsyncStorage
      *
      * Returns a promise resolving to true if the number of cases in AsyncStorage is incremented, else resolves false.
-     * @returns {Promise<unknown>}
      */
     incrementNumCases() {
         return new Promise(resolve => {
@@ -516,29 +551,155 @@ export default class ADDModel {
      *      - 3: Error when uploading
      *      - 4: Error when contacting server
      *      - 5: Successfully saved and uploaded case
+     *      - 6: Uploaded and saved, but failed to mark the case as uploaded
      */
+    // checkAndUploadCase(toUpload, feedback) {
+    //     return new Promise(resolve => {
+    //         console.log("checking case: " + toUpload.caseName);
+    //         console.log("with imgs:" + this.case.caseName);
+    //         console.log("with isComplete:" + this.case.completed);
+    //         this.saveCase(toUpload)
+    //             .then(saved => {
+    //                 if (saved) {
+    //                     console.log("isCompleted" + toUpload.caseName + ":" + this.case.completed);
+    //                     if (this.case.completed) {
+    //                         this.checkInternetAccess(true)
+    //                             .then(connected => {
+    //                                 if (connected) {
+    //                                     this.uploadCase(toUpload, feedback)
+    //                                         .then(result => {
+    //                                             if (result) {
+    //                                                 toUpload.isUploaded = true;
+    //                                                 this.saveCase(toUpload)
+    //                                                     .then(saved => {
+    //                                                         if (saved) {
+    //                                                             console.log("finished checking: " + toUpload.caseName);
+    //                                                             console.log("with imgs end:" + this.case.caseName);
+    //                                                             resolve(5)
+    //                                                         } else {
+    //                                                             resolve(6);
+    //                                                         }
+    //                                                     })
+    //                                             } else {
+    //                                                 resolve(result);
+    //                                             }
+    //                                         })
+    //                                 } else {
+    //                                     resolve(2)
+    //                                 }
+    //                             })
+    //                     } else {
+    //                         resolve(1);
+    //                     }
+    //                 } else {
+    //                     resolve(0);
+    //                 }
+    //             })
+    //     });
+    // }
     checkAndUploadCase(toUpload, feedback) {
         return new Promise(resolve => {
             this.saveCase(toUpload)
                 .then(saved => {
                     if (saved) {
                         if (this.case.completed) {
-                            this.checkInternetAccess(true)
-                                .then(connected => {
-                                    if (connected) {
-                                        this.uploadCase(toUpload, feedback)
-                                            .then(result =>{
-                                                resolve(result);
-                                            })
-                                    } else {
-                                        resolve(2)
-                                    }
-                                })
+                            return this.checkInternetAccess(true);
                         } else {
                             resolve(1);
                         }
                     } else {
                         resolve(0);
+                    }
+                })
+                .then(connected => {
+                    if (connected) {
+                        return this.uploadCase(toUpload, feedback);
+                    } else {
+                        resolve(2)
+                    }
+                })
+                .then(result => {
+                    if (result) {
+                        toUpload.isUploaded = true;
+                        return this.saveCase(toUpload);
+                    } else {
+                        resolve(result);
+                    }
+                })
+                .then(saved => {
+                    if (saved) {
+                        resolve(5)
+                    } else {
+                        resolve(6);
+                    }
+                })
+        });
+    }
+
+    /**
+     * Uploads all saved cases that aren't marked as uploaded and are complete.
+     * Uploads each applicable case with the feedback given.
+     *
+     * Returns a promise resolving to an array of the resolve codes that correspond to any errors that occurred:
+     *      - 0: Not connected to the internet under preferred conditions, so is nothing uploaded.
+     *      - 1: Error when uploading
+     *      - 2: Error when contacting the server
+     *      - 3: Successfully uploaded cases and updated them as uploaded.
+     *      - 4: Successfully uploaded cases but an error occurred saving them as uploaded.
+     */
+    uploadAll(feedback) {
+        return new Promise(resolve => {
+            this.checkInternetAccess(true)
+                .then(access => {
+                    if (access) {
+                        this.isLoaded = true;
+                        this.getCases()
+                            .then(cases => {
+                                let fetches = [];
+                                Object.keys(cases).forEach(k => {
+                                    if (!cases[k].isUploaded && cases[k].completed) {
+                                        fetches.push(this.iterateUploadCase(cases[k], feedback));
+                                    }
+                                });
+                                Promise.all(fetches)
+                                    .then(results => {
+                                        resolve(results.filter(r => r !== 3));
+                                    })
+                            })
+                    } else {
+                        resolve([0]);
+                    }
+                });
+        });
+    }
+
+    /**
+     * Uploads a given case with feedback, this is the upload function for uploading lots of complete cases.
+     * It is more easily iterable thanks to fewer asyncs.
+     *
+     * Returns a promise resolving to:
+     *      - 1: Error when uploading
+     *      - 2: Error when contacting the server
+     *      - 3: Successfully uploaded cases and updated them as uploaded
+     *      - 4: Successfully uploaded cases but an error occurred saving them as uploaded.
+     */
+    iterateUploadCase(c, feedback) {
+        return new Promise(resolve => {
+            this.setCurrentCase(c);
+            this.uploadCase(c, feedback)
+                .then(result => {
+                    if (result === 3) {
+                        c.isUploaded = true;
+                        this.saveCase(c)
+                            .then(saved => {
+                                if (saved) {
+                                    resolve(3)
+                                } else {
+                                    resolve(4);
+                                }
+                            })
+                    } else {
+                        resolve(result);
                     }
                 })
         });
@@ -592,7 +753,7 @@ export default class ADDModel {
                             .then(text => {
                                 console.log(text);
                             });
-                        resolve(5);
+                        resolve(3);
                     } else {
                         console.log("Request to server unsuccessful.");
                         console.log(response.status);
@@ -600,12 +761,12 @@ export default class ADDModel {
                             .then(text => {
                                 console.log(text);
                             });
-                        resolve(4);
+                        resolve(2);
                     }
                 })
                 .catch(error => {
                     console.log("Error making request : " + error);
-                    resolve(3);
+                    resolve(1);
                 });
         });
     }

@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {
-    Platform,
     Dimensions,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
     ScrollView,
-    AsyncStorage, Image, Alert
+    Image, Alert
 } from 'react-native';
 import {
     DefaultTheme,
@@ -17,7 +16,6 @@ import {
     Provider as PaperProvider,
     Button
 } from "react-native-paper";
-// import {Divider} from "react-native-elements";
 import {Divider} from "react-native-paper";
 
 class SettingsView extends Component {
