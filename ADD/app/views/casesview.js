@@ -58,6 +58,8 @@ class CasesView extends Component {
             .then(results => {
                 if (results.includes(1) || results.includes(2) || results.includes(4)) {
                     new Alert.alert("Error", "An error occurred when uploading all cases. [Error codes: " + results + "]")
+                } else if (results[0] === 5) {
+                    new Alert.alert("Nothing to Upload", "There are no complete cases to be uploaded. Please check that the cases have been fully annotated.")
                 } else if (!results.includes(0)) {
                     new Alert.alert("Uploaded", "All of the completed cases were successfully uploaded.")
                 }

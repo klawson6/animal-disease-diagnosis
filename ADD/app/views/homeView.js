@@ -160,6 +160,7 @@ class HomeView extends Component {
             .then(result => {
                 console.log(result);
                 if (result) {
+                    console.log(this.state);
                     this.state.model.uploadFeedback(
                         {
                             "feedback1": this.state.feedback1,
@@ -187,7 +188,6 @@ class HomeView extends Component {
                             }
                             this._handleFinishedUpload();
                         })
-                } else {
                 }
             })
     }
@@ -200,8 +200,8 @@ class HomeView extends Component {
             feedback2: 0,
             feedback3: 0,
             feedback4: 0,
-            feedback5: null,
-            feedback6: null,
+            feedback5: "",
+            feedback6: "",
         });
     };
 

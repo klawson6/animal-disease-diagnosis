@@ -646,6 +646,7 @@ export default class ADDModel {
      *      - 2: Error when contacting the server
      *      - 3: Successfully uploaded cases and updated them as uploaded.
      *      - 4: Successfully uploaded cases but an error occurred saving them as uploaded.
+     *      - 5: No cases ot upload
      */
     uploadAll(feedback) {
         return new Promise(resolve => {
@@ -661,10 +662,14 @@ export default class ADDModel {
                                         fetches.push(this.iterateUploadCase(cases[k], feedback));
                                     }
                                 });
-                                Promise.all(fetches)
-                                    .then(results => {
-                                        resolve(results.filter(r => r !== 3));
-                                    })
+                                if (fetches.length) {
+                                    Promise.all(fetches)
+                                        .then(results => {
+                                            resolve(results.filter(r => r !== 3));
+                                        })
+                                } else {
+                                    resolve([5]);
+                                }
                             })
                     } else {
                         resolve([0]);
