@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: 'black',
         fontSize: 20,
-        alignSelf: "center"
+        alignSelf: "center",
+        marginLeft: Dimensions.get('window').width / 30
     },
     closeImgWrapper: {
         flex: 1,

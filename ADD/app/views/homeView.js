@@ -274,7 +274,7 @@ class HomeView extends Component {
                                                   source={require('../assets/img/folder-blue2.png')}
                                                   text={"Saved Cases"}/>
                                 <HomeScreenButton style={styles.buttonWrapper}
-                                                  onPress={this.onClearPress.bind(this)}
+                                                  onPress={this.onHelpPress.bind(this)}
                                                   source={require('../assets/img/question-blue2.png')}
                                                   text={"How to Use"}/>
                             </View>
@@ -293,7 +293,7 @@ class HomeView extends Component {
                     <View style={styles.topBack}>
                         <View style={styles.topTextContainer}>
                             <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
-                            <Text style={styles.topText2}>v 1.2.4</Text>
+                            <Text style={styles.topText2}>v 1.5.1</Text>
                         </View>
                         <Image resizeMode={"cover"} style={styles.topImg}
                                source={require('../assets/img/cows-blue-back.png')}/>

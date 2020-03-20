@@ -601,6 +601,7 @@ export default class ADDModel {
         return new Promise(resolve => {
             this.saveCase(toUpload)
                 .then(saved => {
+                    console.log(toUpload);
                     if (saved) {
                         if (this.case.completed) {
                             return this.checkInternetAccess(true);
@@ -718,6 +719,7 @@ export default class ADDModel {
     prepareCaseForm(toUpload, feedback) {
         const body = new FormData();
         this.case.assets.forEach(img => {
+            console.log(img);
             body.append("images[]", {
                 uri: img[0].uri,
                 name: img[0].filename,
@@ -741,6 +743,7 @@ export default class ADDModel {
     uploadCase(toUpload, feedback) {
         return new Promise(resolve => {
             const body = this.prepareCaseForm(toUpload, feedback);
+            console.log(body);
             fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
                 {
                     method: 'POST',

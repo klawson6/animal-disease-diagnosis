@@ -439,7 +439,7 @@ class CategoriseView extends Component {
                                                          itemShown={this.state.diagnosisShown}
                                                          expanded={this.state.diseaseExpanded}
                                                          items={this.state.diseases}
-                                                         label={"Presumed Disease"}/>
+                                                         label={"Predicted Disease"}/>
                                 }
                             </ScrollView>
                         </View>
