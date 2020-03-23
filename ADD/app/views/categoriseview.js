@@ -381,7 +381,8 @@ class CategoriseView extends Component {
                         message={"How was your experience capturing and uploading this case?"}
                         onPress={this._handleFeedback}/>
                     : null}
-                <View style={styles.container}>
+                <View pointerEvents={this.state.uploadLoading || this.state.saveLoading ? 'none' : 'auto'}
+                      style={styles.container}>
                     <Text style={styles.title}>Annotate the Image(s)</Text>
                     <WrappedSwiper images={this.state.assets}/>
                     <View style={styles.formContainer}>

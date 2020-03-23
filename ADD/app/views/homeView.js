@@ -46,11 +46,11 @@ class HomeView extends Component {
      *
      *  Navigates the view to the CameraView Component if all permissions have been granted, starting a new case of the specified type.
      **/
-    onCasePress(type){
+    onCasePress(type) {
         if (this.state.model.hasPermissions()) { // Check for granted permissions.
             this.state.model.startCase(type) // Setting the type of case to be built
-                .then(result =>{
-                    if(result){
+                .then(result => {
+                    if (result) {
                         this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
                             model: this.props.navigation.getParam("model")
                         });
@@ -171,7 +171,7 @@ class HomeView extends Component {
                             "feedback6": this.state.feedback6,
                         })
                         .then(result => {
-                            if(result){
+                            if (result) {
                                 new Alert.alert(
                                     'Uploaded',
                                     'Your feedback has been uploaded. Thank you.',
@@ -254,7 +254,8 @@ class HomeView extends Component {
                                           this.state.feedback5,
                                           this.state.feedback6,]}/>
                         : null}
-                    <View style={styles.frontContainer}>
+                    <View pointerEvents={this.state.feedbackPending ? 'none' : 'auto'}
+                          style={styles.frontContainer}>
                         <View style={styles.emptyTop}>
                         </View>
                         <View style={styles.buttonContainer}>
@@ -293,7 +294,7 @@ class HomeView extends Component {
                     <View style={styles.topBack}>
                         <View style={styles.topTextContainer}>
                             <Text style={styles.topText1}>Image Collection Tool for Animal Disease Diagnosis</Text>
-                            <Text style={styles.topText2}>v 1.5.1</Text>
+                            <Text style={styles.topText2}>v 1.5.4</Text>
                         </View>
                         <Image resizeMode={"cover"} style={styles.topImg}
                                source={require('../assets/img/cows-blue-back.png')}/>
