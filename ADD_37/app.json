@@ -1,0 +1,25 @@
+{
+  "name": "ADD",
+  "displayName": "ADD",
+  "expo": {
+    "name": "Animal Disease Diagnosis - Image Collection",
+    "slug": "add-image-collection",
+    "privacy": "unlisted",
+    "icon": "icon.png",
+    "splash": {
+      "image": "splash.png"
+    },
+    "version": "1.5.4",
+    "entryPoint": "node_modules/expo/AppEntry.js",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "description": "Version 1.5 for Image Collection Android application for Animal Disease Diagnosis. ",
+    "android": {
+      "package": "com.klawson.add_image_collection"
+    },
+    "sdkVersion": "37.0.0"
+  }
+}
