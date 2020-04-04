@@ -1,0 +1,50 @@
+Disease,Cattle,Sheep,Goat,Camel,Horse,Donkey,,Comments
+African Horse Sickness (AHS),,,,,X,,,
+Anthrax,X,,,X,X,X,,
+Ascaris (Foals only),,,,,X,X,,
+Babesiosis,X,,,,X,X,,
+Blackleg,X,,,,,,,
+Brucellosis,,,X,X,,,,Currently not in cattle; considered important for goats but not for sheep (and there was some debate! for camels)
+CBPP / CCPP,X,,X,,,,,Contagious Bovine/Caprine Pleuropnemonia (debate re. camelids)
+Camel calf diarrhoea,,,,X,,,,
+Coenurosis,,X,,,,,,
+Colibacillosis,X,,,,,,,
+Contagious ecthyma (ORF),,X,X,X,,,,Also in camels? (Not referred to as ORF?)
+Cowdriosis,X,X,X,,,,,
+Dermatophilosis,,,,,,,,
+FMD,X,,,,,,,Added to cattle in VAE_v2
+Fasciolosis,X,X,,,,,,Causes disease in sheep but rarely in goats
+GI (non-infectious / colic),,,,,X,X,,
+GI (parasitic),,,,,X,X,,
+Habronemiasis,,,,,X,X,,
+Haemonchosis,,X,,,,,,Causes disease in sheep but rarely in goats
+Heat stress,,,,,X,X,,
+Hemorrhagic septicemia,,,,X,,,,This is a fatal form of pasteurollosis - do we need both?
+Hypocalcemia / Pregnancy tox.,,X,X,X,,,,"Ofter referred to as ""Partirient Paresis"" in sheep/goats or ""milk fever"" (in all species)"
+LSD,X,,,,,,,Added to cattle in VAE_v2
+Lungworm,X,X,X,,,,,Added to cattle in VAE_v2
+Lymphangitis (epizootic),,,,,X,,,
+Lymphangitis (ulcerative),,,,,X,,,
+Mange mite,,X,X,X,X,X,,
+Mastitis,,,X,X,,,,Potential to add this for cattle?
+Nasal bot,,X,,,,,,
+Pasteurollosis,X,X,X,X,,,,"Ovine type in sheep and goats. (In camels, how different from hemorrhagic septicemia?)"
+Plant poisoning,,,,X,,,,
+PGE / GIT parasite,X,,,,,,,Nematode infestation
+Pox,,X,X,X,,,,"Different 'strains' for sheep, goats and camels"
+PPR,,X,X,,,,,Peste des Petits Ruminants
+Pus / Abcess,,,,X,,,,
+Rabies,X,,,,X,X,,Rarely seen in horses and particularly donkeys
+Respiratory infections,,,,X,,,,Rather than specific diseases (includes pneumonia)
+Respiratory (lower bacterical),,,,,X,X,,
+Respiratory (upper bacterical),,,,,X,X,,
+Respiratory (asthma / lungworm),,,,,X,X,,
+Respiratory (viral),,,,,X,X,,
+SDS / Unknown camel disease,,,,X,,,,
+Strangles,,,,,X,X,,
+Tetanus,,,,,X,X,,
+Tick infestation,,,,,,,,
+Trichostrongiulosis,,X,X,,,,,
+Trypanosomosis,X,,,X,X,X,,Seasonal appearance - linked to prevalence of vector
+Tuberculosis,X,,,,,,,
+(In App),15,13,12,15,19,16,,
