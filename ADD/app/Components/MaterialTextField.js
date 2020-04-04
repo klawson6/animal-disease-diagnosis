@@ -9,7 +9,7 @@ export default class MaterialTextField extends Component{
                 <Image source={this.props.icon} style={styles.optionImg}/>
                 <TextInput
                     label='Identifier'
-                    value={this.props.name}
+                    value={this.props.identifier}
                     onChangeText={text => this.props.onChangeText(text)}
                     style={styles.textInput}
                 />

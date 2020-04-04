@@ -18,14 +18,14 @@ import {
 } from "react-native-paper";
 import {Divider} from "react-native-paper";
 
-class SettingsView extends Component {
+class SettingsViewModel extends Component {
 
     state = {
         wifi: false,
         cell: false,
         species: null,
         location: null,
-        name: null,
+        identifier: null,
         loading: false,
         locExpanded: false,
         specExpanded: false,
@@ -42,7 +42,7 @@ class SettingsView extends Component {
             cell: this.state.cell,
             species: this.state.species,
             location: this.state.location,
-            name: this.state.name,
+            identifier: this.state.identifier,
         })
             .then(result => {
                 if (result) {
@@ -68,7 +68,7 @@ class SettingsView extends Component {
                 this.setState({
                     wifi: settings.wifi,
                     cell: settings.cell,
-                    name: settings.name,
+                    identifier: settings.identifier,
                     location: settings.location,
                     locationShown: settings.location,
                     species: settings.species,
@@ -114,8 +114,8 @@ class SettingsView extends Component {
                                 <Image source={require('../assets/img/person-grey.png')} style={styles.optionImg}/>
                                 <TextInput
                                     label='Default Identifier'
-                                    value={this.state.name}
-                                    onChangeText={text => this.setState({name: text})}
+                                    value={this.state.identifier}
+                                    onChangeText={text => this.setState({identifier: text})}
                                     style={styles.textInput}
                                 />
                             </View>
@@ -335,4 +335,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SettingsView;
+export default SettingsViewModel;

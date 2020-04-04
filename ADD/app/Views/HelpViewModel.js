@@ -12,7 +12,7 @@ import {
 } from "react-native-paper";
 import { Linking } from 'expo';
 
-class HelpView extends Component {
+class HelpViewModel extends Component {
 
 
     _handleEmail = () => {
@@ -264,4 +264,4 @@ const styles = StyleSheet.create({
     iconText: {}
 });
 
-export default HelpView;
+export default HelpViewModel;

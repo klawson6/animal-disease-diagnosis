@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {Camera} from "expo-camera";
 
-class CameraView extends Component {
+class CameraViewModel extends Component {
 
     camera = null;
     cameraView = null;
@@ -71,7 +71,7 @@ class CameraView extends Component {
         })
     }
 
-    onSnapButtonCamera() {
+    onCapture() {
         if (this.state.type && this.state.done) {
             new Alert.alert(
                 'No More Pictures Required',
@@ -191,7 +191,7 @@ class CameraView extends Component {
                             <Image style={styles.imageSmall}
                                    source={this.state.capturing ? this.state.loading : this.state.thumbnail}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onSnapButtonCamera.bind(this)}>
+                        <TouchableOpacity onPress={this.onCapture.bind(this)}>
                             <Image style={styles.image}
                                    source={require("../assets/img/material-cam.png")}/>
                         </TouchableOpacity>
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export default CameraView;
+export default CameraViewModel;
 
 const FadeInView = (props) => {
     const [fadeAnim] = useState(new Animated.Value(0)); // Initial value for opacity: 0

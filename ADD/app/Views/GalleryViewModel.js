@@ -7,7 +7,7 @@ import {
     ScrollView,
 } from 'react-native';
 
-class GalleryView extends Component {
+class GalleryViewModel extends Component {
 
     model;
 
@@ -109,4 +109,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default GalleryView;
+export default GalleryViewModel;

@@ -4,21 +4,21 @@ import {
 } from "react-native";
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import HomeView from "./app/views/homeView";
-import CameraView from "./app/views/cameraview";
-import SettingsView from "./app/views/settingsview";
-import GalleryView from "./app/views/galleryview";
-import CasesView from "./app/views/casesview"
-import CategoriseView from "./app/views/categoriseview";
-import HelpView from "./app/views/helpView"
-import ADDModel from "./app/models/ADDModel";
+import HomeViewModel from "./app/Views/HomeViewModel";
+import CameraViewModel from "./app/Views/CameraViewModel";
+import SettingsViewModel from "./app/Views/SettingsViewModel";
+import GalleryViewModel from "./app/Views/GalleryViewModel";
+import CasesViewModel from "./app/Views/CasesViewModel"
+import CaseViewModel from "./app/Views/CaseViewModel";
+import HelpViewModel from "./app/Views/HelpViewModel"
+import ADDModel from "./app/Models/ADDModel";
 
 const model = new ADDModel();
 
 const RootStack = createStackNavigator(
     {
         homeView: {
-            screen: HomeView,
+            screen: HomeViewModel,
             navigationOptions: {
                 headerShown: false
             },
@@ -26,12 +26,12 @@ const RootStack = createStackNavigator(
                 model: model
             }
         },
-        cameraView: CameraView,
-        settingsView: SettingsView,
-        galleryView: GalleryView,
-        casesView: CasesView,
-        categoriseView: CategoriseView,
-        helpView: HelpView
+        cameraView: CameraViewModel,
+        settingsView: SettingsViewModel,
+        galleryView: GalleryViewModel,
+        casesView: CasesViewModel,
+        categoriseView: CaseViewModel,
+        helpView: HelpViewModel
     },
     {
         initialRouteName: 'homeView',

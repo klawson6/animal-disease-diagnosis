@@ -12,7 +12,7 @@ import {
 import FeedbackFormSmall from "../Components/FeedbackFormSmall";
 import CasesList from "../Components/CasesList";
 
-class CasesView extends Component {
+class CasesViewModel extends Component {
 
     constructor(props) {
         super(props);
@@ -134,4 +134,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CasesView;
+export default CasesViewModel;

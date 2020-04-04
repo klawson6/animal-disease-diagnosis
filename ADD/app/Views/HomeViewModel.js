@@ -13,7 +13,7 @@ import {Provider as PaperProvider, DefaultTheme} from "react-native-paper";
 import HomeScreenButton from "../Components/HomeScreenButton";
 import FeedbackForm from "../Components/FeedbackForm";
 
-class HomeView extends Component {
+class HomeViewModel extends Component {
 
     /**
      *  View dependant fields.
@@ -42,16 +42,16 @@ class HomeView extends Component {
     }
 
     /**
-     *  Callback executed when a button in the HomeView is clicked corresponding to a new case.
+     *  Callback executed when a button in the HomeViewModel is clicked corresponding to a new case.
      *
-     *  Navigates the view to the CameraView Component if all permissions have been granted, starting a new case of the specified type.
+     *  Navigates the view to the CameraViewModel Component if all permissions have been granted, starting a new case of the specified type.
      **/
     onCasePress(type) {
         if (this.state.model.hasPermissions()) { // Check for granted permissions.
             this.state.model.startCase(type) // Setting the type of case to be built
                 .then(result => {
                     if (result) {
-                        this.props.navigation.navigate('cameraView', { // Navigate the view to CameraView.
+                        this.props.navigation.navigate('cameraView', { // Navigate the view to CameraViewModel.
                             model: this.props.navigation.getParam("model")
                         });
                     } else {
@@ -66,30 +66,13 @@ class HomeView extends Component {
     /**
      *  Callback executed when the button in the view corresponding to the case list, is clicked.
      *
-     *  Navigates the view to the GalleryView Component if all permissions have been granted.
+     *  Navigates the view to the GalleryViewModel Component if all permissions have been granted.
      **/
     onGalleryPress() {
         if (this.state.model.hasPermissions()) { // Check for granted permissions.
-            // this.setState({loading: true, loadingText: "Loading cases..."}); // Sets the loading state to true.
-            AsyncStorage.getItem("settings") // Asynchronously retrieves saved settings from local app storage
-                .then(item => { // Lambda callback passing in the resolved promise
-                    // this.setState({loading: false,}); // Sets the loading state to false.
-                    if (item) { // If there were saved settings
-                        this.props.navigation.navigate('casesView', { // Navigate the view to GalleryView.
-                            home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
-                            settings: JSON.parse(item), // Passing an object corresponding to loaded settings as a parameter.
-                            model: this.props.navigation.getParam("model")
-                        });
-                    } else
-                        this.props.navigation.navigate('casesView', { // Navigate the view to GalleryView.
-                            home: true,  // Passing a parameter to indicate the state of GalleryView to be loaded.
-                            model: this.props.navigation.getParam("model")
-                        });
-                })
-                .catch(error => { // Lambda callback passing in the resolved promise if an error occurred
-                    // this.setState({loading: false,}); // Sets the loading state to false.
-                    console.log("Error getting settings from local storage: " + error); // Log an error for debugging
-                })
+            this.props.navigation.navigate('casesView', { // Navigate the view to GalleryViewModel.
+                model: this.props.navigation.getParam("model")
+            });
         } else {
             this.state.model.initPermissions(); // Ask for permissions
         }
@@ -98,11 +81,11 @@ class HomeView extends Component {
     /**
      *  Callback executed when the button in the view corresponding to the settings, is clicked.
      *
-     *  Navigates the view to the SettingsView Component if all permissions have been granted.
+     *  Navigates the view to the SettingsViewModel Component if all permissions have been granted.
      **/
     onSettingsPress() {
         if (this.state.model.hasPermissions()) { // Check for granted permissions.
-            this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsView.
+            this.props.navigation.navigate('settingsView', { // Navigate the view to SettingsViewModel.
                 model: this.props.navigation.getParam("model")
             });
         } else {
@@ -378,4 +361,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default HomeView;
+export default HomeViewModel;

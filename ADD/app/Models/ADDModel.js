@@ -1,6 +1,7 @@
 import * as Permissions from "expo-permissions";
 import {Alert, AsyncStorage} from "react-native";
-import {ScreenOrientation} from "expo";
+import * as ScreenOrientation from 'expo-screen-orientation';
+// import {ScreenOrientation} from "expo";
 import NetInfo, {NetInfoStateType} from "@react-native-community/netinfo";
 import * as MediaLibrary from "expo-media-library";
 
@@ -8,9 +9,7 @@ export default class ADDModel {
 
     permissions; // Have all permissions been granted
     camera; // A reference to the camera object
-    case = { // The current case being built
-        assets: []
-    };
+    case = {}; // The current case being built - initialises empty
     isLoaded = false; // Default to a new case
 
     /**
@@ -28,7 +27,7 @@ export default class ADDModel {
                         cell: true,
                         species: null,
                         location: null,
-                        name: null
+                        identifier: null
                     }));
                 }
             })
@@ -54,6 +53,7 @@ export default class ADDModel {
     hasPermissions() {
         return this.permissions === "granted";
     }
+
 
     /**
      *  Asks the user for necessary permissions.
@@ -163,7 +163,7 @@ export default class ADDModel {
         return new Promise(resolve => {
             const body = new FormData();
             body.append("feedback", JSON.stringify(feedback));
-            fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/GatherFeedback.php',
+            fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/UploadFeedback.php',
                 {
                     method: 'POST',
                     body: body,
@@ -415,7 +415,8 @@ export default class ADDModel {
     }
 
     /**
-     * Sets the current case being built to a given case, this is one loaded from AsyncStorage
+     * Sets the current case being built to a given case, this is one loaded from AsyncStorage.
+     * case must specify type.
      */
     setCurrentCase(currentCase) {
         this.case = currentCase;
@@ -451,10 +452,10 @@ export default class ADDModel {
     }
 
     /**
-     * Return type of the case currently being built
+     * Return type of the case currently being built. Returns null if the case is new and new started.
      */
     getCaseType() {
-        return this.case.type;
+        return this.case.type ? this.case.type : null;
     }
 
     /**
@@ -500,7 +501,7 @@ export default class ADDModel {
                     }
                 })
                 .catch(error => {
-                    console.log('Error occurred when saving classification: ' + error)
+                    console.log('Error occurred when saving classification: ' + error);
                     resolve(false);
                 });
         });
@@ -553,50 +554,6 @@ export default class ADDModel {
      *      - 5: Successfully saved and uploaded case
      *      - 6: Uploaded and saved, but failed to mark the case as uploaded
      */
-    // checkAndUploadCase(toUpload, feedback) {
-    //     return new Promise(resolve => {
-    //         console.log("checking case: " + toUpload.caseName);
-    //         console.log("with imgs:" + this.case.caseName);
-    //         console.log("with isComplete:" + this.case.completed);
-    //         this.saveCase(toUpload)
-    //             .then(saved => {
-    //                 if (saved) {
-    //                     console.log("isCompleted" + toUpload.caseName + ":" + this.case.completed);
-    //                     if (this.case.completed) {
-    //                         this.checkInternetAccess(true)
-    //                             .then(connected => {
-    //                                 if (connected) {
-    //                                     this.uploadCase(toUpload, feedback)
-    //                                         .then(result => {
-    //                                             if (result) {
-    //                                                 toUpload.isUploaded = true;
-    //                                                 this.saveCase(toUpload)
-    //                                                     .then(saved => {
-    //                                                         if (saved) {
-    //                                                             console.log("finished checking: " + toUpload.caseName);
-    //                                                             console.log("with imgs end:" + this.case.caseName);
-    //                                                             resolve(5)
-    //                                                         } else {
-    //                                                             resolve(6);
-    //                                                         }
-    //                                                     })
-    //                                             } else {
-    //                                                 resolve(result);
-    //                                             }
-    //                                         })
-    //                                 } else {
-    //                                     resolve(2)
-    //                                 }
-    //                             })
-    //                     } else {
-    //                         resolve(1);
-    //                     }
-    //                 } else {
-    //                     resolve(0);
-    //                 }
-    //             })
-    //     });
-    // }
     checkAndUploadCase(toUpload, feedback) {
         return new Promise(resolve => {
             this.saveCase(toUpload)
@@ -744,7 +701,7 @@ export default class ADDModel {
         return new Promise(resolve => {
             const body = this.prepareCaseForm(toUpload, feedback);
             console.log(body);
-            fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/ImageCollector.php',
+            fetch('https://devweb2019.cis.strath.ac.uk/~xsb16116/ADD/UploadCase.php',
                 {
                     method: 'POST',
                     body: body,

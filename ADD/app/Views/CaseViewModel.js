@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {
     Button, DefaultTheme, Provider as PaperProvider,
-} from "react-native-paper"
+} from "react-native-paper";
 import FeedbackFormSmall from "../Components/FeedbackFormSmall";
 import WrappedSwiper from "../Components/WrappedSwiper";
 import MaterialTextField from "../Components/MaterialTextField";
@@ -18,7 +18,7 @@ import MaterialDatePicker from "../Components/MaterialDatePicker";
 import MaterialMultiChoice from "../Components/MaterialMultiChoice";
 import FormRadios from "../Components/FormRadios";
 
-class CategoriseView extends Component {
+class CaseViewModel extends Component {
 
     diseases = {
         Cattle: [
@@ -141,7 +141,7 @@ class CategoriseView extends Component {
     model;
 
     state = {
-        name: null,
+        identifier: null,
         dateSelected: null,
         location: null,
         species: null,
@@ -179,14 +179,14 @@ class CategoriseView extends Component {
 
     uploadCase(feedback) {
         let curCase = {
-            name: this.state.name,
+            identifier: this.state.identifier,
             dateSelected: this.state.dateSelected,
             location: this.state.location,
             species: this.state.species,
             age: this.state.age,
             breed: this.state.breed,
             sex: this.state.sex,
-            diagnosis: this.state.diagnosis ? this.state.diagnosis : "Healthy",
+            diagnosis: this.state.diagnosis ? this.state.diagnosis : this.state.type ? "Healthy" : null,
             type: this.state.type,
             sides: [],
         };
@@ -256,14 +256,14 @@ class CategoriseView extends Component {
             saveLoading: true,
         });
         let curCase = {
-            name: this.state.name,
+            identifier: this.state.identifier,
             dateSelected: this.state.dateSelected,
             location: this.state.location,
             species: this.state.species,
             age: this.state.age,
             breed: this.state.breed,
             sex: this.state.sex,
-            diagnosis: this.state.diagnosis ? this.state.diagnosis : "Healthy",
+            diagnosis: this.state.diagnosis ? this.state.diagnosis : this.state.type ? "Healthy" : null,
             sides: [],
             isUploaded: false
         };
@@ -357,10 +357,7 @@ class CategoriseView extends Component {
     };
 
     _handleRadio = (key, val) => {
-        this.setState({[key]: this.state[key] === val ? 0 : val});
-        setTimeout(() => {
-            console.log(this.state[key]);
-        }, 250)
+        this.setState({[key]: this.state[key] === val ? null : val});
     };
 
     render() {
@@ -390,8 +387,8 @@ class CategoriseView extends Component {
                         <View style={styles.scrollContainer}>
                             <ScrollView>
                                 <MaterialTextField icon={require('../assets/img/person-grey.png')}
-                                                   name={this.state.name}
-                                                   onChangeText={(val) => this.setState({name: val})}/>
+                                                   identifier={this.state.identifier}
+                                                   onChangeText={(val) => this.setState({identifier: val})}/>
                                 <FormDivider/>
                                 <MaterialDatePicker showPicker={this.showDatePicker.bind(this)}
                                                     show={this.state.show}
@@ -512,4 +509,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CategoriseView;
+export default CaseViewModel;
