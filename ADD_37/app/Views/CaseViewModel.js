@@ -177,6 +177,11 @@ class CaseViewModel extends Component {
         }
     }
 
+    /**
+     * Delegate upload to the Model, and await the result of the upload.
+     * Alert the user with 1 of 7 results based on possible errors.
+     * @param feedback
+     */
     uploadCase(feedback) {
         let curCase = {
             identifier: this.state.identifier,
@@ -246,11 +251,9 @@ class CaseViewModel extends Component {
             })
     }
 
-    //    ________
-    //    |  o  o |
-    //    | |___| |
-    //    |_______|
-    //     _|  _|
+    /**
+     * Save the current case in the model, alert the user of success.
+     */
     onSavePress() {
         this.setState({
             saveLoading: true,
@@ -290,12 +293,20 @@ class CaseViewModel extends Component {
             });
     }
 
+    /**
+     * update view
+     */
     showDatePicker() {
         this.setState({
             show: true
         });
     }
 
+    /**
+     * update view
+     * @param event
+     * @param date
+     */
     setDate(event, date) {
         if (date !== undefined) {
             this.setState({
@@ -308,6 +319,11 @@ class CaseViewModel extends Component {
         }
     }
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleSpeciesPress = (val) => {
         this.setState({
             speciesExpanded: !this.state.speciesExpanded,
@@ -319,6 +335,11 @@ class CaseViewModel extends Component {
         });
     };
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleLocPress = (val) => {
         this.setState({
             locExpanded: !this.state.locExpanded,
@@ -327,6 +348,11 @@ class CaseViewModel extends Component {
         });
     };
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleDiseasePress = (val) => {
         this.setState({
             diseaseExpanded: !this.state.diseaseExpanded,
@@ -344,6 +370,9 @@ class CaseViewModel extends Component {
         });
     };
 
+    /**
+     * Lock the view
+     */
     onUploadPress() {
         this.setState({
             uploadLoading: true,
@@ -351,11 +380,21 @@ class CaseViewModel extends Component {
         });
     }
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleFeedback = (val) => {
         this.setState({feedbackPending: false});
         this.uploadCase(val);
     };
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleRadio = (key, val) => {
         this.setState({[key]: this.state[key] === val ? null : val});
     };

@@ -25,6 +25,7 @@ class CasesViewModel extends Component {
     }
 
     componentDidMount() {
+        // Get cases from model asynchronously
         this.model.getCases()
             .then(cases => {
                 this.setState({
@@ -35,6 +36,10 @@ class CasesViewModel extends Component {
             });
     }
 
+    /**
+     * Navigate to CaseViewModel, loading the case that was clicked.
+      * @param c
+     */
     openCase(c) {
         console.log(c);
         console.log(this.model);
@@ -44,6 +49,9 @@ class CasesViewModel extends Component {
         });
     }
 
+    /**
+     * Lock the view during upload
+     */
     onUploadPress() {
         this.setState({
             loading: true,
@@ -52,6 +60,11 @@ class CasesViewModel extends Component {
         });
     }
 
+    /**
+     * Acquire reactionary feedback from user, delegate upload of cases and feedback to model
+     * @param val
+     * @private
+     */
     _handleFeedback = (val) => {
         this.setState({feedbackPending: false});
         this.model.uploadAll(val)

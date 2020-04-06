@@ -207,7 +207,7 @@ export default class default_1 extends Component {
                     index = actualIndex - 1;
                 }
             } else {
-                index = actualIndex; // REQUIRED FIX FOR THIS TO WORK KYLE DO NOT FORGET
+                index = actualIndex; // REQUIRED FIX IMPLEMENTED FOR CS408 PROJECT - KYLE LAWSON
             }
             const stateWouldBeSet = {index, loopJump};
             this.realtimeOffset = contentOffset;
