@@ -23,6 +23,11 @@ class GalleryViewModel extends Component {
         this.loadCase();
     }
 
+    /**
+     * Dynamically build the view at run time as the number of images ot display is not consistent or predictable.
+     * @param cases
+     * @returns {[]}
+     */
     buildGallery = function (cases) {
         if (cases === null) return;
         let rowCount = 0;
@@ -47,6 +52,9 @@ class GalleryViewModel extends Component {
         return list;
     };
 
+    /**
+     * Get the case being worked on to display its images.
+     */
     loadCase() {
         this.setState({
             cases: this.model.getCurrentCase(),

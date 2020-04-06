@@ -175,6 +175,11 @@ class HomeViewModel extends Component {
             })
     }
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleFinishedUpload = () => {
         this.setState({
             feedbackPending: false,
@@ -188,6 +193,11 @@ class HomeViewModel extends Component {
         });
     };
 
+    /**
+     * Binding data & function dependencies
+     * @param val
+     * @private
+     */
     _handleFeedbackActive = () => {
         if (this.state.feedbackPending) {
             this._handleFinishedUpload();
@@ -198,10 +208,20 @@ class HomeViewModel extends Component {
         }
     };
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleFeedbackOption = (key, val) => {
         this.setState({[key]: val});
     };
 
+    /**
+     * Binding data & function dependencies
+     * @param val
+     * @private
+     */
     _handleUpload = () => {
         this.setState({uploading: true});
         this.onUploadPress();

@@ -35,6 +35,9 @@ class SettingsViewModel extends Component {
 
     model;
 
+    /**
+     * Save the settings in the model, alerting the user of success.
+     */
     onSavePress() {
         this.model.saveSettings({
             wifi: this.state.wifi,
@@ -76,6 +79,11 @@ class SettingsViewModel extends Component {
             });
     }
 
+    /**
+     * Binding data dependencies
+     * @param val
+     * @private
+     */
     _handleSpeciesPress = (val) => {
         this.setState({
             speciesExpanded: !this.state.speciesExpanded,
@@ -84,6 +92,11 @@ class SettingsViewModel extends Component {
         });
     };
 
+    /**
+     * Binding data & function dependencies
+     * @param val
+     * @private
+     */
     _handleLocPress = (val) => {
         this.setState({
             locExpanded: !this.state.locExpanded,

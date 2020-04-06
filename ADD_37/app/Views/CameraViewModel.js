@@ -41,6 +41,11 @@ class CameraViewModel extends Component {
 
     model;
 
+    /**
+     * Checks if at least one image has been captured if the current case is a Disease case, or checks for all 4 images required for a Healthy case.
+     * Returns false if check fails, else true.
+     * @returns {boolean}
+     */
     checkImages() {
         if ((this.state.type && !this.state.done) || !this.model.getCurrentCase().assets.length) {
             this.state.type ?
@@ -57,6 +62,9 @@ class CameraViewModel extends Component {
         return true;
     }
 
+    /**
+     * Binding nav functionality
+     */
     onContinueButton() {
         if (this.checkImages()) {
             this.props.navigation.navigate('categoriseView', {
@@ -65,12 +73,20 @@ class CameraViewModel extends Component {
         }
     }
 
+    /**
+     * Binding nav functionality
+     */
     onGalleryButton() {
         this.props.navigation.navigate('galleryView', {
             model: this.props.navigation.getParam("model"),
         })
     }
 
+    /**
+     * Delegates handling of capturing an image to the Model, and awaits the result fo the capture.
+     * Sets the thumbnail with the new image.
+     * Reports back any failures regarding capturing images with error alerts
+     */
     onCapture() {
         if (this.state.type && this.state.done) {
             new Alert.alert(
@@ -112,7 +128,10 @@ class CameraViewModel extends Component {
         }
     }
 
-
+    /**
+     * Cycles through the sides being captured for a healthy case.
+     * This changes the stencil on the viewfinder, and the integer associated with each image to identify the side it represents.
+     */
     switchSide() {
         switch (this.state.side) {
             case "Front":
